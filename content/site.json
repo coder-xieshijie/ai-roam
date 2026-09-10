@@ -1,0 +1,47 @@
+{
+  "name": "谢世杰｜AI游民",
+  "tagline": "帮技术人把 AI 变成工作能力、判断力和职业杠杆。",
+  "description": "这里记录我做的 Agent 工具、开发实践，以及对工作与成长的思考。",
+  "github": "https://github.com/coder-xieshijie",
+  "wechat": "AI游民谢世杰",
+  "filing": {
+    "domain": "",
+    "icp": "",
+    "police": "",
+    "policeUrl": ""
+  },
+  "projects": [
+    {
+      "slug": "agent-lord",
+      "name": "Agent Lord",
+      "type": "AGENT ORCHESTRATION",
+      "summary": "在一个对话里调度、查看和继续多个编程 Agent 的任务。",
+      "detail": "保存会话与执行记录，让任务可以追踪，也可以接着做。",
+      "repo": "https://github.com/coder-xieshijie/agent-lord",
+      "revision": "36de09d7f128d522f4f0a271a5616e6460e92ff6",
+      "updated": "2026-09-10"
+    },
+    {
+      "slug": "dev-skills",
+      "name": "dev-skills",
+      "type": "REUSABLE SKILLS",
+      "summary": "把解释与代码评审的方法，写成 Agent 可以复用的指引。",
+      "detail": "从理解一个技术概念，到判断一条 Review 建议是否成立。",
+      "repo": "https://github.com/coder-xieshijie/dev-skills",
+      "revision": "4b46de87aa09a092c6c375e8d1487aac9692f6d8",
+      "updated": "2026-09-10"
+    }
+  ],
+  "articles": [
+    {
+      "slug": "skills-and-mcp",
+      "title": "Skills 与 MCP，究竟是什么关系？",
+      "summary": "用一次代码评审拆开看：工作方法、工具接口，以及真正需要验证的结果。",
+      "published": "2026-03-10",
+      "updated": "2026-09-10",
+      "topic": "AGENT 开发",
+      "reading": "6 分钟",
+      "sourceTitle": "一文讲透 Skills 与 MCP：从源码看清两者的真正边界"
+    }
+  ]
+}
