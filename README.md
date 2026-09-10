@@ -25,7 +25,8 @@ python3 -m http.server 4173 --directory dist
 | `content/skills-and-mcp.md` | 文章正文；保留原发表日期和本站修订说明 |
 | `scripts/build.mjs` | 共用导航、页脚、页面模板与静态生成 |
 | `assets/site.css` / `assets/site.js` | 全站样式、公众号名称复制与失败提示 |
-| `assets/crab.png` | 沿用的寄居蟹品牌图 |
+| `assets/brand-robot.png` | 2026-09-10 确认的朱红机器人正式 IP 素材，1024px PNG |
+| `assets/favicon.ico` / `assets/apple-touch-icon.png` | 同一正式素材的多尺寸 favicon 与 180px Apple 图标 |
 | `assets/observer-example.jpg` | Agent Lord 公开仓库的合成示例画面，页面明确标注 |
 
 修改源文件后运行构建，同时生成 GitHub Pages 根目录文件与 `dist/` 预览文件。根目录生成的 HTML 需要一起提交；不要直接修改这些生成文件。`dist/` 和 `node_modules/` 不提交。
