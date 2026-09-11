@@ -38,13 +38,14 @@ jobs:
           oidc-provider-arn: ${{ vars.ALIYUN_OIDC_PROVIDER_ARN }}
           audience: sts.aliyuncs.com
       - name: Install verified Alibaba Cloud CLI
-        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
         run: |
           curl -fsSL --retry 3 https://github.com/aliyun/aliyun-cli/releases/download/v3.5.0/aliyun-cli-linux-3.5.0-amd64.tgz -o "$RUNNER_TEMP/aliyun.tgz"
           echo "f97640bd11002f26e19c4f0b4725a3695e37b43499268837f35dd938cbe043aa  $RUNNER_TEMP/aliyun.tgz" | sha256sum -c -
           mkdir -p "$RUNNER_TEMP/aliyun-bin"
           tar -xzf "$RUNNER_TEMP/aliyun.tgz" -C "$RUNNER_TEMP/aliyun-bin"
           echo "$RUNNER_TEMP/aliyun-bin" >> "$GITHUB_PATH"
+      - name: Test CLI without a configured region
+        run: python3 -m unittest discover -s tests -p 'test_deploy_cli.py'
       - name: Deploy and verify public website
         if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
         env:

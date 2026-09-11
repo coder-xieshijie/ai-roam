@@ -18,7 +18,7 @@ INSTANCE = os.environ['ALIYUN_INSTANCE_ID']
 
 
 def api(action, **parameters):
-    args = ['aliyun', 'ecs', action, '--RegionId', REGION]
+    args = ['aliyun', 'ecs', action, '--region', REGION, '--RegionId', REGION]
     for key, value in parameters.items():
         args.extend(['--' + key, str(value)])
     result = subprocess.run(args, check=True, stdout=subprocess.PIPE, text=True)
