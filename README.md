@@ -2,7 +2,9 @@
 
 谢世杰｜AI游民的个人网站：公开作品、AI 开发实践与关于我。
 
-GitHub Pages 地址：[coder-xieshijie.cn/ai-roam](https://coder-xieshijie.cn/ai-roam/)。发布来源保留为 `main` 分支根目录；分支里的改动合入后才会更新正式站点。
+正式主页：[xieshijie.cn](https://xieshijie.cn/)，部署在阿里云 ECS。
+
+GitHub Pages 备用地址：[coder-xieshijie.cn/ai-roam](https://coder-xieshijie.cn/ai-roam/)。发布来源保留为 `main` 分支根目录；分支里的改动合入后才会更新正式站点。
 
 ## 本地开发
 
@@ -35,9 +37,22 @@ python3 -m http.server 4173 --directory dist
 
 新增文章：在 `content/` 添加 Markdown，并在 `site.json` 的 `articles` 中填写 slug、标题、摘要、原发表日期、修订日期、主题、阅读时间和原题。最近更新从文章修订日期与项目介绍更新日期生成，不代表上游项目发布日期。移除文章时，也需要移除它在根目录和 `dist/` 中的旧输出。
 
+## 自动部署到阿里云
+
+日常更新：修改上表中的源文件 → 运行 `npm run build` 和 `npm run check` → 将源文件及生成的 HTML 一起提交 PR → 合入 `main`。GitHub Actions 的 **Check and deploy website** 会自动检查并部署到 [xieshijie.cn](https://xieshijie.cn/)，不需要登录阿里云控制台。
+
+- 普通 PR 只构建、检查和测试。仅 `main` 的 push 或手动运行可以部署。
+- 在仓库 **Actions → Check and deploy website** 查看结果；网络失败可点击 **Re-run failed jobs** 重试。手动发布当前 `main` 可点 **Run workflow**，分支选择 `main`。
+- 如需撤回已发布的内容，创建并合入对应提交的 revert PR，自动部署会发布恢复后的版本。服务器切换后的本地 HTTPS 检查失败时会自动恢复原版本；公网验证失败会将工作流标红，应查看日志再重试或回退。
+- 部署按提交 SHA 校验归档和每个公开文件，先准备完整版本，再原子切换网站目录。旧版本保留在服务器，更新不需要重启 Nginx。
+- OIDC 信任限定为 `coder-xieshijie/ai-roam` 的 `main` 分支。临时角色只能在指定 ECS 上以 `ai-roam-deploy` 用户执行命令并读取执行结果；这个 Linux 用户可写网站目录，没有 sudo 权限。
+- GitHub Repository Variables：`ALIYUN_DEPLOY_ROLE_ARN`、`ALIYUN_OIDC_PROVIDER_ARN`、`ALIYUN_INSTANCE_ID`。这些是资源标识；不存储主账号 AccessKey、SSH 密钥或 OAuth 凭证。
+
+部署实现见 `.github/workflows/deploy.yml`、`scripts/deploy-aliyun.py` 与 `scripts/deploy-receive.py`。新增公开文件类型时需同步接收脚本的允许类型；目前无需在服务器安装 Node.js。
+
 ## 备案与联系信息
 
-`filing` 当前留空，等待实际核发的信息；空值不会生成占位备案号。设置 `domain` 与 `icp` 后展示 ICP 查询入口；取得公安备案号后，再同时填写 `police` 和平台实际提供的 `policeUrl`。部署到对应域名前核对备案信息与登记服务内容。
+`filing` 已填写核实后的 `xieshijie.cn` 与 `鲁ICP备2026052690号-1`，页脚链接到工信部查询入口；取得公安备案号后，再同时填写 `police` 和平台实际提供的 `policeUrl`。部署到对应域名前核对备案信息与登记服务内容。
 
 公众号名称沿用旧站的「AI游民谢世杰」。若已更名，在 `site.json` 中更新一次即可同步全站。
 
