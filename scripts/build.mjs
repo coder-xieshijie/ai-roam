@@ -42,7 +42,7 @@ function footer(base) {
       ? `<a href="${esc(f.policeUrl)}">${esc(f.police)}</a>`
       : "",
   ].join("");
-  return `<footer class="site-footer"><div class="wrap"><div class="footer-main"><div><h2>继续探索。</h2><p>探索 AI，也探索工作与成长的新可能。</p></div><div><div class="footer-links">${link(site.github, "GitHub")}<button class="copy-button" type="button" data-copy="${esc(site.wechat)}">公众号 · ${esc(site.wechat)} <span aria-hidden="true">⧉</span></button></div><span id="copy-status" class="copy-status" role="status" aria-live="polite"></span></div></div><div class="footer-meta"><span>© 2026 谢世杰 · AI ROAM</span><span class="filing">${filings}</span><a href="${base}about/">个人作品与实践 · 个人观点</a></div></div></footer>`;
+  return `<footer class="site-footer"><div class="wrap"><div class="footer-main"><div><h2>继续探索。</h2><p>探索 AI，也探索工作与成长的新可能。</p></div><div><div class="footer-links">${link(site.github, "GitHub")}<button class="copy-button" type="button" data-copy="${esc(site.wechat)}">公众号 · ${esc(site.wechat)} <span aria-hidden="true">⧉</span></button></div><span id="copy-status" class="copy-status" role="status" aria-live="polite"></span></div></div><div class="footer-meta"><span>© 2026 谢世杰 · AI ROAM</span><span class="filing">${filings}</span><a href="${base}sync-status/">同步状态</a><a href="${base}about/">个人作品与实践 · 个人观点</a></div></div></footer>`;
 }
 
 function page(path, title, description, active, body, options = {}) {
@@ -170,6 +170,15 @@ page(
   "about/",
   (b) =>
     `<section class="page-intro about-lead"><div><p class="eyebrow">ABOUT / 谢世杰</p><h1>探索 AI，也探索<br>工作与成长的新可能。</h1><p class="lead">我叫谢世杰。做开发者工具，也写下实践中的方法与判断。这里是我的个人主页，记录公开作品与个人观点。</p></div><img src="${b}assets/brand-robot.png" width="1024" height="1024" alt="AI游民朱红机器人形象"></section><section class="detail-grid"><h2>始终关心的事</h2><div class="detail-body"><p>怎样让开发者工作得更高效，是贯穿我几段经历的问题。从研发效能到代码智能，再到 AI Coding，工具在变化，需要做出的判断也在变化。</p><p>现在我尤其关心 Agent 如何获得合适的上下文、怎样验证结果，以及怎样让执行过程中的错误及时暴露。</p></div></section><section class="detail-grid"><h2>走过的路径</h2><div class="detail-body"><ol class="timeline"><li><time>2026 — 现在</time><div><h3>MiniMax</h3><p>Agent 研发，目前参与 MiniMax Code Agent 的研发。</p></div></li><li><time>2025 — 2026</time><div><h3>小红书</h3><p>AI Coding，关注多步任务中的上下文与执行过程。</p></div></li><li><time>2023 — 2025</time><div><h3>理想汽车</h3><p>代码智能，从代码补全到智能 Code Review。</p></div></li><li><time>此前</time><div><h3>快手</h3><p>Java 后端工程师，做研发效能与开发者工具。</p></div></li></ol></div></section><section class="detail-grid"><h2>这里会写什么</h2><div class="detail-body capabilities"><div><h3>把 AI 用进工作</h3><p>记录 Agent 工具、开发实践，以及可复用的工作方法。</p></div><div><h3>形成自己的判断</h3><p>从具体任务出发，看清能力、边界和验证结果。</p></div><div><h3>继续成长</h3><p>思考工具变化以后，技术人如何调整自己的工作方式。</p></div></div></section><section class="detail-grid"><h2>找到我</h2><div class="detail-body"><p>开源项目与代码放在 GitHub。文章和实践也会在公众号「${esc(site.wechat)}」分享；你可以通过页脚复制名称，在微信中搜索。</p><div class="actions">${link(site.github, "GitHub 主页", "button")}${link(b + "writing/", "读我的文章")}</div></div></section>`,
+);
+
+page(
+  "sync-status/index.html",
+  "Obsidian 同步状态",
+  "Self-hosted LiveSync 的脱敏运行状态，不展示笔记正文或数据库凭据。",
+  "",
+  (b) =>
+    `<section class="page-intro sync-status-intro"><div class="breadcrumb"><a href="${b}">首页</a><span>/</span><span>同步状态</span></div><p class="eyebrow">SYSTEM STATUS / OBSIDIAN</p><h1>Obsidian 同步状态</h1><p class="lead">这里仅展示 Self-hosted LiveSync 的运行指标。笔记正文、路径和数据库凭据不会出现在这个页面。</p></section><section class="status-board" data-sync-status data-endpoint="./status.json" data-state="loading" aria-busy="true"><div class="status-board-head"><div><span class="status-label">CURRENT STATUS</span><h2>云端同步服务</h2></div><span class="status-badge" data-status-badge><i aria-hidden="true"></i><span data-status-label>读取中</span></span></div><div class="status-metrics"><div class="status-metric"><span>远端记录</span><strong data-status-documents>—</strong><small>加密数据记录，不等于笔记数量</small></div><div class="status-metric"><span>数据库文件</span><strong data-status-storage>—</strong><small>CouchDB 当前磁盘占用</small></div><div class="status-metric"><span>逻辑数据</span><strong data-status-data>—</strong><small>压缩前的有效数据体积</small></div><div class="status-metric"><span>状态检查</span><strong class="status-time" data-status-updated>—</strong><small>页面打开后每分钟刷新</small></div></div><p class="status-message" data-status-message role="status" aria-live="polite">正在读取服务器状态……</p><noscript><p class="status-message">需要启用 JavaScript 才能读取实时状态。</p></noscript></section><section class="detail-grid status-explanation"><h2>这里能看到什么</h2><div class="detail-body"><p>页面只公开服务是否在线、远端记录数量、存储占用和最近检查时间。所有指标由服务器按分钟生成，前端不会连接 CouchDB，也不会持有同步密码。</p><p>由于同步库已开启端到端加密和路径混淆，即使进入云端数据库，也无法直接阅读笔记正文。查看和编辑真实内容仍需使用配置好密钥的 Obsidian。</p></div></section>`,
 );
 
 for (const { path, html } of pages) {
