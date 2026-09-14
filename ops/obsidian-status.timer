@@ -1,0 +1,12 @@
+[Unit]
+Description=Refresh the public Obsidian LiveSync status every minute
+
+[Timer]
+OnBootSec=30s
+OnUnitActiveSec=60s
+AccuracySec=10s
+Persistent=true
+
+[Install]
+WantedBy=timers.target
+
