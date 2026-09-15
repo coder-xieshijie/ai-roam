@@ -7,7 +7,7 @@ Wants=network-online.target
 Type=oneshot
 User=root
 Group=root
-UMask=0022
+UMask=0077
 ExecStart=/usr/local/sbin/update-obsidian-sync-status
 NoNewPrivileges=true
 PrivateDevices=true
@@ -17,6 +17,5 @@ ProtectKernelLogs=true
 ProtectKernelModules=true
 ProtectKernelTunables=true
 ProtectSystem=strict
-ReadWritePaths=/var/www/obsidian-status
+ReadWritePaths=/var/www/obsidian-status /var/lib/obsidian-status
 RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
-

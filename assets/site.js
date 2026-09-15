@@ -39,6 +39,43 @@ if (syncStatus) {
       hour12: false,
     }).format(date);
   };
+  const renderChanges = (metrics) => {
+    const windows = metrics?.windows;
+    if (!windows || !Object.keys(windows).length) {
+      value("[data-change-tracking]", "变更统计暂不可用");
+      return;
+    }
+    syncStatus.querySelectorAll("[data-change-window]").forEach((row) => {
+      const windowStatus = windows[row.dataset.changeWindow];
+      if (!windowStatus) return;
+      for (const action of ["created", "modified", "deleted"]) {
+        const count = windowStatus[action];
+        const target = row.querySelector(`[data-change-${action}]`);
+        if (target)
+          target.textContent = Number.isInteger(count)
+            ? count.toLocaleString("zh-CN")
+            : "—";
+      }
+      const coverage = row.querySelector("[data-change-coverage]");
+      if (coverage) {
+        coverage.textContent = windowStatus.complete ? "完整" : "积累中";
+        coverage.dataset.complete = windowStatus.complete ? "true" : "false";
+        if (!windowStatus.complete && windowStatus.completeAt)
+          coverage.title = `将在 ${formatTime(windowStatus.completeAt)} 积累完整`;
+      }
+    });
+    if (metrics.status === "delayed") {
+      value(
+        "[data-change-tracking]",
+        `统计延迟 · 上次扫描 ${formatTime(metrics.lastScannedAt)}`,
+      );
+    } else {
+      value(
+        "[data-change-tracking]",
+        `统计开始于 ${formatTime(metrics.trackingSince)}`,
+      );
+    }
+  };
   const refresh = async () => {
     syncStatus.setAttribute("aria-busy", "true");
     try {
@@ -60,6 +97,7 @@ if (syncStatus) {
       value("[data-status-storage]", formatBytes(status.storageBytes));
       value("[data-status-data]", formatBytes(status.dataBytes));
       value("[data-status-updated]", formatTime(status.updatedAt));
+      renderChanges(status.changeMetrics);
       value(
         "[data-status-message]",
         online
@@ -69,6 +107,7 @@ if (syncStatus) {
     } catch {
       syncStatus.dataset.state = "unknown";
       value("[data-status-label]", "无法读取");
+      value("[data-change-tracking]", "暂时无法读取变更统计");
       value(
         "[data-status-message]",
         "暂时无法取得服务器状态，请稍后刷新页面。",
