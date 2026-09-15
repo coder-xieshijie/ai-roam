@@ -890,23 +890,32 @@ code {
   font-size: 11px;
   text-align: right;
 }
-.change-subsection {
-  padding-top: 20px;
-}
-.change-subsection + .change-subsection {
-  margin-top: 22px;
-  border-top: 1px solid var(--line);
-}
-.change-subsection-head {
+.change-tabs {
   display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 24px;
-  margin-bottom: 11px;
+  gap: 7px;
+  margin: 20px 0 14px;
+  overflow-x: auto;
 }
-.change-subsection-head h4 {
+.change-tabs button {
+  appearance: none;
+  border: 1px solid var(--line);
+  background: transparent;
+  min-width: 72px;
+  padding: 9px 15px;
   font-size: 14px;
-  font-weight: 650;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.change-tabs button:hover {
+  border-color: #989a91;
+}
+.change-tabs button[aria-selected="true"] {
+  border-color: var(--blue);
+  background: var(--blue);
+  color: var(--white);
+}
+.change-panel:focus {
+  outline: none;
 }
 .change-table-wrap {
   overflow-x: auto;
@@ -918,8 +927,26 @@ code {
   border-collapse: collapse;
   font-size: 13px;
 }
-.line-change-table {
-  min-width: 480px;
+.change-summary-table {
+  min-width: 650px;
+}
+.change-summary-table th,
+.change-summary-table td {
+  width: 20%;
+  text-align: center;
+}
+.change-summary-table tbody td {
+  font-size: 24px;
+  font-weight: 600;
+  line-height: 1.25;
+}
+.change-sources {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  margin-top: 11px;
+  color: var(--muted);
+  font-size: 11px;
 }
 .change-table th,
 .change-table td {
@@ -940,6 +967,12 @@ code {
 .change-table th:first-child,
 .change-table td:first-child {
   text-align: left;
+}
+.change-summary-table th,
+.change-summary-table td,
+.change-summary-table th:first-child,
+.change-summary-table td:first-child {
+  text-align: center;
 }
 .change-table tbody th {
   font-weight: 600;
@@ -1217,7 +1250,8 @@ code {
     padding: 22px 0 18px;
   }
   .change-history-head,
-  .change-subsection-head,
+  .change-tabs,
+  .change-sources,
   .change-note {
     margin-right: 22px;
     margin-left: 22px;
@@ -1227,7 +1261,7 @@ code {
     flex-direction: column;
     gap: 8px;
   }
-  .change-subsection-head {
+  .change-sources {
     align-items: flex-start;
     flex-direction: column;
     gap: 4px;

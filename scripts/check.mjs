@@ -60,6 +60,30 @@ for (const file of htmlFiles) {
     "GitHub and preview HTML differ",
   );
 }
+const statusHtml = await readFile(resolve(root, "sync-status/index.html"), "utf8");
+for (const window of ["1d", "3d", "7d", "30d"])
+  assert.equal(
+    (statusHtml.match(new RegExp(`data-change-tab="${window}"`, "g")) || [])
+      .length,
+    1,
+    `sync status must contain one ${window} change tab`,
+  );
+for (const metric of [
+  "created",
+  "modified",
+  "deleted",
+  "lines-added",
+  "lines-deleted",
+])
+  assert.ok(
+    statusHtml.includes(`data-summary-${metric}`),
+    `sync status is missing ${metric}`,
+  );
+const siteScript = await readFile(resolve(root, "assets/site.js"), "utf8");
+assert.ok(
+  siteScript.includes('tab.addEventListener("click"'),
+  "sync status tabs must update on click",
+);
 if (errors.length) {
   console.error(errors.join("\n"));
   process.exitCode = 1;

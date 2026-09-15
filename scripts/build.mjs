@@ -172,27 +172,15 @@ page(
     `<section class="page-intro about-lead"><div><p class="eyebrow">ABOUT / 谢世杰</p><h1>探索 AI，也探索<br>工作与成长的新可能。</h1><p class="lead">我叫谢世杰。做开发者工具，也写下实践中的方法与判断。这里是我的个人主页，记录公开作品与个人观点。</p></div><img src="${b}assets/brand-robot.png" width="1024" height="1024" alt="AI游民朱红机器人形象"></section><section class="detail-grid"><h2>始终关心的事</h2><div class="detail-body"><p>怎样让开发者工作得更高效，是贯穿我几段经历的问题。从研发效能到代码智能，再到 AI Coding，工具在变化，需要做出的判断也在变化。</p><p>现在我尤其关心 Agent 如何获得合适的上下文、怎样验证结果，以及怎样让执行过程中的错误及时暴露。</p></div></section><section class="detail-grid"><h2>走过的路径</h2><div class="detail-body"><ol class="timeline"><li><time>2026 — 现在</time><div><h3>MiniMax</h3><p>Agent 研发，目前参与 MiniMax Code Agent 的研发。</p></div></li><li><time>2025 — 2026</time><div><h3>小红书</h3><p>AI Coding，关注多步任务中的上下文与执行过程。</p></div></li><li><time>2023 — 2025</time><div><h3>理想汽车</h3><p>代码智能，从代码补全到智能 Code Review。</p></div></li><li><time>此前</time><div><h3>快手</h3><p>Java 后端工程师，做研发效能与开发者工具。</p></div></li></ol></div></section><section class="detail-grid"><h2>这里会写什么</h2><div class="detail-body capabilities"><div><h3>把 AI 用进工作</h3><p>记录 Agent 工具、开发实践，以及可复用的工作方法。</p></div><div><h3>形成自己的判断</h3><p>从具体任务出发，看清能力、边界和验证结果。</p></div><div><h3>继续成长</h3><p>思考工具变化以后，技术人如何调整自己的工作方式。</p></div></div></section><section class="detail-grid"><h2>找到我</h2><div class="detail-body"><p>开源项目与代码放在 GitHub。文章和实践也会在公众号「${esc(site.wechat)}」分享；你可以通过页脚复制名称，在微信中搜索。</p><div class="actions">${link(site.github, "GitHub 主页", "button")}${link(b + "writing/", "读我的文章")}</div></div></section>`,
 );
 
-const changeRows = [
+const changeTabs = [
   ["1d", "1 天"],
   ["3d", "3 天"],
   ["7d", "7 天"],
   ["30d", "1 个月"],
 ]
   .map(
-    ([key, label]) =>
-      `<tr data-change-window="${key}"><th scope="row">${label}</th><td class="change-created" data-change-created>—</td><td class="change-modified" data-change-modified>—</td><td class="change-deleted" data-change-deleted>—</td><td><span class="coverage-badge" data-change-coverage>积累中</span></td></tr>`,
-  )
-  .join("");
-
-const lineRows = [
-  ["1d", "1 天"],
-  ["3d", "3 天"],
-  ["7d", "7 天"],
-  ["30d", "1 个月"],
-]
-  .map(
-    ([key, label]) =>
-      `<tr data-line-window="${key}"><th scope="row">${label}</th><td class="change-created" data-line-added>—</td><td class="change-deleted" data-line-deleted>—</td><td><span class="coverage-badge" data-line-coverage>积累中</span></td></tr>`,
+    ([key, label], index) =>
+      `<button type="button" role="tab" id="change-tab-${key}" data-change-tab="${key}" aria-controls="change-panel" aria-selected="${index === 0 ? "true" : "false"}" tabindex="${index === 0 ? "0" : "-1"}">${label}</button>`,
   )
   .join("");
 
@@ -224,26 +212,18 @@ page(
       <div class="change-history">
         <div class="change-history-head">
           <div><span class="status-label">RECENT CHANGES</span><h3>最近变更</h3></div>
+          <span class="coverage-badge" data-window-coverage>数据加载中</span>
         </div>
-        <div class="change-subsection">
-          <div class="change-subsection-head"><h4>文件</h4><span class="change-tracking" data-change-tracking>正在建立统计基线……</span></div>
+        <div class="change-tabs" role="tablist" aria-label="最近变更时间范围">${changeTabs}</div>
+        <div id="change-panel" class="change-panel" role="tabpanel" aria-labelledby="change-tab-1d" data-change-panel>
           <div class="change-table-wrap">
-            <table class="change-table">
-              <thead><tr><th scope="col">时间范围</th><th scope="col">新增文件</th><th scope="col">修改文件</th><th scope="col">删除文件</th><th scope="col">数据完整度</th></tr></thead>
-              <tbody>${changeRows}</tbody>
+            <table class="change-table change-summary-table">
+              <thead><tr><th scope="col">新增文件</th><th scope="col">修改文件</th><th scope="col">删除文件</th><th scope="col">新增行数</th><th scope="col">删除行数</th></tr></thead>
+              <tbody><tr><td class="change-created" data-summary-created>—</td><td class="change-modified" data-summary-modified>—</td><td class="change-deleted" data-summary-deleted>—</td><td class="change-created" data-summary-lines-added>—</td><td class="change-deleted" data-summary-lines-deleted>—</td></tr></tbody>
             </table>
           </div>
-          <p class="change-note">同一个文件在每个时间窗口、每种操作中只计算一次；重命名计为删除旧文件并新增新文件。</p>
-        </div>
-        <div class="change-subsection">
-          <div class="change-subsection-head"><h4>Markdown 行数</h4><span class="change-tracking" data-line-tracking>等待电脑建立统计基线……</span></div>
-          <div class="change-table-wrap">
-            <table class="change-table line-change-table">
-              <thead><tr><th scope="col">时间范围</th><th scope="col">新增行数</th><th scope="col">删除行数</th><th scope="col">数据完整度</th></tr></thead>
-              <tbody>${lineRows}</tbody>
-            </table>
-          </div>
-          <p class="change-note">修改一行会计为删除 1 行、再新增 1 行。电脑离线时暂停扫描，恢复后统计离线期间的净变化。</p>
+          <div class="change-sources"><span data-change-tracking>正在建立文件统计基线……</span><span data-line-tracking>等待电脑建立行数统计基线……</span></div>
+          <p class="change-note">文件在每个时间范围、每种操作中只计算一次；修改一行计为删除 1 行、再新增 1 行。重命名按删除旧文件并新增新文件计算。</p>
         </div>
       </div>
     </section>

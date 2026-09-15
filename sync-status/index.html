@@ -23,26 +23,18 @@
       <div class="change-history">
         <div class="change-history-head">
           <div><span class="status-label">RECENT CHANGES</span><h3>最近变更</h3></div>
+          <span class="coverage-badge" data-window-coverage>数据加载中</span>
         </div>
-        <div class="change-subsection">
-          <div class="change-subsection-head"><h4>文件</h4><span class="change-tracking" data-change-tracking>正在建立统计基线……</span></div>
+        <div class="change-tabs" role="tablist" aria-label="最近变更时间范围"><button type="button" role="tab" id="change-tab-1d" data-change-tab="1d" aria-controls="change-panel" aria-selected="true" tabindex="0">1 天</button><button type="button" role="tab" id="change-tab-3d" data-change-tab="3d" aria-controls="change-panel" aria-selected="false" tabindex="-1">3 天</button><button type="button" role="tab" id="change-tab-7d" data-change-tab="7d" aria-controls="change-panel" aria-selected="false" tabindex="-1">7 天</button><button type="button" role="tab" id="change-tab-30d" data-change-tab="30d" aria-controls="change-panel" aria-selected="false" tabindex="-1">1 个月</button></div>
+        <div id="change-panel" class="change-panel" role="tabpanel" aria-labelledby="change-tab-1d" data-change-panel>
           <div class="change-table-wrap">
-            <table class="change-table">
-              <thead><tr><th scope="col">时间范围</th><th scope="col">新增文件</th><th scope="col">修改文件</th><th scope="col">删除文件</th><th scope="col">数据完整度</th></tr></thead>
-              <tbody><tr data-change-window="1d"><th scope="row">1 天</th><td class="change-created" data-change-created>—</td><td class="change-modified" data-change-modified>—</td><td class="change-deleted" data-change-deleted>—</td><td><span class="coverage-badge" data-change-coverage>积累中</span></td></tr><tr data-change-window="3d"><th scope="row">3 天</th><td class="change-created" data-change-created>—</td><td class="change-modified" data-change-modified>—</td><td class="change-deleted" data-change-deleted>—</td><td><span class="coverage-badge" data-change-coverage>积累中</span></td></tr><tr data-change-window="7d"><th scope="row">7 天</th><td class="change-created" data-change-created>—</td><td class="change-modified" data-change-modified>—</td><td class="change-deleted" data-change-deleted>—</td><td><span class="coverage-badge" data-change-coverage>积累中</span></td></tr><tr data-change-window="30d"><th scope="row">1 个月</th><td class="change-created" data-change-created>—</td><td class="change-modified" data-change-modified>—</td><td class="change-deleted" data-change-deleted>—</td><td><span class="coverage-badge" data-change-coverage>积累中</span></td></tr></tbody>
+            <table class="change-table change-summary-table">
+              <thead><tr><th scope="col">新增文件</th><th scope="col">修改文件</th><th scope="col">删除文件</th><th scope="col">新增行数</th><th scope="col">删除行数</th></tr></thead>
+              <tbody><tr><td class="change-created" data-summary-created>—</td><td class="change-modified" data-summary-modified>—</td><td class="change-deleted" data-summary-deleted>—</td><td class="change-created" data-summary-lines-added>—</td><td class="change-deleted" data-summary-lines-deleted>—</td></tr></tbody>
             </table>
           </div>
-          <p class="change-note">同一个文件在每个时间窗口、每种操作中只计算一次；重命名计为删除旧文件并新增新文件。</p>
-        </div>
-        <div class="change-subsection">
-          <div class="change-subsection-head"><h4>Markdown 行数</h4><span class="change-tracking" data-line-tracking>等待电脑建立统计基线……</span></div>
-          <div class="change-table-wrap">
-            <table class="change-table line-change-table">
-              <thead><tr><th scope="col">时间范围</th><th scope="col">新增行数</th><th scope="col">删除行数</th><th scope="col">数据完整度</th></tr></thead>
-              <tbody><tr data-line-window="1d"><th scope="row">1 天</th><td class="change-created" data-line-added>—</td><td class="change-deleted" data-line-deleted>—</td><td><span class="coverage-badge" data-line-coverage>积累中</span></td></tr><tr data-line-window="3d"><th scope="row">3 天</th><td class="change-created" data-line-added>—</td><td class="change-deleted" data-line-deleted>—</td><td><span class="coverage-badge" data-line-coverage>积累中</span></td></tr><tr data-line-window="7d"><th scope="row">7 天</th><td class="change-created" data-line-added>—</td><td class="change-deleted" data-line-deleted>—</td><td><span class="coverage-badge" data-line-coverage>积累中</span></td></tr><tr data-line-window="30d"><th scope="row">1 个月</th><td class="change-created" data-line-added>—</td><td class="change-deleted" data-line-deleted>—</td><td><span class="coverage-badge" data-line-coverage>积累中</span></td></tr></tbody>
-            </table>
-          </div>
-          <p class="change-note">修改一行会计为删除 1 行、再新增 1 行。电脑离线时暂停扫描，恢复后统计离线期间的净变化。</p>
+          <div class="change-sources"><span data-change-tracking>正在建立文件统计基线……</span><span data-line-tracking>等待电脑建立行数统计基线……</span></div>
+          <p class="change-note">文件在每个时间范围、每种操作中只计算一次；修改一行计为删除 1 行、再新增 1 行。重命名按删除旧文件并新增新文件计算。</p>
         </div>
       </div>
     </section>
