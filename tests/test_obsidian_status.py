@@ -83,6 +83,27 @@ class StatusPublisherTest(unittest.TestCase):
                     "last_seq": "14",
                     "pending": 0,
                 }
+            if path == "/obsidian_metrics/line-state%3Amac":
+                return {
+                    "_id": "line-state:mac",
+                    "type": "line-metric-state",
+                    "trackingSince": 900,
+                    "lastScannedAt": 1_200,
+                }
+            if path.startswith("/obsidian_metrics/_all_docs?"):
+                return {
+                    "rows": [
+                        {
+                            "doc": {
+                                "_id": "line-event:test",
+                                "type": "line-metric",
+                                "observedAt": 1_050,
+                                "addedLines": 7,
+                                "deletedLines": 3,
+                            }
+                        },
+                    ]
+                }
             if path == "/obsidian_livesync/f%3Aa":
                 return {
                     "_id": "f:a",
@@ -121,11 +142,17 @@ class StatusPublisherTest(unittest.TestCase):
         self.assertEqual(
             repeated["changeMetrics"]["windows"]["1d"]["modified"], 1
         )
+        self.assertEqual(
+            repeated["lineMetrics"]["windows"]["1d"]["added"], 7
+        )
+        self.assertEqual(
+            repeated["lineMetrics"]["windows"]["1d"]["deleted"], 3
+        )
         STATUS.write_status(repeated)
         public = STATUS.OUTPUT_PATH.read_text()
         self.assertNotIn("test-user", public)
         self.assertNotIn("test-secret", public)
-        self.assertEqual(json.loads(public)["schemaVersion"], 2)
+        self.assertEqual(json.loads(public)["schemaVersion"], 3)
 
     def test_preserves_previous_metrics_when_couchdb_is_offline(self):
         STATUS.OUTPUT_PATH.write_text(
@@ -136,6 +163,11 @@ class StatusPublisherTest(unittest.TestCase):
                         "status": "tracking",
                         "trackingSince": "2026-09-15T00:00:00Z",
                         "windows": {"1d": {"created": 2}},
+                    },
+                    "lineMetrics": {
+                        "status": "tracking",
+                        "trackingSince": "2026-09-15T00:00:00Z",
+                        "windows": {"1d": {"added": 9, "deleted": 4}},
                     },
                 }
             )
@@ -149,6 +181,8 @@ class StatusPublisherTest(unittest.TestCase):
         self.assertEqual(result["status"], "offline")
         self.assertEqual(result["changeMetrics"]["status"], "delayed")
         self.assertEqual(result["changeMetrics"]["windows"]["1d"]["created"], 2)
+        self.assertEqual(result["lineMetrics"]["status"], "delayed")
+        self.assertEqual(result["lineMetrics"]["windows"]["1d"]["added"], 9)
 
 
 if __name__ == "__main__":

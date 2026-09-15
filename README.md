@@ -52,9 +52,11 @@ python3 -m http.server 4173 --directory dist
 
 ## Obsidian 同步状态
 
-`/sync-status/` 从同路径的 `status.json` 读取脱敏指标。服务器上的 `obsidian-status.timer` 每分钟运行 `scripts/update-obsidian-status.py`：读取 CouchDB 健康状态，并用 root-only SQLite 记录从启用时开始的匿名文件变化。公开 JSON 只包含服务状态、记录数、容量和 1/3/7/30 天聚合计数，不包含文件名、路径、正文或凭据。
+`/sync-status/` 从同路径的 `status.json` 读取脱敏指标。服务器上的 `obsidian-status.timer` 每分钟运行 `scripts/update-obsidian-status.py`：读取 CouchDB 健康状态，并用 root-only SQLite 记录从启用时开始的匿名文件变化。公开 JSON 只包含服务状态、记录数、容量，以及 1/3/7/30 天的文件和行数聚合计数，不包含文件名、路径、正文或凭据。
 
-相关服务器文件保存在 `ops/`；SQLite 位于 `/var/lib/obsidian-status/metrics.sqlite3`，公开快照位于 `/var/www/obsidian-status/status.json`。首次启动只建立现有文件基线，不把它们计为新增。事件保留 90 天，同一文件在每个窗口、每种操作中只计一次。
+文件变化由服务器从加密同步记录统计。行数无法从端到端加密后的正文中计算，因此 `scripts/collect-obsidian-line-metrics.py` 通过 macOS LaunchAgent 在本机只读 Markdown：本地 SQLite 仅保存带密钥的文件标识和逐行 HMAC，云端 `obsidian_metrics` 库仅接收每次扫描的新增/删除行数总计。首次运行只建立现有文件基线，不把它们计为新增。行数中的修改按“删除旧行并新增新行”计算；文件重命名按旧文件全部删除、新文件全部新增计算。
+
+相关服务文件保存在 `ops/`。服务器 SQLite 位于 `/var/lib/obsidian-status/metrics.sqlite3`，公开快照位于 `/var/www/obsidian-status/status.json`；本机行数状态位于 `~/Library/Application Support/Obsidian Line Metrics/state.sqlite3`。聚合窗口从各自功能启用时开始积累，同一文件在每个文件操作窗口中只计一次。
 
 ## 备案与联系信息
 

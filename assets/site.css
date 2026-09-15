@@ -879,7 +879,7 @@ code {
   align-items: flex-end;
   justify-content: space-between;
   gap: 24px;
-  margin-bottom: 22px;
+  margin-bottom: 8px;
 }
 .change-history-head h3 {
   font: 500 27px/1.4 var(--serif);
@@ -890,6 +890,24 @@ code {
   font-size: 11px;
   text-align: right;
 }
+.change-subsection {
+  padding-top: 20px;
+}
+.change-subsection + .change-subsection {
+  margin-top: 22px;
+  border-top: 1px solid var(--line);
+}
+.change-subsection-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 11px;
+}
+.change-subsection-head h4 {
+  font-size: 14px;
+  font-weight: 650;
+}
 .change-table-wrap {
   overflow-x: auto;
   border: 1px solid var(--line);
@@ -899,6 +917,9 @@ code {
   min-width: 560px;
   border-collapse: collapse;
   font-size: 13px;
+}
+.line-change-table {
+  min-width: 480px;
 }
 .change-table th,
 .change-table td {
@@ -1196,6 +1217,7 @@ code {
     padding: 22px 0 18px;
   }
   .change-history-head,
+  .change-subsection-head,
   .change-note {
     margin-right: 22px;
     margin-left: 22px;
@@ -1204,6 +1226,11 @@ code {
     align-items: flex-start;
     flex-direction: column;
     gap: 8px;
+  }
+  .change-subsection-head {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 4px;
   }
   .change-history-head h3 {
     font-size: 24px;
