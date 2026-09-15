@@ -869,6 +869,89 @@ code {
   color: var(--muted);
   font-size: 12px;
 }
+.change-history {
+  border-top: 1px solid var(--line);
+  background: var(--paper);
+  padding: 27px 30px 22px;
+}
+.change-history-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 22px;
+}
+.change-history-head h3 {
+  font: 500 27px/1.4 var(--serif);
+  margin-top: 6px;
+}
+.change-tracking {
+  color: var(--muted);
+  font-size: 11px;
+  text-align: right;
+}
+.change-table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--line);
+}
+.change-table {
+  width: 100%;
+  min-width: 560px;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+.change-table th,
+.change-table td {
+  padding: 15px 18px;
+  border-bottom: 1px solid var(--line);
+  text-align: right;
+}
+.change-table tr:last-child th,
+.change-table tr:last-child td {
+  border-bottom: 0;
+}
+.change-table thead th {
+  background: #e4e4dc;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 500;
+}
+.change-table th:first-child,
+.change-table td:first-child {
+  text-align: left;
+}
+.change-table tbody th {
+  font-weight: 600;
+}
+.change-created {
+  color: #31764f;
+}
+.change-modified {
+  color: #9d4d19;
+}
+.change-deleted {
+  color: #a43f36;
+}
+.coverage-badge {
+  display: inline-block;
+  min-width: 50px;
+  padding: 3px 8px;
+  border: 1px solid #d5b08f;
+  color: #8b5425;
+  background: #f4e7d9;
+  text-align: center;
+  font-size: 10px;
+}
+.coverage-badge[data-complete="true"] {
+  border-color: #a9c6b4;
+  color: #2e6d49;
+  background: #e1eee5;
+}
+.change-note {
+  margin-top: 13px;
+  color: var(--muted);
+  font-size: 11px;
+}
 .status-explanation {
   margin-bottom: 22px;
 }
@@ -1108,6 +1191,29 @@ code {
   }
   .status-message {
     padding: 13px 22px;
+  }
+  .change-history {
+    padding: 22px 0 18px;
+  }
+  .change-history-head,
+  .change-note {
+    margin-right: 22px;
+    margin-left: 22px;
+  }
+  .change-history-head {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .change-history-head h3 {
+    font-size: 24px;
+  }
+  .change-tracking {
+    text-align: left;
+  }
+  .change-table-wrap {
+    border-right: 0;
+    border-left: 0;
   }
   .breadcrumb {
     margin-bottom: 25px;

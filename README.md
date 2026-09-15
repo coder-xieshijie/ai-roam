@@ -26,14 +26,14 @@ python3 -m http.server 4173 --directory dist
 | `content/site.json` | 站点信息、项目与文章元数据、公开联系入口、备案配置 |
 | `content/skills-and-mcp.md` | 文章正文；保留原发表日期和本站修订说明 |
 | `scripts/build.mjs` | 共用导航、页脚、页面模板与静态生成 |
-| `assets/site.css` / `assets/site.js` | 全站样式、公众号名称复制与失败提示 |
+| `assets/site.css` / `assets/site.js` | 全站样式、公众号名称复制和同步状态展示 |
 | `assets/brand-robot.png` | 2026-09-10 确认的朱红机器人正式 IP 素材，1024px PNG |
 | `assets/favicon.ico` / `assets/apple-touch-icon.png` | 同一正式素材的多尺寸 favicon 与 180px Apple 图标 |
 | `assets/observer-example.jpg` | Agent Lord 公开仓库的合成示例画面，页面明确标注 |
 
 修改源文件后运行构建，同时生成 GitHub Pages 根目录文件与 `dist/` 预览文件。根目录生成的 HTML 需要一起提交；不要直接修改这些生成文件。`dist/` 和 `node_modules/` 不提交。
 
-七个页面：首页、作品列表、Agent Lord、dev-skills、文章列表、Skills 与 MCP 正文、关于我。内部导航使用相对链接，兼容根路径和 `/ai-roam/` 子路径。`npm run check` 验证两种挂载路径下的本地资源、页面链接、锚点及生成文件一致性。
+八个页面：首页、作品列表、Agent Lord、dev-skills、文章列表、Skills 与 MCP 正文、关于我、同步状态。内部导航使用相对链接，兼容根路径和 `/ai-roam/` 子路径。`npm run check` 验证两种挂载路径下的本地资源、页面链接、锚点及生成文件一致性。
 
 新增文章：在 `content/` 添加 Markdown，并在 `site.json` 的 `articles` 中填写 slug、标题、摘要、原发表日期、修订日期、主题、阅读时间和原题。最近更新从文章修订日期与项目介绍更新日期生成，不代表上游项目发布日期。移除文章时，也需要移除它在根目录和 `dist/` 中的旧输出。
 
@@ -49,6 +49,12 @@ python3 -m http.server 4173 --directory dist
 - GitHub Repository Variables：`ALIYUN_DEPLOY_ROLE_ARN`、`ALIYUN_OIDC_PROVIDER_ARN`、`ALIYUN_INSTANCE_ID`。这些是资源标识；不存储主账号 AccessKey、SSH 密钥或 OAuth 凭证。
 
 部署实现见 `.github/workflows/deploy.yml`、`scripts/deploy-aliyun.py` 与 `scripts/deploy-receive.py`。新增公开文件类型时需同步接收脚本的允许类型；目前无需在服务器安装 Node.js。
+
+## Obsidian 同步状态
+
+`/sync-status/` 从同路径的 `status.json` 读取脱敏指标。服务器上的 `obsidian-status.timer` 每分钟运行 `scripts/update-obsidian-status.py`：读取 CouchDB 健康状态，并用 root-only SQLite 记录从启用时开始的匿名文件变化。公开 JSON 只包含服务状态、记录数、容量和 1/3/7/30 天聚合计数，不包含文件名、路径、正文或凭据。
+
+相关服务器文件保存在 `ops/`；SQLite 位于 `/var/lib/obsidian-status/metrics.sqlite3`，公开快照位于 `/var/www/obsidian-status/status.json`。首次启动只建立现有文件基线，不把它们计为新增。事件保留 90 天，同一文件在每个窗口、每种操作中只计一次。
 
 ## 备案与联系信息
 
