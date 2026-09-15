@@ -39,80 +39,72 @@ if (syncStatus) {
       hour12: false,
     }).format(date);
   };
-  const renderFileChanges = (metrics) => {
-    const windows = metrics?.windows;
-    if (!windows || !Object.keys(windows).length) {
-      value("[data-change-tracking]", "变更统计暂不可用");
-      return;
-    }
-    syncStatus.querySelectorAll("[data-change-window]").forEach((row) => {
-      const windowStatus = windows[row.dataset.changeWindow];
-      if (!windowStatus) return;
-      for (const action of ["created", "modified", "deleted"]) {
-        const count = windowStatus[action];
-        const target = row.querySelector(`[data-change-${action}]`);
-        if (target)
-          target.textContent = Number.isInteger(count)
-            ? count.toLocaleString("zh-CN")
-            : "—";
-      }
-      const coverage = row.querySelector("[data-change-coverage]");
-      if (coverage) {
-        coverage.textContent = windowStatus.complete ? "完整" : "积累中";
-        coverage.dataset.complete = windowStatus.complete ? "true" : "false";
-        if (!windowStatus.complete && windowStatus.completeAt)
-          coverage.title = `将在 ${formatTime(windowStatus.completeAt)} 积累完整`;
-      }
-    });
-    if (metrics.status === "delayed") {
-      value(
-        "[data-change-tracking]",
-        `统计延迟 · 上次扫描 ${formatTime(metrics.lastScannedAt)}`,
-      );
-    } else {
-      value(
-        "[data-change-tracking]",
-        `统计开始于 ${formatTime(metrics.trackingSince)}`,
-      );
+  const formatCount = (count) =>
+    Number.isInteger(count) ? count.toLocaleString("zh-CN") : "—";
+  const tabs = [...syncStatus.querySelectorAll("[data-change-tab]")];
+  const panel = syncStatus.querySelector("[data-change-panel]");
+  let activeWindow = "1d";
+  let latestFileMetrics;
+  let latestLineMetrics;
+  const trackingText = (metrics, local) => {
+    if (!metrics?.windows || !Object.keys(metrics.windows).length)
+      return local ? "行数统计等待电脑建立基线" : "文件统计暂不可用";
+    if (metrics.status === "delayed")
+      return `${local ? "电脑" : "服务器"}统计延迟 · ${formatTime(metrics.lastScannedAt)}`;
+    return `${local ? "行数" : "文件"}统计开始于 ${formatTime(metrics.trackingSince)}`;
+  };
+  const renderSelectedWindow = () => {
+    const fileWindow = latestFileMetrics?.windows?.[activeWindow];
+    const lineWindow = latestLineMetrics?.windows?.[activeWindow];
+    value("[data-summary-created]", formatCount(fileWindow?.created));
+    value("[data-summary-modified]", formatCount(fileWindow?.modified));
+    value("[data-summary-deleted]", formatCount(fileWindow?.deleted));
+    value("[data-summary-lines-added]", formatCount(lineWindow?.added));
+    value("[data-summary-lines-deleted]", formatCount(lineWindow?.deleted));
+    const coverage = syncStatus.querySelector("[data-window-coverage]");
+    if (coverage) {
+      const available = fileWindow && lineWindow;
+      const complete = available && fileWindow.complete && lineWindow.complete;
+      coverage.textContent = available ? (complete ? "数据完整" : "积累中") : "部分数据待就绪";
+      coverage.dataset.complete = complete ? "true" : "false";
+      const completeAt = [fileWindow?.completeAt, lineWindow?.completeAt]
+        .filter(Boolean)
+        .sort()
+        .at(-1);
+      coverage.title = !complete && completeAt ? `将在 ${formatTime(completeAt)} 积累完整` : "";
     }
   };
-  const renderLineChanges = (metrics) => {
-    const windows = metrics?.windows;
-    if (!windows || !Object.keys(windows).length) {
-      value("[data-line-tracking]", "等待电脑建立统计基线");
-      return;
-    }
-    syncStatus.querySelectorAll("[data-line-window]").forEach((row) => {
-      const windowStatus = windows[row.dataset.lineWindow];
-      if (!windowStatus) return;
-      for (const action of ["added", "deleted"]) {
-        const count = windowStatus[action];
-        const target = row.querySelector(`[data-line-${action}]`);
-        if (target)
-          target.textContent = Number.isInteger(count)
-            ? count.toLocaleString("zh-CN")
-            : "—";
-      }
-      const coverage = row.querySelector("[data-line-coverage]");
-      if (coverage) {
-        coverage.textContent = windowStatus.complete ? "完整" : "积累中";
-        coverage.dataset.complete = windowStatus.complete ? "true" : "false";
-        if (!windowStatus.complete && windowStatus.completeAt)
-          coverage.title = `将在 ${formatTime(windowStatus.completeAt)} 积累完整`;
-      }
-    });
-    if (metrics.status === "delayed") {
-      value(
-        "[data-line-tracking]",
-        `统计延迟 · 电脑上次扫描 ${formatTime(metrics.lastScannedAt)}`,
-      );
-    } else {
-      value(
-        "[data-line-tracking]",
-        `统计开始于 ${formatTime(metrics.trackingSince)}`,
-      );
-    }
+  const renderChanges = (fileMetrics, lineMetrics) => {
+    latestFileMetrics = fileMetrics;
+    latestLineMetrics = lineMetrics;
+    value("[data-change-tracking]", trackingText(fileMetrics, false));
+    value("[data-line-tracking]", trackingText(lineMetrics, true));
+    renderSelectedWindow();
   };
+  const activateTab = (tab, moveFocus = false) => {
+    activeWindow = tab.dataset.changeTab;
+    for (const candidate of tabs) {
+      const selected = candidate === tab;
+      candidate.setAttribute("aria-selected", selected ? "true" : "false");
+      candidate.tabIndex = selected ? 0 : -1;
+    }
+    if (panel) panel.setAttribute("aria-labelledby", tab.id);
+    renderSelectedWindow();
+    if (moveFocus) tab.focus();
+  };
+  tabs.forEach((tab, index) => {
+    tab.addEventListener("click", () => activateTab(tab));
+    tab.addEventListener("keydown", (event) => {
+      let nextIndex;
+      if (event.key === "ArrowRight") nextIndex = (index + 1) % tabs.length;
+      if (event.key === "ArrowLeft") nextIndex = (index - 1 + tabs.length) % tabs.length;
+      if (event.key === "Home") nextIndex = 0;
+      if (event.key === "End") nextIndex = tabs.length - 1;
+      if (nextIndex === undefined) return;
+      event.preventDefault();
+      activateTab(tabs[nextIndex], true);
+    });
+  });
   const refresh = async () => {
     syncStatus.setAttribute("aria-busy", "true");
     try {
@@ -134,8 +126,7 @@ if (syncStatus) {
       value("[data-status-storage]", formatBytes(status.storageBytes));
       value("[data-status-data]", formatBytes(status.dataBytes));
       value("[data-status-updated]", formatTime(status.updatedAt));
-      renderFileChanges(status.changeMetrics);
-      renderLineChanges(status.lineMetrics);
+      renderChanges(status.changeMetrics, status.lineMetrics);
       value(
         "[data-status-message]",
         online
