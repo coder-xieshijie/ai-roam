@@ -32,6 +32,8 @@ jobs:
         run: python3 -m unittest discover -s tests -p 'test_deploy.py'
       - name: Test Obsidian status publisher
         run: python3 -m unittest discover -s tests -p 'test_obsidian_status.py'
+      - name: Test local Obsidian line metrics collector
+        run: python3 -m unittest discover -s tests -p 'test_obsidian_line_metrics.py'
       - name: Configure temporary Alibaba Cloud credentials
         if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
         uses: aliyun/configure-aliyun-credentials-action@1e5248c8d5d93a8781ac344a68e19a43341e79e6

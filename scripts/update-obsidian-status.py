@@ -30,6 +30,9 @@ STATE_PATH = Path(
 )
 COUCHDB_URL = os.environ.get("OBSIDIAN_STATUS_COUCHDB", "http://127.0.0.1:5984")
 DATABASE = "obsidian_livesync"
+LINE_METRICS_DATABASE = os.environ.get(
+    "OBSIDIAN_LINE_METRICS_DATABASE", "obsidian_metrics"
+)
 FILE_TYPES = {"plain", "newnote"}
 DAY_SECONDS = 24 * 60 * 60
 WINDOWS = (
@@ -39,6 +42,7 @@ WINDOWS = (
     ("30d", 30 * DAY_SECONDS),
 )
 RETENTION_SECONDS = 90 * DAY_SECONDS
+LINE_METRICS_STALE_SECONDS = 5 * 60
 
 
 def timestamp(epoch=None):
@@ -315,10 +319,86 @@ def update_change_metrics(username, password, update_seq, now_epoch):
         connection.close()
 
 
+def empty_line_metrics(status="unavailable"):
+    return {"status": status, "windows": {}}
+
+
+def update_line_metrics(username, password, now_epoch):
+    state = fetch_json(
+        "/" + LINE_METRICS_DATABASE + "/line-state%3Amac",
+        username,
+        password,
+    )
+    parameters = urlencode(
+        {
+            "include_docs": "true",
+            "startkey": json.dumps(
+                "line-event:{0:010d}".format(now_epoch - 30 * DAY_SECONDS)
+            ),
+            "endkey": json.dumps("line-event:\ufff0"),
+        }
+    )
+    response = fetch_json(
+        "/" + LINE_METRICS_DATABASE + "/_all_docs?" + parameters,
+        username,
+        password,
+    )
+    events = []
+    for row in response.get("rows") or []:
+        document = row.get("doc") or {}
+        if document.get("type") == "line-metric":
+            events.append(document)
+    started_at = state.get("trackingSince")
+    last_scanned_at = state.get("lastScannedAt")
+    if not isinstance(started_at, int) or not isinstance(last_scanned_at, int):
+        return empty_line_metrics()
+    windows = {}
+    for label, seconds in WINDOWS:
+        added = 0
+        deleted = 0
+        cutoff = now_epoch - seconds
+        for event in events:
+            observed_at = event.get("observedAt")
+            if not isinstance(observed_at, int) or observed_at < cutoff:
+                continue
+            event_added = event.get("addedLines")
+            event_deleted = event.get("deletedLines")
+            if isinstance(event_added, int) and event_added > 0:
+                added += event_added
+            if isinstance(event_deleted, int) and event_deleted > 0:
+                deleted += event_deleted
+        windows[label] = {
+            "added": added,
+            "deleted": deleted,
+            "complete": now_epoch - started_at >= seconds,
+            "completeAt": timestamp(started_at + seconds),
+        }
+    status = (
+        "delayed"
+        if now_epoch - last_scanned_at > LINE_METRICS_STALE_SECONDS
+        else "tracking"
+    )
+    return {
+        "status": status,
+        "trackingSince": timestamp(started_at),
+        "lastScannedAt": timestamp(last_scanned_at),
+        "windows": windows,
+    }
+
+
 def delayed_metrics(previous):
     metrics = previous.get("changeMetrics")
     if not isinstance(metrics, dict):
         return {"status": "unavailable", "windows": {}}
+    copied = json.loads(json.dumps(metrics))
+    copied["status"] = "delayed"
+    return copied
+
+
+def delayed_line_metrics(previous):
+    metrics = previous.get("lineMetrics")
+    if not isinstance(metrics, dict):
+        return empty_line_metrics()
     copied = json.loads(json.dumps(metrics))
     copied["status"] = "delayed"
     return copied
@@ -337,7 +417,7 @@ def collect_status(now_epoch=None):
             raise RuntimeError("CouchDB health check failed")
         sizes = database.get("sizes") or {}
         status = {
-            "schemaVersion": 2,
+            "schemaVersion": 3,
             "status": "online",
             "documentCount": database.get("doc_count"),
             "storageBytes": sizes.get("file"),
@@ -352,10 +432,16 @@ def collect_status(now_epoch=None):
             )
         except Exception:
             status["changeMetrics"] = delayed_metrics(previous)
+        try:
+            status["lineMetrics"] = update_line_metrics(
+                username, password, now_epoch
+            )
+        except Exception:
+            status["lineMetrics"] = delayed_line_metrics(previous)
         return status
     except Exception:
         return {
-            "schemaVersion": 2,
+            "schemaVersion": 3,
             "status": "offline",
             "documentCount": previous.get("documentCount"),
             "storageBytes": previous.get("storageBytes"),
@@ -364,6 +450,7 @@ def collect_status(now_epoch=None):
             "updatedAt": checked_at,
             "lastSuccessfulAt": previous.get("lastSuccessfulAt"),
             "changeMetrics": delayed_metrics(previous),
+            "lineMetrics": delayed_line_metrics(previous),
         }
 
 

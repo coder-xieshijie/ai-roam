@@ -184,10 +184,22 @@ const changeRows = [
   )
   .join("");
 
+const lineRows = [
+  ["1d", "1 天"],
+  ["3d", "3 天"],
+  ["7d", "7 天"],
+  ["30d", "1 个月"],
+]
+  .map(
+    ([key, label]) =>
+      `<tr data-line-window="${key}"><th scope="row">${label}</th><td class="change-created" data-line-added>—</td><td class="change-deleted" data-line-deleted>—</td><td><span class="coverage-badge" data-line-coverage>积累中</span></td></tr>`,
+  )
+  .join("");
+
 page(
   "sync-status/index.html",
   "Obsidian 同步状态",
-  "Self-hosted LiveSync 的脱敏运行状态与最近文件变化，不展示笔记正文或数据库凭据。",
+  "Self-hosted LiveSync 的脱敏运行状态与最近文件、行数变化，不展示笔记正文或数据库凭据。",
   "",
   (b) => `
     <section class="page-intro sync-status-intro">
@@ -212,20 +224,32 @@ page(
       <div class="change-history">
         <div class="change-history-head">
           <div><span class="status-label">RECENT CHANGES</span><h3>最近变更</h3></div>
-          <span class="change-tracking" data-change-tracking>正在建立统计基线……</span>
         </div>
-        <div class="change-table-wrap">
-          <table class="change-table">
-            <thead><tr><th scope="col">时间范围</th><th scope="col">新增</th><th scope="col">修改</th><th scope="col">删除</th><th scope="col">数据完整度</th></tr></thead>
-            <tbody>${changeRows}</tbody>
-          </table>
+        <div class="change-subsection">
+          <div class="change-subsection-head"><h4>文件</h4><span class="change-tracking" data-change-tracking>正在建立统计基线……</span></div>
+          <div class="change-table-wrap">
+            <table class="change-table">
+              <thead><tr><th scope="col">时间范围</th><th scope="col">新增文件</th><th scope="col">修改文件</th><th scope="col">删除文件</th><th scope="col">数据完整度</th></tr></thead>
+              <tbody>${changeRows}</tbody>
+            </table>
+          </div>
+          <p class="change-note">同一个文件在每个时间窗口、每种操作中只计算一次；重命名计为删除旧文件并新增新文件。</p>
         </div>
-        <p class="change-note">同一个文件在每个时间窗口、每种操作中只计算一次；重命名计为删除旧文件并新增新文件。</p>
+        <div class="change-subsection">
+          <div class="change-subsection-head"><h4>Markdown 行数</h4><span class="change-tracking" data-line-tracking>等待电脑建立统计基线……</span></div>
+          <div class="change-table-wrap">
+            <table class="change-table line-change-table">
+              <thead><tr><th scope="col">时间范围</th><th scope="col">新增行数</th><th scope="col">删除行数</th><th scope="col">数据完整度</th></tr></thead>
+              <tbody>${lineRows}</tbody>
+            </table>
+          </div>
+          <p class="change-note">修改一行会计为删除 1 行、再新增 1 行。电脑离线时暂停扫描，恢复后统计离线期间的净变化。</p>
+        </div>
       </div>
     </section>
     <section class="detail-grid status-explanation">
       <h2>这里能看到什么</h2>
-      <div class="detail-body"><p>页面只公开服务状态、远端记录数量、存储占用和最近文件变化。服务器按分钟采集匿名文件记录，前端不会连接 CouchDB，也不会持有同步密码。</p><p>统计从功能启用时开始积累，不补造更早的历史。由于同步库已开启端到端加密和路径混淆，服务器不会保存文件名、路径或笔记正文。</p></div>
+      <div class="detail-body"><p>页面只公开服务状态、远端记录数量、存储占用，以及最近文件和行数变化。服务器按分钟采集匿名文件记录；行数由电脑本地只读 Markdown 后汇总上报，前端不会连接 CouchDB，也不会持有同步密码。</p><p>统计从功能启用时开始积累，不补造更早的历史。由于同步库已开启端到端加密和路径混淆，云端不会收到文件名、路径、逐行内容或笔记正文。</p></div>
     </section>`,
 );
 
