@@ -4,7 +4,8 @@
   "type": "module",
   "scripts": {
     "build": "node scripts/build.mjs",
-    "check": "node scripts/check.mjs"
+    "check": "node scripts/check.mjs",
+    "demo": "npm run build && node scripts/vine-demo.mjs"
   },
   "engines": {
     "node": ">=24"
