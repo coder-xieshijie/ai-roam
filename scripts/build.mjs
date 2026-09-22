@@ -2,6 +2,7 @@ import { readFile, writeFile, mkdir, cp } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { marked } from "marked";
+import { renderHome } from "./home.mjs";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const site = JSON.parse(
@@ -68,34 +69,7 @@ function articleRows(base) {
     .join("");
 }
 
-page(
-  "index.html",
-  "作品、实践与思考",
-  site.description,
-  "",
-  (b) =>
-    `<section class="hero"><div class="hero-copy"><p class="eyebrow">谢世杰 / DEVELOPER & AI EXPLORER</p><h1>帮技术人把 AI 变成<br><em>工作能力、判断力</em><br>和职业杠杆。</h1><p class="description">${site.description}</p><div class="actions">${link("#work", "看作品", "button")}${link(b + "writing/", "读文章")}</div></div><figure class="hero-art"><img src="${b}assets/brand-robot.png" width="1024" height="1024" alt="浅紫背景上的朱红机器人，AI游民的品牌形象" fetchpriority="high"><figcaption>STAY CURIOUS. KEEP ROAMING.</figcaption></figure></section><section id="work" class="section">${heading("01 / SELECTED WORK", "做过的东西", link(b + "projects/", "全部作品"))}${projects(b)}</section><section class="section">${heading("02 / WRITING & PRACTICE", "写下来的思考", link(b + "writing/", "文章与实践"))}${articleRows(b)}</section><section class="section bottom-grid"><div>${heading("03 / FIELD NOTES", "最近更新")}<ul class="updates">${[
-      ...site.articles.map((a) => ({
-        date: a.updated,
-        label: `修订文章 · ${a.title}`,
-        url: `writing/${a.slug}/`,
-      })),
-      ...site.projects.map((p) => ({
-        date: p.updated,
-        label: `更新介绍 · ${p.name}`,
-        url: `projects/${p.slug}/`,
-      })),
-    ]
-      .sort((a, z) => z.date.localeCompare(a.date))
-      .slice(0, 3)
-      .map(
-        (u) =>
-          `<li><time datetime="${u.date}">${u.date.replaceAll("-", ".")}</time><a href="${b}${u.url}">${u.label}</a></li>`,
-      )
-      .join(
-        "",
-      )}</ul></div><div>${heading("04 / ABOUT ME", "一条持续的主线")}<p class="short-about">从研发效能、代码智能到 AI Coding，我一直关心：怎样让开发者工作得更高效。这里放我的公开项目，也记录做事过程中逐渐形成的判断。</p>${link(b + "about/", "更多关于我")}</div></section>`,
-);
+pages.push({ path: "index.html", html: renderHome(site) });
 
 page(
   "projects/index.html",

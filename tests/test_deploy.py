@@ -35,6 +35,17 @@ class DeployTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 receiver.unpack(bundle(files), {'../escape.html': 'a' * 64}, root)
 
+    def test_webfonts_and_their_licenses_can_be_deployed(self):
+        files = {'index.html': b'homepage', 'assets/favicon.ico': b'icon',
+                 'assets/fonts/wenkai.woff2': b'wOF2',
+                 'assets/fonts/WenKai-OFL.txt': b'SIL Open Font License'}
+        manifest = {name: hashlib.sha256(body).hexdigest() for name, body in files.items()}
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp).resolve()
+            receiver.unpack(bundle(files), manifest, root)
+            for name, body in files.items():
+                self.assertEqual((root / name).read_bytes(), body)
+
     def test_symlink_in_archive_is_rejected(self):
         data = io.BytesIO()
         with tarfile.open(fileobj=data, mode='w:gz') as tar:

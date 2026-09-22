@@ -16,7 +16,7 @@ import urllib.request
 
 
 def unpack(archive, manifest, destination):
-    allowed = {'.html', '.css', '.js', '.png', '.jpg', '.jpeg', '.ico', '.svg', '.webp', '.woff2'}
+    allowed = {'.html', '.css', '.js', '.png', '.jpg', '.jpeg', '.ico', '.svg', '.webp', '.woff2', '.txt'}
     for name, digest in manifest.items():
         path = PurePosixPath(name)
         if (path.is_absolute() or '..' in path.parts or not path.parts
