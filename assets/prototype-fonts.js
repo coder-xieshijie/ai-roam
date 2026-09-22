@@ -4,9 +4,10 @@
     wenkai: {label:'标题：霞鹜文楷 · 正文：IBM Plex Sans SC',fonts:['Study WenKai','Study Plex','Study Plex Latin','Study Mono'],title:'霞鹜文楷'},
     plex: {label:'标题与正文：IBM Plex Sans SC',fonts:['Study Plex','Study Mono'],title:'IBM Plex'},
     zhuque: {label:'标题：朱雀仿宋 · 正文：IBM Plex Sans SC',fonts:['Study Zhuque','Study Plex','Study Plex Latin','Study Mono'],title:'朱雀仿宋'},
+    anthropic: {label:'中文：文楷 / Plex · 西文：Anthropic Sans · 代码：Anthropic Mono Web',fonts:['Study WenKai','Study Plex','Study Anthropic Sans','Study Anthropic Mono'],title:'Anthropic Sans + Mono'},
     current: {label:'标题：Noto Serif SC · 正文：Noto Sans SC / Inter',fonts:['Roam Serif','Roam Sans','Roam Inter'],title:'当前宋体'},
   };
-  const keys=Object.keys(choices),buttons=[...document.querySelectorAll('[data-choice]')];
+  const buttons=[...document.querySelectorAll('[data-choice]')],keys=buttons.map(button=>button.dataset.choice);
   const status=document.querySelector('#font-status');
   let active='',generation=0;
   async function select(key,updateURL=true) {
@@ -36,4 +37,13 @@
     event.preventDefault();select(keys[(keys.indexOf(active)+(event.key==='ArrowRight'?1:-1)+keys.length)%keys.length]);
   });
   select(new URL(location.href).searchParams.get('font'),false);
+  const codeStatus=document.querySelector('#code-font-status');
+  Promise.all(['Study Anthropic Sans','Study Anthropic Mono'].map(name=>document.fonts.load(`400 16px "${name}"`,'ilMW01'))).then(faces=>{
+    if(faces.some(face=>face.length===0))throw new Error('Local Anthropic fonts unavailable');
+    document.querySelector('.f-code-study').dataset.fontState='ready';
+    codeStatus.textContent='本机 Anthropic 字体已就绪';
+  }).catch(()=>{
+    document.querySelector('.f-code-study').dataset.fontState='error';
+    codeStatus.textContent='本机未加载 Anthropic 字体，请先安装';
+  });
 })();
