@@ -1,0 +1,8 @@
+/* Shared font faces for the local typography studies and full Anthropic demo. */
+@font-face{font-family:'Study WenKai';font-style:normal;font-weight:400;font-display:swap;src:url('./wenkai.woff2') format('woff2')}
+@font-face{font-family:'Study Plex';font-style:normal;font-weight:400;font-display:swap;src:url('./plex-sans-sc.woff2') format('woff2')}
+@font-face{font-family:'Study Plex Latin';font-style:normal;font-weight:400;font-display:swap;src:url('./plex-sans-sc.woff2') format('woff2');unicode-range:U+0000-00FF}
+@font-face{font-family:'Study Mono';font-style:normal;font-weight:400;font-display:swap;src:url('./plex-mono.woff2') format('woff2')}
+@font-face{font-family:'Study Zhuque';font-style:normal;font-weight:400;font-display:swap;src:url('./zhuque.woff2') format('woff2')}
+@font-face{font-family:'Study Anthropic Sans';font-weight:300 800;font-style:normal;src:local('AnthropicSansVariable-TextLight'),local('Anthropic Sans Text Light'),local('Anthropic Sans')}
+@font-face{font-family:'Study Anthropic Mono';font-weight:300 800;font-style:normal;src:local('AnthropicMonoWebWeb-Regular'),local('Anthropic Mono Web')}

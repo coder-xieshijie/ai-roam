@@ -1,11 +1,4 @@
 /* Local one-page type study. Font outlines are real, self-hosted WOFF2 subsets. */
-@font-face{font-family:'Study WenKai';font-style:normal;font-weight:400;font-display:swap;src:url('./prototype-style/wenkai.woff2') format('woff2')}
-@font-face{font-family:'Study Plex';font-style:normal;font-weight:400;font-display:swap;src:url('./prototype-style/plex-sans-sc.woff2') format('woff2')}
-@font-face{font-family:'Study Plex Latin';font-style:normal;font-weight:400;font-display:swap;src:url('./prototype-style/plex-sans-sc.woff2') format('woff2');unicode-range:U+0000-00FF}
-@font-face{font-family:'Study Mono';font-style:normal;font-weight:400;font-display:swap;src:url('./prototype-style/plex-mono.woff2') format('woff2')}
-@font-face{font-family:'Study Zhuque';font-style:normal;font-weight:400;font-display:swap;src:url('./prototype-style/zhuque.woff2') format('woff2')}
-@font-face{font-family:'Study Anthropic Sans';font-weight:300 800;font-style:normal;src:local('AnthropicSansVariable-TextLight'),local('Anthropic Sans Text Light'),local('Anthropic Sans')}
-@font-face{font-family:'Study Anthropic Mono';font-weight:300 800;font-style:normal;src:local('AnthropicMonoWebWeb-Regular'),local('Anthropic Mono Web')}
 .font-demo{--paper:#f4f0e6;--ink:#3c3e34;--muted:#717465;--line:#d8d2c3;--accent:#b75b42;--title:'Study Plex Latin','Study WenKai',serif;--body:'Study Plex','PingFang SC',sans-serif;--mono:'Study Mono',monospace;margin:0;color:var(--ink);background:var(--paper);font:14px/1.7 'Roam Inter','PingFang SC',sans-serif;-webkit-font-smoothing:antialiased}
 .font-demo[data-font=anthropic]{--title:'Study Anthropic Sans','Study WenKai',serif;--body:'Study Anthropic Sans','Study Plex','PingFang SC',sans-serif;--mono:'Study Anthropic Mono',monospace}
 .font-demo[data-font=plex]{--title:'Study Plex','PingFang SC',sans-serif}

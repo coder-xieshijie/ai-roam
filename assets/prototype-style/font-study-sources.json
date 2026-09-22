@@ -10,5 +10,5 @@
     "Zhuque-LICENSE.txt": "https://raw.githubusercontent.com/TrionesType/zhuque/803217b9663d1c6e1402e91acc94e4f572713d73/LICENSE.txt"
   },
   "zhuque_release": "https://github.com/TrionesType/zhuque/releases/download/v0.212/ZhuqueFangsong-v0.212.zip",
-  "note": "Fonts retain upstream outlines and names. WOFF2 subsets contain the one-page specimen text; they are not desktop font distributions. Regenerate if copy changes."
+  "note": "Fonts retain upstream outlines and names. WenKai and Plex Sans SC WOFF2 subsets cover both the complete humanist homepage and the font-study text. Zhuque covers the one-page specimen; Plex Mono covers its code and Latin samples. These are not desktop font distributions. Regenerate if copy changes."
 }

@@ -19,10 +19,10 @@ The SVG sprites retain the upstream path geometry; symbol IDs and the enclosing 
 
 ## Font study additions
 
-The one-page font study uses LXGW WenKai Regular, IBM Plex Sans SC Regular, IBM Plex Mono Regular, and Zhuque Fangsong Regular v0.212. All are local WOFF2 subsets of the text shown on this page; original outlines and names are preserved. The current Noto pairing remains as a fourth reference.
+The one-page font study uses LXGW WenKai Regular, IBM Plex Sans SC Regular, IBM Plex Mono Regular, and Zhuque Fangsong Regular v0.212. All are local WOFF2 subsets; WenKai and Plex Sans SC cover both the complete humanist homepage and the font-study page, while Zhuque and Plex Mono retain their specimen scope; original outlines and names are preserved. The current Noto pairing remains as a fourth reference.
 
-Pinned sources and the subset scope are recorded in `font-study-sources.json`; licenses are included alongside the fonts. These are web-only subsets, not installable font distributions. Regenerate when specimen text changes. The four additional fonts total approximately 199 KiB.
+Pinned sources and the subset scope are recorded in `font-study-sources.json`; licenses are included alongside the fonts. These are web-only subsets, not installable font distributions. Regenerate when specimen text changes. The four additional fonts total approximately 245 KiB. Shared declarations live in `study-fonts.css`.
 
 ## Anthropic local-font study
 
-The fifth pairing resolves the user's installed Anthropic Sans and Anthropic Mono Web with CSS `local()` names. No Anthropic font files are included or redistributed in this repository. Both fonts cover the Latin samples; CJK uses the separately named Chinese fallback. Source identity was cross-checked against the installed font name tables and the public stylesheet linked by https://www.anthropic.com/ on 2026-09-22. Local name resolution and measured glyph advances were verified in the preview browser.
+The fifth pairing and the complete `?variant=anthropic` homepage resolve the user's installed Anthropic Sans and Anthropic Mono Web with CSS `local()` names. No Anthropic font files are included or redistributed in this repository. Both fonts cover the Latin samples; CJK uses the separately named Chinese fallback. Source identity was cross-checked against the installed font name tables and the public stylesheet linked by https://www.anthropic.com/ on 2026-09-22. Local name resolution and measured glyph advances were verified in the preview browser.

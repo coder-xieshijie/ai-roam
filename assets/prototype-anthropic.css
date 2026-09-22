@@ -1,0 +1,9 @@
+/* Full humanist homepage with the user's installed Anthropic Latin fonts. */
+.design-anthropic{--d-sans:'Study Anthropic Sans','Study Plex','PingFang SC',sans-serif;--d-serif:'Study Anthropic Sans','Study WenKai',serif;--d-mono:'Study Anthropic Mono','Study Plex',monospace;font-synthesis:none;font-optical-sizing:auto}
+.design-anthropic .t-copy>.d-eyebrow,.design-anthropic .d-article-meta time{font-family:var(--d-mono)}
+.design-anthropic .h-manual-bottom{font-family:var(--d-sans);font-style:normal}
+.design-anthropic .h-quote{font-family:var(--d-sans)}
+.design-anthropic .h-article h3{text-wrap:balance;word-break:keep-all;overflow-wrap:anywhere}
+.design-anthropic .h-about-note li>span{font-family:var(--d-mono);font-style:normal;font-size:13px}
+.design-anthropic .prototype-switcher,.design-anthropic .prototype-select{font-family:var(--d-sans)}
+.d-font-notice{border:1px solid var(--d-line);padding:12px 18px;margin-block:16px;font-size:12px;color:var(--d-accent)}

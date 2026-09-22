@@ -14,10 +14,11 @@ const escape = (s) => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;
 const link = (href, text, cls = 'v-link') => `<a class="${cls}" href="${escape(href)}">${escape(text)} <span aria-hidden="true">↗</span></a>`;
 const [lord, skills] = site.projects;
 const article = site.articles[0];
-const styleVariants = [['swiss','A · 瑞士编辑'], ['human','B · 人文科技'], ['scarlet','朱红探索线'], ['original','原版']];
+const styleVariants = [['anthropic','B · Anthropic'], ['human','B · 原字体'], ['swiss','A · 瑞士编辑'], ['scarlet','朱红探索线'], ['original','原版']];
 const legacyVariants = [['vine','藤蔓'], ['robot','机器人'], ['sketch','手绘游迹']];
 const switcher = (variant) => {
-  const variants = [...styleVariants, ...legacyVariants.filter(([key]) => key === variant)];
+  const legacy = legacyVariants.filter(([key]) => key === variant);
+  const variants = [...(legacy.length ? styleVariants.slice(0, 4) : styleVariants), ...legacy];
   const index = variants.findIndex(([key]) => key === variant);
   const previous = variants[(index + variants.length - 1) % variants.length][0];
   const next = variants[(index + 1) % variants.length][0];
@@ -49,16 +50,16 @@ ${switcher('vine')}</body></html>`;
 const robotDemo = renderRobotDemo(site, switcher);
 const trailDemos = {scarlet: renderTrailDemo(site, switcher, 'scarlet'), sketch: renderTrailDemo(site, switcher, 'sketch')};
 
-const styleDemos = {swiss: renderSwissDemo(site, switcher), human: renderHumanDemo(site, switcher), fonts: renderFontDemo()};
+const styleDemos = {anthropic: renderHumanDemo(site, switcher, 'anthropic'), swiss: renderSwissDemo(site, switcher), human: renderHumanDemo(site, switcher), fonts: renderFontDemo()};
 
 const mime = {'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=utf-8','.css':'text/css; charset=utf-8','.png':'image/png','.jpg':'image/jpeg','.ico':'image/x-icon','.svg':'image/svg+xml','.woff2':'font/woff2'};
 createServer(async (request, response) => {
   try {
     const url = new URL(request.url, 'http://localhost');
     if (url.pathname === '/' || url.pathname === '/index.html') {
-      const variant = url.searchParams.get('variant') || 'swiss';
+      const variant = url.searchParams.get('variant') || 'anthropic';
       const original = variant === 'original';
-      const html = original ? (await readFile(resolve(root, 'dist/index.html'), 'utf8')).replace('</head>', '<link rel="stylesheet" href="./assets/prototype-vine.css"></head>').replace('</body>', switcher('original') + '</body>') : variant === 'vine' ? demo : variant === 'robot' ? robotDemo : styleDemos[variant] || trailDemos[variant] || styleDemos.swiss;
+      const html = original ? (await readFile(resolve(root, 'dist/index.html'), 'utf8')).replace('</head>', '<link rel="stylesheet" href="./assets/prototype-vine.css"></head>').replace('</body>', switcher('original') + '</body>') : variant === 'vine' ? demo : variant === 'robot' ? robotDemo : styleDemos[variant] || trailDemos[variant] || styleDemos.anthropic;
       response.writeHead(200, {'Content-Type':mime['.html'],'Cache-Control':'no-store'}).end(html);
       return;
     }
@@ -66,8 +67,8 @@ createServer(async (request, response) => {
     if (!path.startsWith(resolve(root, 'dist') + sep)) { response.writeHead(403).end(); return; }
     if (url.pathname.endsWith('/')) path = resolve(path, 'index.html');
     // Prototype assets are served from source, so CSS/JS edits only need a reload.
-    if (/\/assets\/prototype-(vine|robot|trail|switcher|style|fonts)\.(css|js)$/.test(url.pathname)) path = resolve(root, 'assets', url.pathname.split('/').pop());
+    if (/\/assets\/prototype-(vine|robot|trail|switcher|style|fonts|anthropic)\.(css|js)$/.test(url.pathname)) path = resolve(root, 'assets', url.pathname.split('/').pop());
     if (url.pathname.startsWith('/assets/prototype-style/')) path = resolve(root, 'assets/prototype-style', path.split(sep).pop());
     response.writeHead(200, {'Content-Type':mime[extname(path)] || 'application/octet-stream','Cache-Control':'no-store'}).end(await readFile(path));
   } catch { response.writeHead(404).end('Not found'); }
-}).listen(4173, '127.0.0.1', () => console.log('Homepage comparison demo: http://127.0.0.1:4173/?variant=swiss'));
+}).listen(4173, '127.0.0.1', () => console.log('Homepage comparison demo: http://127.0.0.1:4173/?variant=anthropic'));
