@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light"><title>sql语句各个关键字的执行顺序 · 谢世杰｜AI游民</title><meta name="description" content="通过关联、过滤、分组和排序，理解 SQL 各个关键字在逻辑执行中的顺序。"><meta property="og:type" content="article"><meta property="og:title" content="sql语句各个关键字的执行顺序 · AI Roam"><meta property="og:description" content="通过关联、过滤、分组和排序，理解 SQL 各个关键字在逻辑执行中的顺序。"><meta name="theme-color" content="#f1efea"><link rel="icon" type="image/x-icon" href="../../assets/favicon.ico"><link rel="apple-touch-icon" sizes="180x180" href="../../assets/apple-touch-icon.png"><link rel="stylesheet" href="../../assets/site.css"><script src="../../assets/site.js" defer></script></head>
+<body><a class="skip" href="#main">跳到正文</a><header class="site-header wrap"><a class="brand" href="../../">谢世杰｜AI游民<span>AI ROAM</span></a><nav class="nav" aria-label="主导航"><a href="../../projects/">作品</a><a href="../../writing/" aria-current="page">文章与实践</a><a href="../../about/">关于</a><a class="nav-github" href="https://github.com/coder-xieshijie">GitHub ↗</a></nav></header><main id="main" class="wrap"><header class="page-intro article-header"><div class="breadcrumb"><a href="../../writing/">文章与实践</a><span>/</span><span>数据库与搜索</span></div><p class="eyebrow">数据库与搜索 / 学习笔记</p><h1>sql语句各个关键字的执行顺序</h1><p class="lead">通过关联、过滤、分组和排序，理解 SQL 各个关键字在逻辑执行中的顺序。</p><div class="article-meta"><span>旧文整理 · 谢世杰</span><span>原发表 <time datetime="2023-07-24">2023-07-24</time></span><span>迁入 <time datetime="2026-09-22">2026-09-22</time></span><span>约 5 分钟</span></div><aside class="editor-note"><strong>整理说明</strong><p>从旧博客迁入，保留当时的正文与技术语境；示例和工具版本未经本次重新运行验证。</p></aside></header><div class="reading-layout"><nav class="toc" aria-label="文章目录"><h2>本文目录</h2><a href="#section-1">图解 SQL 的执行顺序</a></nav><article class="prose" id="article-body"><p>The order of execution of SQL statements is important to understand, especially when writing complex queries. Here’s the usual order:</p>
+<ol><li><p><strong>FROM and JOINs</strong>: The FROM clause, and any JOINs are first executed. This determines and combines all the tables being used in the query.</p></li><li><p><strong>WHERE</strong>: Once we know what tables are being used and how they’re connected, the WHERE clause filters down the data that’s going to be used for the next steps.</p></li><li><p><strong>GROUP BY</strong>: The data we have so far is then grouped based on the columns specified in the GROUP BY clause.</p></li><li><p><strong>Aggregation functions (MIN, MAX, AVG, COUNT, etc.)</strong>: Any aggregation functions in the SELECT part of the query are then applied within each group of data.</p></li><li><p><strong>HAVING</strong>: If a HAVING clause is present, it acts like a WHERE but for groups instead of individual rows.</p></li><li><p><strong>SELECT</strong>: The specific columns mentioned in the SELECT statement are then calculated and returned.</p></li><li><p><strong>ORDER BY</strong>: If an ORDER BY clause is present, the returned result set is sorted accordingly.</p></li><li><p><strong>LIMIT</strong>: If a LIMIT clause is present, the final result set is limited to a certain number of rows.</p></li></ol>
+<p>执行顺序</p>
+<ol><li>from </li><li>on join 联表，把需要查询的表聚合起来</li><li>where 条件过滤</li><li>group by 对过滤的条件进行分组</li><li>having 对每一个分组分别进行条件过滤</li><li>select 现在数据，然后进行函数count、max、distinct等的计算</li><li>order by 对数据进行排序</li><li>limit 最后才进行截取，需要注意的是排序是在截取前面的，如果先截取在排序，那么就可能造成数据不符合预期</li></ol>
+<hr>
+<h2 id="section-1">图解 SQL 的执行顺序</h2>
+<p>这是一条标准的查询语句:</p>
+<p><img src="../../assets/articles/f30d728d0bc79f0e.webp" alt="图片" loading="lazy" decoding="async"></p>
+<p>这是我们实际上SQL执行顺序：</p>
+<ul><li><p>我们先执行from,join来确定表之间的连接关系，得到初步的数据</p></li><li><p>where对数据进行普通的初步的筛选</p></li><li><p>group by 分组</p></li><li><p>各组分别执行having中的普通筛选或者聚合函数筛选。</p></li><li><p>然后把再根据我们要的数据进行select，可以是普通字段查询也可以是获取聚合函数的查询结果，如果是集合函数，select的查询结果会新增一条字段</p></li><li><p>将查询结果去重distinct</p></li><li><p>最后合并各组的查询结果，按照order by的条件进行排序</p></li></ul>
+<p><img src="../../assets/articles/03f201f79a4c9184.webp" alt="图片" loading="lazy" decoding="async"></p>
+<h3 id="section-2"><strong>数据的关联过程</strong></h3>
+<p>数据库中的两张表</p>
+<p><img src="../../assets/articles/7d804da77a13c472.webp" alt="图片" loading="lazy" decoding="async"></p>
+<h3 id="section-3"><strong>from&amp;join&amp;where</strong></h3>
+<p>用于确定我们要查询的表的范围，涉及哪些表。</p>
+<p>选择一张表，然后用join连接</p>
+<pre><code class="language-plaintext">from table1 join table2 on table1.id=table2.id
+</code></pre>
+<p>选择多张表，用where做关联条件</p>
+<pre><code class="language-plaintext">from table1,table2 where table1.id=table2.id
+</code></pre>
+<p>我们会得到满足关联条件的两张表的数据，不加关联条件会出现笛卡尔积。</p>
+<p><img src="../../assets/articles/6d270abb5a1296a3.webp" alt="图片" loading="lazy" decoding="async"></p>
+<h3 id="section-4"><strong>group by</strong></h3>
+<p>按照我们的分组条件，将数据进行分组，但是不会筛选数据。</p>
+<p>比如我们按照即id的奇偶分组</p>
+<p><img src="../../assets/articles/fb8bd2183678c08d.webp" alt="图片" loading="lazy" decoding="async"></p>
+<h3 id="section-5"><strong>having&amp;where</strong></h3>
+<p>having中可以是普通条件的筛选，也能是聚合函数。而where只能是普通函数，一般情况下，有having可以不写where，把where的筛选放在having里，SQL语句看上去更丝滑。</p>
+<h5 id="section-6">使用where再group by</h5>
+<p>先把不满足where条件的数据删除，再去分组</p>
+<h5 id="section-7">使用group by再having</h5>
+<p>先分组再删除不满足having条件的数据，这两种方法有区别吗，几乎没有！</p>
+<p>举个例子：</p>
+<p><code>100/2=50</code>，此时我们把100拆分<code>(10+10+10+10+10…)/2=5+5+5+…+5=50</code>,只要筛选条件没变，即便是分组了也得满足筛选条件，所以where后group by 和group by再having是不影响结果的！</p>
+<p>不同的是，having语法支持聚合函数,其实having的意思就是针对每组的条件进行筛选。我们之前看到了普通的筛选条件是不影响的，但是having还支持聚合函数，这是where无法实现的。</p>
+<p>当前数据分组情况</p>
+<p><img src="../../assets/articles/7d441da7b54e1d8e.webp" alt="图片" loading="lazy" decoding="async">执行having的筛选条件，可以使用聚合函数。筛选掉工资小于各组平均工资的<code>having salary&lt;avg(salary)</code></p>
+<p><img src="../../assets/articles/fbbaf3ef32c32a87.webp" alt="图片" loading="lazy" decoding="async"></p>
+<h3 id="section-8"><strong>select</strong></h3>
+<p>分组结束之后，我们再执行select语句，因为聚合函数是依赖于分组的，聚合函数会单独新增一个查询出来的字段，这里用紫色表示，这里我们两个id重复了，我们就保留一个id，重复字段名需要指向来自哪张表，否则会出现唯一性问题。最后按照用户名去重。</p>
+<pre><code class="language-plaintext">select employee.id,distinct name,salary, avg(salary)
+</code></pre>
+<p><img src="../../assets/articles/ad73f182a533c6aa.webp" alt="图片" loading="lazy" decoding="async">将各组having之后的数据再合并数据。</p>
+<p><img src="../../assets/articles/9e6554a10555de27.webp" alt="图片" loading="lazy" decoding="async"></p>
+<h3 id="section-9"><strong>order by</strong></h3>
+<p>最后我们执行order by 将数据按照一定顺序排序，比如这里按照id排序。如果此时有limit那么查询到相应的我们需要的记录数时，就不继续往下查了。</p>
+<p><img src="../../assets/articles/3f943027572ca546.webp" alt="图片" loading="lazy" decoding="async"></p>
+<h3 id="section-10"><strong>limit</strong></h3>
+<p>记住limit是最后查询的，为什么呢？假如我们要查询年级最小的三个数据，如果在排序之前就截取到3个数据。实际上查询出来的不是最小的三个数据而是前三个数据了，记住这一点。</p>
+<p>我们如果limit 0,3窃取前三个数据再排序，实际上最少工资的是2000,3000,4000。你这里只能是4000,5000,8000了。</p>
+<p><img src="../../assets/articles/150ab78e0f78fbc5.webp" alt="图片" loading="lazy" decoding="async"></p>
+<footer class="article-source"><p>原题：sql语句各个关键字的执行顺序 · 旧博客存档于 2024 年 6 月。</p><p><a class="text-link" href="https://github.com/coder-xieshijie/coder-xieshijie.github.io/blob/94073945f64517bee4b550a98b7b7837512e4e77/2023/07/24/%E6%95%B0%E6%8D%AE%E5%BA%93/MySQL/sql%E8%AF%AD%E5%8F%A5%E5%90%84%E4%B8%AA%E5%85%B3%E9%94%AE%E5%AD%97%E7%9A%84%E6%89%A7%E8%A1%8C%E9%A1%BA%E5%BA%8F/index.html">查看旧仓库中的原文<span aria-hidden="true">↗</span></a></p></footer></article></div><nav class="article-pagination" aria-label="前后篇文章"><a href="../mysql-explain/"><span>上一篇</span><strong>mysql的explain关键字使用说明</strong></a><a href="../redis-key-lookup/"><span>下一篇</span><strong>redis key值如何定位到value</strong></a></nav><div class="related"><a class="text-link" href="../../writing/">返回全部文章<span aria-hidden="true">↗</span></a><a class="text-link" href="../../">回到首页<span aria-hidden="true">↗</span></a></div></main><footer class="site-footer"><div class="wrap"><div class="footer-main"><div><h2>继续探索。</h2><p>探索 AI，也探索工作与成长的新可能。</p></div><div><div class="footer-links"><a class="text-link" href="https://github.com/coder-xieshijie">GitHub<span aria-hidden="true">↗</span></a><button class="copy-button" type="button" data-copy="AI游民谢世杰">公众号 · AI游民谢世杰 <span aria-hidden="true">⧉</span></button></div><span id="copy-status" class="copy-status" role="status" aria-live="polite"></span></div></div><div class="footer-meta"><span>© 2026 谢世杰 · AI ROAM</span><span class="filing"><a href="https://beian.miit.gov.cn/">鲁ICP备2026052690号-1</a></span><a href="../../sync-status/">同步状态</a><a href="../../about/">个人作品与实践 · 个人观点</a></div></div></footer></body></html>

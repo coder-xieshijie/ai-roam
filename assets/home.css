@@ -318,3 +318,9 @@
 .h-contribution>.d-link{margin-top:22px;color:var(--d-accent);border-bottom:1px solid var(--d-line);padding-bottom:7px}
 @media(max-width:800px){.h-contributions{grid-template-columns:1fr;gap:28px;padding:35px 0 45px}.h-contributions header>p:last-child{max-width:none}}
 @media(max-width:520px){.h-workflows{gap:10px;font-size:11px}.h-contribution h3{font-size:25px}.h-contribution-meta{font-size:9px}.h-contribution>p{font-size:13px}}
+.h-reading-picks{list-style:none;margin:28px 0 0;padding:0;border-top:1px solid var(--d-line)}
+.h-reading-picks li{border-bottom:1px solid var(--d-line)}
+.h-reading-picks a{display:grid;grid-template-columns:1fr 16px;gap:5px 14px;padding:16px 0;font-size:13px;line-height:1.8}
+.h-reading-picks time{grid-column:1/-1;font:10px var(--d-mono);color:var(--d-muted)}
+.h-reading-picks .d-icon{width:14px;height:14px;margin-top:4px;color:var(--d-accent)}
+.h-reading-picks a:hover{color:var(--d-accent)}
