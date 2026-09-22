@@ -1,9 +1,10 @@
-// Local-only comparison: original, growing vine, and robot route on /?variant=.
+// Local-only homepage comparison on /?variant=.
 // Question: which reading path fits AI Roam's brand?
 import { createServer } from 'node:http';
 import { readFile } from 'node:fs/promises';
 import { resolve, extname, sep } from 'node:path';
 import { renderRobotDemo } from './robot-demo.mjs';
+import { renderTrailDemo } from './trail-demo.mjs';
 
 const root = resolve(import.meta.dirname, '..');
 const site = JSON.parse(await readFile(resolve(root, 'content/site.json'), 'utf8'));
@@ -11,12 +12,12 @@ const escape = (s) => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;
 const link = (href, text, cls = 'v-link') => `<a class="${cls}" href="${escape(href)}">${escape(text)} <span aria-hidden="true">↗</span></a>`;
 const [lord, skills] = site.projects;
 const article = site.articles[0];
-const variants = [['original','原版'], ['vine','藤蔓版'], ['robot','机器人版']];
+const variants = [['original','原版'], ['vine','藤蔓'], ['robot','机器人'], ['scarlet','朱红探索线'], ['sketch','手绘游迹']];
 const switcher = (variant) => {
   const index = variants.findIndex(([key]) => key === variant);
   const previous = variants[(index + variants.length - 1) % variants.length][0];
   const next = variants[(index + 1) % variants.length][0];
-  return `<aside class="prototype-switcher" aria-label="首页原型对照"><span>DEMO</span><a class="prototype-step" href="?variant=${previous}" aria-label="上一个方案">‹</a>${variants.map(([key,label]) => `<a href="?variant=${key}" ${variant===key ? 'aria-current="page"' : ''}>${label}</a>`).join('')}${variant === 'vine' ? '<button type="button" id="replay-vine" title="回到顶部，重新浏览生长效果">重播 ↺</button>' : ''}<a class="prototype-step" href="?variant=${next}" aria-label="下一个方案">›</a></aside><script>addEventListener('keydown',event=>{if(!['ArrowLeft','ArrowRight'].includes(event.key)||event.altKey||event.metaKey||event.ctrlKey||event.target.closest('input,textarea,select,[contenteditable]'))return;event.preventDefault();location.href='?variant='+(event.key==='ArrowLeft'?'${previous}':'${next}');});</script>`;
+  return `<aside class="prototype-switcher" aria-label="首页原型对照"><span>DEMO</span><a class="prototype-step" href="?variant=${previous}" aria-label="上一个方案">‹</a>${variants.map(([key,label]) => `<a class="prototype-option" href="?variant=${key}" ${variant===key ? 'aria-current="page"' : ''}>${label}</a>`).join('')}<select class="prototype-select" aria-label="选择对照方案">${variants.map(([key,label]) => `<option value="${key}" ${variant===key ? 'selected' : ''}>${label}</option>`).join('')}</select>${variant === 'vine' ? '<button type="button" id="replay-vine" title="回到顶部，重新浏览生长效果">重播 ↺</button>' : ''}<a class="prototype-step" href="?variant=${next}" aria-label="下一个方案">›</a></aside><script src="./assets/prototype-switcher.js" defer></script>`;
 };
 const demo = `<!doctype html>
 <html lang="zh-CN" data-bloom="clay"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light"><title>藤蔓花园 · AI游民首页 Demo</title><meta name="robots" content="noindex"><link rel="icon" href="./assets/favicon.ico"><link rel="stylesheet" href="./assets/prototype-vine.css"><script src="./assets/prototype-vine.js" defer></script><script src="./assets/site.js" defer></script></head>
@@ -42,15 +43,16 @@ const demo = `<!doctype html>
 ${switcher('vine')}</body></html>`;
 
 const robotDemo = renderRobotDemo(site, switcher);
+const trailDemos = {scarlet: renderTrailDemo(site, switcher, 'scarlet'), sketch: renderTrailDemo(site, switcher, 'sketch')};
 
 const mime = {'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=utf-8','.css':'text/css; charset=utf-8','.png':'image/png','.jpg':'image/jpeg','.ico':'image/x-icon','.svg':'image/svg+xml'};
 createServer(async (request, response) => {
   try {
     const url = new URL(request.url, 'http://localhost');
     if (url.pathname === '/' || url.pathname === '/index.html') {
-      const variant = url.searchParams.get('variant') || 'robot';
+      const variant = url.searchParams.get('variant') || 'scarlet';
       const original = variant === 'original';
-      const html = original ? (await readFile(resolve(root, 'dist/index.html'), 'utf8')).replace('</head>', '<link rel="stylesheet" href="./assets/prototype-vine.css"></head>').replace('</body>', switcher('original') + '</body>') : variant === 'vine' ? demo : robotDemo;
+      const html = original ? (await readFile(resolve(root, 'dist/index.html'), 'utf8')).replace('</head>', '<link rel="stylesheet" href="./assets/prototype-vine.css"></head>').replace('</body>', switcher('original') + '</body>') : variant === 'vine' ? demo : variant === 'robot' ? robotDemo : trailDemos[variant] || trailDemos.scarlet;
       response.writeHead(200, {'Content-Type':mime['.html'],'Cache-Control':'no-store'}).end(html);
       return;
     }
@@ -58,7 +60,7 @@ createServer(async (request, response) => {
     if (!path.startsWith(resolve(root, 'dist') + sep)) { response.writeHead(403).end(); return; }
     if (url.pathname.endsWith('/')) path = resolve(path, 'index.html');
     // Prototype assets are served from source, so CSS/JS edits only need a reload.
-    if (/\/assets\/prototype-(vine|robot)\.(css|js)$/.test(url.pathname)) path = resolve(root, 'assets', url.pathname.split('/').pop());
+    if (/\/assets\/prototype-(vine|robot|trail|switcher)\.(css|js)$/.test(url.pathname)) path = resolve(root, 'assets', url.pathname.split('/').pop());
     response.writeHead(200, {'Content-Type':mime[extname(path)] || 'application/octet-stream','Cache-Control':'no-store'}).end(await readFile(path));
   } catch { response.writeHead(404).end('Not found'); }
-}).listen(4173, '127.0.0.1', () => console.log('Homepage comparison demo: http://127.0.0.1:4173/?variant=robot'));
+}).listen(4173, '127.0.0.1', () => console.log('Homepage comparison demo: http://127.0.0.1:4173/?variant=scarlet'));
