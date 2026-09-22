@@ -17,7 +17,7 @@ npm run check
 python3 -m http.server 4173 --directory dist
 ```
 
-打开 [本地预览](http://localhost:4173/)。页面是静态 HTML，不需要运行时框架、第三方字体或外部脚本。唯一构建依赖 `marked` 用于渲染仓库内本人维护的 Markdown，不能直接接收不可信的投稿。
+打开 [本地预览](http://localhost:4173/)。页面是静态 HTML，不需要运行时框架或外部脚本。首页使用 Anthropic 官方 CDN 的 Sans / Mono Web 字体；中文和英文回退字体自托管，外部字体不可用时内容仍可阅读。唯一构建依赖 `marked` 用于渲染仓库内本人维护的 Markdown，不能直接接收不可信的投稿。
 
 ## 内容维护
 
@@ -26,6 +26,7 @@ python3 -m http.server 4173 --directory dist
 | `content/site.json` | 站点信息、项目与文章元数据、公开联系入口、备案配置 |
 | `content/skills-and-mcp.md` | 文章正文；保留原发表日期和本站修订说明 |
 | `scripts/build.mjs` | 共用导航、页脚、页面模板与静态生成 |
+| `scripts/home.mjs` / `assets/home.css` / `assets/home-trail.js` | 首页人文科技排版、字体及朱红探索线 |
 | `assets/site.css` / `assets/site.js` | 全站样式、公众号名称复制和同步状态展示 |
 | `assets/brand-robot.png` | 2026-09-10 确认的朱红机器人正式 IP 素材，1024px PNG |
 | `assets/favicon.ico` / `assets/apple-touch-icon.png` | 同一正式素材的多尺寸 favicon 与 180px Apple 图标 |
@@ -72,3 +73,15 @@ python3 -m http.server 4173 --directory dist
 - 关于页仅采用本人确认可公开的经历，不包含内部项目、数据和文档。
 
 `.openai/hosting.json` 关联用于审阅的 Sites 私有预览，静态目录为 `dist`；GitHub Pages 的发布方式继续保留。发布私有预览前先构建、检查并提交同一份源码。
+
+## 首页设计与字体
+
+首页采用已确认的人文科技风：暖纸底色、朱红探索线、Phosphor Regular 图标；线头随视野 65% 高度直接绘制，未经过的路径保持空白。手机将路线放在正文左侧，减少动态效果时展示静态路径。项目、文章和同步状态等内页继续使用原有布局。
+
+西文标题与正文使用 Anthropic Sans，代码/命令、日期和编号使用 Anthropic Mono Web；这两款从 Anthropic 使用的公共 CDN 加载，不依赖访客本机安装，也不在仓库分发字体二进制。公共地址来自 2026-09-22 核对的 [Anthropic 站点样式](https://cdn.prod.website-files.com/67ce28cfec624e2b733f8a52/css/ant-brand.shared.3fb5bf118.min.css)。这不是可再分发字体的开源授权声明；更换为自托管前需要确认相应授权。上游文件失效时会回退到本地 IBM Plex。
+
+中文标题为霞鹜文楷，正文为 IBM Plex Sans SC；Mono 的离线回退为 IBM Plex Mono。`assets/fonts/` 中包含 SIL OFL 许可证与当前首页所需字形的 WOFF2 子集，保留原字形与名称；改文案时应检查子集是否含新增汉字。来源：
+
+- [霞鹜文楷 Regular](https://github.com/lxgw/LxgwWenKai/tree/8bd6319350fb3ae1904c1cb1a41595ab15d21140)，`assets/fonts/WenKai-OFL.txt`。
+- [IBM Plex Sans SC / Mono Regular](https://github.com/IBM/plex/tree/78cd4223d8de9fcb78cba84eadecb269c56093c5)，`assets/fonts/Plex-*-LICENSE.txt`。
+- [Phosphor Core](https://github.com/phosphor-icons/core/tree/2b75f3ad12b420c9504ef05df8d2564a28f8500e)，`assets/fonts/Phosphor-LICENSE.txt`；SVG 图形保持上游路径，合并为本地 sprite。
