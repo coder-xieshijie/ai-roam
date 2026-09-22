@@ -23,7 +23,7 @@
   function rebuild() {
     svg.replaceChildren();branches=[];
     const width=root.clientWidth,height=root.clientHeight;
-    const mobile=innerWidth<=680;
+    const mobile=innerWidth<=Number(root.dataset.breakpoint||680);
     const rootBox=root.getBoundingClientRect();
     const intro=document.querySelector('.t-intro');
     const center=mobile?26:width/2;
@@ -133,4 +133,5 @@
   reduced.addEventListener('change',schedule);
   document.querySelector('#replay-trail').addEventListener('click',()=>window.scrollTo({top:0,behavior:reduced.matches?'instant':'smooth'}));
   rebuild();
+  document.fonts.ready.then(rebuild);
 })();
