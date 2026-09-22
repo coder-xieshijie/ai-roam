@@ -5,12 +5,12 @@ import json
 import os
 from pathlib import Path
 import re
-import shlex
 import subprocess
 import sys
 import time
 import urllib.request
 import uuid
+import zlib
 
 ROOT = Path(__file__).resolve().parent.parent
 REGION = os.environ.get('ALIYUN_REGION', 'cn-shanghai')
@@ -36,6 +36,20 @@ def fetch(url):
             time.sleep(5)
 
 
+def deployment_command(payload):
+    # Compress the receiver and manifest together so article/image archives fit
+    # Cloud Assistant's command limit without weakening per-file verification.
+    receiver = (ROOT / 'scripts/deploy-receive.py').read_text()
+    program = 'import sys\nsys.argv = ["deploy-receive", ' + repr(json.dumps(payload)) + ']\n' + receiver
+    packed = base64.b64encode(zlib.compress(program.encode(), 9)).decode()
+    command = ("#!/bin/bash\nset -euo pipefail\npython3 - <<'AI_ROAM_PYTHON'\n"
+               "import base64, zlib\nexec(zlib.decompress(base64.b64decode('" + packed + "')))\nAI_ROAM_PYTHON\n")
+    encoded = base64.b64encode(command.encode()).decode()
+    if len(encoded) > 24 * 1024:
+        raise ValueError('Cloud Assistant command exceeds 24 KiB')
+    return encoded
+
+
 def main():
     sha = os.environ.get('GITHUB_SHA') or subprocess.check_output(['git', 'rev-parse', 'HEAD'], text=True).strip()
     if not re.fullmatch('[a-f0-9]{40}', sha):
@@ -53,12 +67,8 @@ def main():
             raise ValueError('Build output was not committed: ' + name)
         manifest[name] = hashlib.sha256(committed).hexdigest()
     archive = fetch('https://codeload.github.com/coder-xieshijie/ai-roam/tar.gz/' + sha)
-    payload = json.dumps({'sha': sha, 'manifest': manifest, 'archive_sha256': hashlib.sha256(archive).hexdigest()})
-    receiver = (ROOT / 'scripts/deploy-receive.py').read_text()
-    command = "#!/bin/bash\nset -euo pipefail\npython3 - " + shlex.quote(payload) + " <<'AI_ROAM_PYTHON'\n" + receiver + '\nAI_ROAM_PYTHON\n'
-    encoded = base64.b64encode(command.encode()).decode()
-    if len(encoded) > 24 * 1024:
-        raise ValueError('Cloud Assistant command exceeds 24 KiB')
+    payload = {'sha': sha, 'manifest': manifest, 'archive_sha256': hashlib.sha256(archive).hexdigest()}
+    encoded = deployment_command(payload)
     invocation = api('RunCommand', **{
         'InstanceId.1': INSTANCE, 'Type': 'RunShellScript', 'Username': 'ai-roam-deploy',
         'WorkingDir': '/var/www/ai-roam', 'ContentEncoding': 'Base64',

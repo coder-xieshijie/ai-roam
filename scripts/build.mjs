@@ -61,12 +61,12 @@ function projects(base) {
 }
 
 function articleRows(base) {
-  return site.articles
-    .map(
-      (a) =>
-        `<a class="article-row" href="${base}writing/${a.slug}/"><div class="article-date"><time datetime="${a.published}">${a.published.replaceAll("-", ".")}</time><span class="tag">${a.topic}</span></div><div><h3>${a.title}</h3><p>${a.summary}</p></div><span class="article-arrow" aria-hidden="true">↗</span></a>`,
-    )
-    .join("");
+  return site.articles.map(a => `<a class="article-row" data-article-topic="${esc(a.topic)}" href="${base}writing/${a.slug}/"><div class="article-date"><time datetime="${a.published}">${a.published.replaceAll("-", ".")}</time><span class="tag">${esc(a.topic)}</span></div><div><h3>${esc(a.title)}</h3><p>${esc(a.summary)}</p><span class="article-kind">${esc(a.kind || "实践文章")}</span></div><span class="article-arrow" aria-hidden="true">↗</span></a>`).join("");
+}
+
+function articleFilters() {
+  const topics = [...new Set(site.articles.map(a => a.topic))];
+  return `<div class="article-filters" data-article-filters role="group" aria-label="按主题筛选文章" hidden><button type="button" data-topic="" aria-pressed="true">全部 <span>${site.articles.length}</span></button>${topics.map(topic => `<button type="button" data-topic="${esc(topic)}" aria-pressed="false">${esc(topic)} <span>${site.articles.filter(a => a.topic === topic).length}</span></button>`).join("")}</div><p class="article-count" data-article-count role="status" aria-live="polite">共 ${site.articles.length} 篇 · 按原发表时间排列</p>`;
 }
 
 pages.push({ path: "index.html", html: renderHome(site) });
@@ -109,28 +109,30 @@ page(
   "关于 Agent 开发、工作方法与技术判断的文章和实践记录。",
   "writing/",
   (b) =>
-    `<section class="page-intro"><p class="eyebrow">WRITING & PRACTICE</p><h1>把做过的事，想清楚。</h1><p class="lead">记录 AI 开发中的具体问题、实践方法和判断。<br>文章保留原发表日期，修订时说明变化。</p></section><section class="section project-list">${articleRows(b)}</section><section class="detail-grid"><h2>从实践继续读</h2><div class="detail-body"><p>方法也会写进工具。关于多 Agent 任务推进，可以看 Agent Lord；关于决策、计划与评审方法，可以看 dev-skills。</p><div class="actions">${link(b + "projects/agent-lord/", "Agent Lord")}${link(b + "projects/dev-skills/", "dev-skills")}</div></div></section>`,
+    `<section class="page-intro"><p class="eyebrow">WRITING & PRACTICE</p><h1>把做过的事，想清楚。</h1><p class="lead">从 AI 实践、研发效能，到工作中的方法与思考。<br>收录早期笔记与近期文章，保留原发表日期和整理说明。</p></section>${articleFilters()}<section class="section project-list article-library" aria-label="文章列表">${articleRows(b)}</section><section class="detail-grid"><h2>从实践继续读</h2><div class="detail-body"><p>方法也会写进工具。关于多 Agent 任务推进，可以看 Agent Lord；关于决策、计划与评审方法，可以看 dev-skills。</p><div class="actions">${link(b + "projects/agent-lord/", "Agent Lord")}${link(b + "projects/dev-skills/", "dev-skills")}</div></div></section>`,
 );
 
-for (const a of site.articles) {
-  const md = await readFile(resolve(root, `content/${a.slug}.md`), "utf8");
-  const headings = [];
-  let headingCount = 0;
-  const renderer = new marked.Renderer();
-  renderer.heading = function ({ tokens, depth }) {
-    const label = this.parser.parseInline(tokens);
-    const id = `section-${++headingCount}`;
-    if (depth === 2) headings.push({ id, label });
-    return `<h${depth} id="${id}">${label}</h${depth}>\n`;
-  };
-  const article = marked.parse(md, { renderer, gfm: true });
+for (const [index, a] of site.articles.entries()) {
+  const headings = a.legacy ? a.toc : [];
+  let article;
+  if (a.legacy) {
+    article = await readFile(resolve(root, `content/legacy/${a.slug}.html`), "utf8");
+  } else {
+    const md = await readFile(resolve(root, `content/${a.slug}.md`), "utf8");
+    let headingCount = 0;
+    const renderer = new marked.Renderer();
+    renderer.heading = function ({ tokens, depth }) {
+      const label = this.parser.parseInline(tokens);
+      const id = `section-${++headingCount}`;
+      if (depth === 2) headings.push({ id, label });
+      return `<h${depth} id="${id}">${label}</h${depth}>\n`;
+    };
+    article = marked.parse(md, { renderer, gfm: true });
+  }
+  const previous = site.articles[index - 1], next = site.articles[index + 1];
   page(
-    `writing/${a.slug}/index.html`,
-    a.title,
-    a.summary,
-    "writing/",
-    (b) =>
-      `<header class="page-intro article-header"><div class="breadcrumb"><a href="${b}writing/">文章与实践</a><span>/</span><span>${a.topic}</span></div><p class="eyebrow">${a.topic} / NOTES</p><h1>${a.title}</h1><p class="lead">${a.summary}</p><div class="article-meta"><span>谢世杰</span><span>原发表 <time datetime="${a.published}">${a.published}</time></span><span>修订 <time datetime="${a.updated}">${a.updated}</time></span><span>约 ${a.reading}</span></div></header><div class="reading-layout"><nav class="toc" aria-label="文章目录"><h2>ON THIS PAGE</h2>${headings.map((h) => `<a href="#${h.id}">${h.label}</a>`).join("")}</nav><article class="prose">${article}</article></div><div class="related">${link(b + "writing/", "返回文章")}${link(b + "projects/dev-skills/", "实践这个方法 · dev-skills")}</div>`,
+    `writing/${a.slug}/index.html`, a.title, a.summary, "writing/",
+    b => `<header class="page-intro article-header"><div class="breadcrumb"><a href="${b}writing/">文章与实践</a><span>/</span><span>${esc(a.topic)}</span></div><p class="eyebrow">${esc(a.topic)} / ${esc(a.kind || "NOTES")}</p><h1>${esc(a.title)}</h1><p class="lead">${esc(a.summary)}</p><div class="article-meta"><span>${a.legacy ? "旧文整理 · 谢世杰" : "谢世杰"}</span><span>原发表 <time datetime="${a.published}">${a.published}</time></span><span>${a.legacy ? "迁入" : "修订"} <time datetime="${a.migrated || a.updated}">${a.migrated || a.updated}</time></span><span>约 ${esc(a.reading)}</span></div>${a.editorNote ? `<aside class="editor-note"><strong>整理说明</strong><p>${esc(a.editorNote)}</p></aside>` : ""}</header><div class="reading-layout"><nav class="toc" aria-label="文章目录"><h2>本文目录</h2>${headings.length ? headings.map(h => `<a href="#${h.id}">${a.legacy ? esc(h.label) : h.label}</a>`).join("") : '<a href="#article-body">阅读全文</a>'}</nav><article class="prose" id="article-body">${article}${a.sourceUrl ? `<footer class="article-source"><p>原题：${esc(a.sourceTitle)} · 旧博客存档于 2024 年 6 月。</p><p>${link(a.sourceUrl,"查看旧仓库中的原文")}</p></footer>` : ""}</article></div><nav class="article-pagination" aria-label="前后篇文章">${previous ? `<a href="../${previous.slug}/"><span>上一篇</span><strong>${esc(previous.title)}</strong></a>` : ""}${next ? `<a href="../${next.slug}/"><span>下一篇</span><strong>${esc(next.title)}</strong></a>` : ""}</nav><div class="related">${link(b + "writing/", "返回全部文章")}${link(b + "", "回到首页")}</div>`,
     { article: true },
   );
 }

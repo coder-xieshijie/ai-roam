@@ -1,0 +1,112 @@
+<h2 id="section-1">一、项目背景</h2>
+<blockquote><p>背景：项目中有解析jar的业务场景，通过解析指定注解标注的class获取指定注解标注的方法</p></blockquote>
+<h2 id="section-2">二、reflections能力概览</h2>
+<p>reflections的部分能力如下</p>
+<ul><li>类处理<ul><li>获取jar包中的所有class对象</li><li>获取jar中指定注解的所有class对象</li><li>获取jar中指定类及其所有的子类的class对象</li><li>…</li></ul></li><li>方法处理<ul><li>获取jar包中所有的method对象</li><li>获取jar中被指定注解标记的method对象</li><li>获取jar中返回值为指定类的method对象</li><li>获取jar中入参为指定类的method对象</li><li>…</li></ul></li><li>字段处理<ul><li>获取jar中被指定注解标记的filed对象</li><li>…</li></ul></li><li>资源处理<ul><li>获取jar中resource中的properties文件</li><li>…</li></ul></li><li>工具类：<ul><li>过滤类中方法(类似stream流式写法)</li><li>…</li></ul></li><li>序列化为xml/json</li><li>更多能力见官方文档：<a href="https://github.com/ronmamo/reflections" rel="noopener noreferrer">https://github.com/ronmamo/reflections</a></li></ul>
+<h2 id="section-3">三、使用demo</h2>
+<pre><code class="language-java">public Set&lt;Class&lt;?&gt;&gt; queryClass(String jarPath, String url) throws MalformedURLException {
+  // 根据jarPath去构建classloader，此处是自定义classloader
+        WarClassLoader warClassLoader =
+                SwaggerGenerator.getWarClassLoader(jarPath, Thread.currentThread().getContextClassLoader());
+
+  // 构建configuration，设置classloader和要解析的url
+        ConfigurationBuilder config = ConfigurationBuilder.build();
+        config.addClassLoader((URLClassLoader) warClassLoader.getParent());
+        config.setScanners(new ResourcesScanner(), new TypeAnnotationsScanner(), new SubTypesScanner());
+        config.getUrls().clear();
+        config.getUrls().add(new URL(url)); // 需要解析哪一个jar就传入对应的url地址
+
+  // 构建Reflection对象，获取符合指定注解的class
+        Reflections ref = new Reflections(config);
+        Stream&lt;Class&lt;?&gt;&gt; apiStream = ref.getTypesAnnotatedWith(Api.class).stream();
+        Stream&lt;Class&lt;?&gt;&gt; restStream = ref.getTypesAnnotatedWith(RestController.class).stream();
+        Stream&lt;Class&lt;?&gt;&gt; apiAndDef = Stream.concat(apiStream, restStream);
+
+        // 反击class的set集合
+        return apiAndDef.collect(Collectors.toSet());
+    }
+</code></pre>
+<ol><li>通过reflections.classes() 获取所有的class文件</li><li>reflections需要传入configuration才能进行初始化</li><li>configuration配置<ol><li>classloader：声明要扫描哪一个classloader下的class</li><li>scanner：声明需要扫描哪些内容：type和annotation的scanner</li><li>url：真实要扫描的jar执行流程</li></ol></li><li>初始化configuration并设置<ol><li>classloader：声明要扫描哪一个classloader下的class</li><li>scanner：声明需要扫描哪些内容：type和annotation的scanner</li><li>url：真实要扫描的jar</li></ol></li></ol>
+<h2 id="section-4">四、主要流程源码分析</h2>
+<ol><li><p>初始化, 调用 <code>new Reflections(config)</code>执行如下</p><pre><code class="language-java">public Reflections(final Configuration configuration) {
+  // 设置configuration
+        this.configuration = configuration;
+  // 设置存在class元信息的store对象，其内部维护 Map&lt;String, Multimap&lt;String, String&gt;&gt; storeMap
+        store = new Store(configuration);
+
+        if (configuration.getScanners() != null &amp;&amp; !configuration.getScanners().isEmpty()) {
+            //inject to scanners
+            for (Scanner scanner : configuration.getScanners()) {
+                scanner.setConfiguration(configuration);
+                scanner.setStore(store.getOrCreate(scanner.getClass().getSimpleName()));
+            }
+// 扫描configuration中持有的所有url
+            scan();
+        }
+  }
+</code></pre></li><li><p>扫描url, 调用<code>scan()</code>执行如下</p><pre><code class="language-java">protected void scan() {
+        // 一些代码...
+
+  // 遍历configuration中的所有url
+        for (final URL url : configuration.getUrls()) {
+            try {
+              // 如果configuration配置了线程池，则把scan加入到线程池异步执行
+                if (executorService != null) {
+                    futures.add(executorService.submit(new Runnable() {
+                        public void run() {
+                            if (log != null &amp;&amp; log.isDebugEnabled()) log.debug("[" + Thread.currentThread().toString() + "] scanning " + url);
+                            scan(url);
+                        }
+                    }));
+                } else {
+                    scan(url);
+                }
+                scannedUrls++;
+            } catch (ReflectionsException e) {
+                if (log != null &amp;&amp; log.isWarnEnabled()) log.warn("could not create Vfs.Dir from url. ignoring the exception and continuing", e);
+            }
+        }
+
+        // 一些代码...
+}
+
+    public void scan(URL url) {
+      // 通过迭代器遍历url中的所有符合要求的文件
+        for (final Vfs.File file : Vfs.fromURL(url).getFiles()) {
+            String input = file.getRelativePath().replace('/', '.');
+            if (configuration.getInputsFilter() == null || configuration.getInputsFilter().apply(input)) {
+                Object classObject = null;
+              // 遍历configuration中的声明的scanner实现类，扫描不同的内容并加入store
+                for (Scanner scanner : configuration.getScanners()) {
+                    try {
+                        if (scanner.acceptsInput(input)) {
+                            classObject = scanner.scan(file, classObject);
+                        }
+                    } catch (Exception e) {
+
+                }
+            }
+        }
+    }
+</code></pre></li><li><p>存储, 根据传入的scanner的不同，执行不同的scan扫描逻辑，这里以<code>new TypeAnnotationsScanner()</code>为例</p><pre><code class="language-java">public void scan(final Object cls) {
+  // 获取class name
+final String className = getMetadataAdapter().getClassName(cls);
+
+        for (String annotationType : (List&lt;String&gt;) getMetadataAdapter().getClassAnnotationNames(cls)) {
+
+            if (acceptResult(annotationType) ||
+                annotationType.equals(Inherited.class.getName())) { //as an exception, accept Inherited as well
+                // 以(注解，class name)为键值对，存入private Multimap&lt;String, String&gt; store;
+                getStore().put(annotationType, className);
+            }
+        }
+    }
+</code></pre></li><li><p>获取class对象, 通过注解去store中获取类集合</p><pre><code class="language-java">public Set&lt;Class&lt;?&gt;&gt; getTypesAnnotatedWith(final Class&lt;? extends Annotation&gt; annotation, boolean honorInherited) {
+  // 直接去store中根据注解name去获取对应的class列表
+        Iterable&lt;String&gt; annotated = store.get(index(TypeAnnotationsScanner.class), annotation.getName());
+        Iterable&lt;String&gt; classes = getAllAnnotated(annotated, annotation.isAnnotationPresent(Inherited.class), honorInherited);
+        return Sets.newHashSet(concat(forNames(annotated, loaders()), forNames(classes, loaders())));
+}
+</code></pre></li></ol>
+<h2 id="section-5">总结</h2>
+<ol><li><p>reflections需要传入configuration才能进行初始化</p></li><li><p>configuration配置</p><ol><li>classloader：声明要扫描哪一个classloader下的class</li><li>scanner：声明需要扫描哪些内容：type和annotation的scanner</li><li>url：真实要扫描的jar</li></ol></li><li><p>执行流程</p><ol><li><p>初始化configuration并设置</p></li><li><p>classloader：声明要扫描哪一个classloader下的class</p></li><li><p>scanner：声明需要扫描哪些内容：type和annotation的scanner</p></li><li><p>url：真实要扫描的jar</p></li><li><p>执行scan，扫描指定url</p></li><li><p>根据设置的scanner，把对应的信息存入store</p></li><li><p>根据key去store获取指定信息</p></li></ol></li></ol>

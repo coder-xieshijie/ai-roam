@@ -1,0 +1,224 @@
+<h2 id="section-1">涉及知识点：</h2>
+<ol><li><p>枚举+枚举配置抽象类</p></li><li><p>函数式接口</p></li><li><p>设计模式</p><ul><li><p>策略模式</p></li><li><p>模板方法</p></li><li><p>工厂模式</p></li><li><p>单例模式</p></li></ul></li></ol>
+<h2 id="section-2">代码实例</h2>
+<ul><li>策略模式，定义抽象接口，不同的实现类实现不同的策略</li><li>模板方法，定义一个模板方法，把公共流程写在模板方法中，然后不同的子类按需实现模板方法流程中的方法</li><li>单例和工厂是按需</li></ul>
+<pre><code class="language-java">/** 策略业务接口 */
+public interface AwardStrategy {
+    /**
+     * 奖励发放接口
+     */
+    Map&lt;String, Boolean&gt; awardStrategy(String userId);
+
+    /**
+     * 获取策略标识,即不同渠道的来源标识
+     */
+    String getSource();
+}
+</code></pre>
+<p>定义奖励发放模板流程：</p>
+<pre><code class="language-java">/** 定义奖励发放模板流程 */
+public abstract class BaseAwardTemplate {
+    private static final Logger log = LoggerFactory.getLogger(BaseAwardTemplate.class);
+
+    //奖励发放模板方法
+    public Boolean awardTemplate(String userId) {
+        this.authentication(userId);
+        this.risk(userId);
+        return this.awardRecord(userId);
+    }
+
+    //身份验证
+    protected void authentication(String userId) {
+        log.info("{} 执行身份验证!", userId);
+    }
+
+    //风控
+    protected void risk(String userId) {
+        log.info("{} 执行风控校验!", userId);
+    }
+
+    //执行奖励发放
+    protected abstract Boolean awardRecord(String userId);
+}
+</code></pre>
+<p>实现不同渠道的奖励业务：</p>
+<pre><code class="language-java">@Slf4j
+@Service
+public class ToutiaoAwardStrategyService extends BaseAwardTemplate implements AwardStrategy {
+    /**
+     * 奖励发放接口
+     */
+    @Override
+    public Boolean awardStrategy(String userId) {
+        return super.awardTemplate(userId);
+    }
+
+    @Override
+    public String getSource() {
+        return "toutiao";
+    }
+
+    /**
+     * 具体的业务奖励发放实现
+     */
+    @Override
+    protected Boolean awardRecord(String userId) {
+        log.info("头条渠道用户{}奖励50元红包!", userId);
+        return Boolean.TRUE;
+    }
+}
+
+
+@Slf4j
+@Service
+public class WeChatAwardStrategyService extends BaseAwardTemplate implements AwardStrategy {
+    /**
+     * 奖励发放接口
+     */
+    @Override
+    public Boolean awardStrategy(String userId) {
+        return super.awardTemplate(userId);
+    }
+
+    @Override
+    public String getSource() {
+        return "wx";
+    }
+
+    /***
+     * 具体的业务奖励发放实现
+     */
+    @Override
+    protected Boolean awardRecord(String userId) {
+        log.info("微信渠道用户{}奖励100元红包!", userId);
+        return Boolean.TRUE;
+    }
+}
+</code></pre>
+<p>定义工厂方法，对外统一暴露业务调用入口：</p>
+<pre><code class="language-java">@Component
+public class AwardStrategyFactory implements ApplicationContextAware {
+    private final static Map&lt;String, AwardStrategy&gt; MAP = new HashMap&lt;&gt;();
+
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        Map&lt;String, AwardStrategy&gt; beanTypeMap = applicationContext.getBeansOfType(AwardStrategy.class);
+        beanTypeMap.values().forEach(strategyObj -&gt; MAP.put(strategyObj.getSource(), strategyObj));
+    }
+
+    /**
+     * 对外统一暴露的工厂方法
+     */
+    public Boolean getAwardResult(String userId, String source) {
+        AwardStrategy strategy = MAP.get(source);
+        if (Objects.isNull(strategy)) {
+            throw new RuntimeException("渠道异常!");
+        }
+        return strategy.awardStrategy(userId);
+    }
+
+    /**
+     * 静态内部类创建单例工厂对象
+     */
+    private static class CreateFactorySingleton {
+        private static AwardStrategyFactory factory = new AwardStrategyFactory();
+    }
+
+    public static AwardStrategyFactory getInstance() {
+        return CreateFactorySingleton.factory;
+    }
+}
+</code></pre>
+<p>业务入口方法：</p>
+<pre><code class="language-java">@RestController
+@RequestMapping("/activity")
+public class ActivityController {
+
+    @PostMapping("/reward3")
+    public void reward3(String userId, String source) {
+        AwardStrategyFactory.getInstance().getAwardResult(userId, source);
+    }
+}
+</code></pre>
+<h2 id="section-3">模板模式和策略模式的区别</h2>
+<h4 id="section-4">策略模式</h4>
+<pre><code class="language-java">interface Strategy {
+   public int doOperation(int num1, int num2);
+}
+
+class OperationAdd implements Strategy{
+   @Override
+   public int doOperation(int num1, int num2) {
+      return num1 + num2;
+   }
+}
+
+class OperationSubtract implements Strategy{
+   @Override
+   public int doOperation(int num1, int num2) {
+      return num1 - num2;
+   }
+}
+
+class Context {
+   private Strategy strategy;
+
+   public Context(Strategy strategy){
+      this.strategy = strategy;
+   }
+
+   public int executeStrategy(int num1, int num2){
+      return strategy.doOperation(num1, num2);
+   }
+}
+
+</code></pre>
+<h4 id="section-5">模版模式</h4>
+<pre><code class="language-java">abstract class Game {
+   abstract void initialize();
+   abstract void startPlay();
+   abstract void endPlay();
+
+   //template method
+   public final void play(){
+
+      //initialize the game
+      initialize();
+
+      //start game
+      startPlay();
+
+      //end game
+      endPlay();
+   }
+}
+
+class Cricket extends Game {
+   void endPlay() {
+      System.out.println("Cricket Game Finished!");
+   }
+   void initialize() {
+      System.out.println("Cricket Game Initialized! Start playing.");
+   }
+   void startPlay() {
+      System.out.println("Cricket Game Started. Enjoy the game!");
+   }
+}
+
+class Football extends Game {
+   void endPlay() {
+      System.out.println("Football Game Finished!");
+   }
+   void initialize() {
+      System.out.println("Football Game Initialized! Start playing.");
+   }
+   void startPlay() {
+      System.out.println("Football Game Started. Enjoy the game!");
+   }
+}
+
+</code></pre>
+<p>从上面代码可以看出：</p>
+<ul><li>策略模式通过has-a的组合方式去实现，在代码运行的时候根据传入参数来动态的确定策略</li><li>模板模式通过is-a的继承方式去实现，每一个子类都代表一种不同的模板实现</li></ul>
+<p>所以策略和模板经常跟工厂一同出现：模板的抽象和子类决定实现流程，策略在运行的时候动态决定哪一个子目标，工厂用来生产</p>
+<p>引自：<a href="https://mp.weixin.qq.com/s/qTmw1pHvzcMJPB6fbBHaZg" rel="noopener noreferrer">https://mp.weixin.qq.com/s/qTmw1pHvzcMJPB6fbBHaZg</a></p>

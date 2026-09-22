@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light"><title>索引的记账本 · 谢世杰｜AI游民</title><meta name="description" content="用记账本的类比理解索引，整理索引类型及其背后的数据结构。"><meta property="og:type" content="article"><meta property="og:title" content="索引的记账本 · AI Roam"><meta property="og:description" content="用记账本的类比理解索引，整理索引类型及其背后的数据结构。"><meta name="theme-color" content="#f1efea"><link rel="icon" type="image/x-icon" href="../../assets/favicon.ico"><link rel="apple-touch-icon" sizes="180x180" href="../../assets/apple-touch-icon.png"><link rel="stylesheet" href="../../assets/site.css"><script src="../../assets/site.js" defer></script></head>
+<body><a class="skip" href="#main">跳到正文</a><header class="site-header wrap"><a class="brand" href="../../">谢世杰｜AI游民<span>AI ROAM</span></a><nav class="nav" aria-label="主导航"><a href="../../projects/">作品</a><a href="../../writing/" aria-current="page">文章与实践</a><a href="../../about/">关于</a><a class="nav-github" href="https://github.com/coder-xieshijie">GitHub ↗</a></nav></header><main id="main" class="wrap"><header class="page-intro article-header"><div class="breadcrumb"><a href="../../writing/">文章与实践</a><span>/</span><span>数据库与搜索</span></div><p class="eyebrow">数据库与搜索 / 学习笔记</p><h1>索引的记账本</h1><p class="lead">用记账本的类比理解索引，整理索引类型及其背后的数据结构。</p><div class="article-meta"><span>旧文整理 · 谢世杰</span><span>原发表 <time datetime="2022-11-13">2022-11-13</time></span><span>迁入 <time datetime="2026-09-22">2026-09-22</time></span><span>约 9 分钟</span></div><aside class="editor-note"><strong>整理说明</strong><p>从旧博客迁入，保留当时的正文与技术语境；示例和工具版本未经本次重新运行验证。</p></aside></header><div class="reading-layout"><nav class="toc" aria-label="文章目录"><h2>本文目录</h2><a href="#section-1">一、[索引定义]</a><a href="#section-2">二、[索引类型]</a><a href="#section-3">三、[索引概念引申]</a></nav><article class="prose" id="article-body"><hr>
+<ul><li>建立（a,b,c）索引</li><li>a=xxx,b=xxx,c=xxx 走（a,b,c）索引</li><li>a=xxx,c=xxx,b=xxx 走（a,b,c）索引，这种情况数据库会自动优化成联合索引</li><li>a=xxx,c=xxx 走的是a索引</li><li>a=xxx,b!=xxx 走的是a索引</li><li>a=xxx,b&lt;xxx,c=xxx 走的是(a,b)索引，会在&lt;停止</li><li>a=xxx,order by b 走的是a索引，因为联合索引（a,b,c）是先排序a，在排序b，在排序c，而先排序b显然是不行的</li><li>a=xxx or d=xxx ,不走索引</li><li>a=xxx and d=xxx 只有a索引</li><li>a&lt;xxx, 可能走a索引，也可能不走a索引，具体要看记录中符合<code>a&lt;xxx</code>的数量，如果符合的数量很多，那么优化器就会认为此时走索引的价值不大，会进行全表扫描，如果符合的数量很少，那么优化器会任务走索引的更快，从而走索引。这和<code>a=xxx,b&lt;xxx</code>走(a, b)索引并不冲突，因为先走a导致大部分数据已经被剔除了，索引此时走b索引是有价值的</li></ul>
+<p>补充：如何看联合索引走的那几个所以，只要通过explain看一下key_len字段就可以了</p>
+<hr>
+<blockquote><p><strong>核心概念</strong></p></blockquote>
+<ul><li><strong>主键索引/二级索引</strong></li><li><strong>聚簇索引/非聚簇索引</strong></li><li><strong>回表/索引覆盖</strong></li><li><strong>索引下推</strong></li><li><strong>联合索引/最左联合匹配</strong></li><li><strong>前缀索引</strong></li></ul>
+<h2 id="section-1">一、[索引定义]</h2>
+<blockquote><p><strong>1.索引定义</strong></p></blockquote>
+<p>在数据之外，数据库系统还维护着<strong>满足特定查找算法的数据结构</strong>，这些数据结构以<strong>某种方式引用（指向）数据</strong>，这样就可以在这些数据结构上实现高级查找算法。<strong>这种数据结构，就是索引。</strong></p>
+<blockquote><p><strong>2.索引的数据结构</strong></p></blockquote>
+<ul><li>B树 / B+树 (mysql的innodb引擎默认选择B+树作为索引的数据结构)</li><li>HASH表</li><li>有序数组</li></ul>
+<blockquote><p><strong>3.选用B+树而不选用B树作为索引</strong></p></blockquote>
+<ul><li>B树的数据结构：record记录存放在树的节点中</li><li>B+树的数据结构: record记录只存放在树的叶子节点中</li></ul>
+<p><img src="../../assets/articles/312086dd888b9d44.webp" alt="B树" loading="lazy" decoding="async"><br><img src="../../assets/articles/620c58b2bc3b1d8d.webp" alt="B+树" loading="lazy" decoding="async"></p>
+<ul><li>假设一条数据大小1KB，索引大小16B，数据库采用磁盘数据页存储，磁盘页默认大小是16K。同样三次IO:<ol><li>B树能获取16*16*16=4096条数据</li><li>B+树能够获取1000*1000*1000=10亿条数据</li></ol></li></ul>
+<h2 id="section-2">二、[索引类型]</h2>
+<blockquote><p><strong>1.主键索引和二级索引</strong></p></blockquote>
+<ul><li>主键索引：索引的叶子节点是数据行</li><li>二级索引：索引的叶子节点是KEY字段加主键索引，因此，通过二级索引询首先查到是主键值，然后InnoDB再根据查到的主键值通过主键索引找到相应的数据块。</li><li>innodb的主索引文件上 直接存放该行数据,称为聚簇索引,次索引指向对主键的引用</li><li>myisam中, 主索引和次索引,都指向物理行(磁盘位置).</li></ul>
+<blockquote><p><strong>2.聚簇索引和非聚簇索引</strong></p></blockquote>
+<ul><li><p>聚簇索引是对磁盘上实际数据重新组织以按指定的一个或多个列的值排序的算法。特点是存储数据的顺序和索引顺序一致。一般情况下主键会默认创建聚簇索引，且一张表只允许存在一个聚簇索引（理由：数据一旦存储，顺序只能有一种）。</p></li><li><p>相较于聚簇索引的叶子点击是数据记录，非聚簇索引的叶子节点是指向数据记录的指针。非聚簇索引与聚簇索引最大的不同就是数据记录的顺序跟索引是不一致的，因此在数据</p></li><li><p>我们知道 Mysql 底层是用 B+ 树来存储索引的，且数据都存在叶子节点。对于 InnoDB 来说，它的主键索引和行记录是存储在一起的，因此叫做聚集索引（clustered index)。</p><p>PS：MyISAM 的行记录是单独存储的，不和索引在一起，因此 MyISAM也就没有聚集索引。</p><p>除了聚集索引，其它索引都叫做非聚集索引（secondary index）。包括普通索引，唯一索引等。</p><p>另外需要注意，在 InnoDB 中有且只有一个聚集索引。它有三种情况：</p><ol><li>若表存在主键，则主键索引就是聚集索引。</li><li>若不存在主键，则会把第一个非空的<strong>唯一索引</strong>作为聚集索引。</li><li>否则，就会隐式的定义一个 rowid 作为聚集索引。</li></ol></li></ul>
+<blockquote><p><strong>3.聚簇索引优劣</strong></p></blockquote>
+<ul><li><p>优势: 根据主键查询条目比较少时，不用回行(数据就在主键节点下)</p></li><li><p>劣势: 如果碰到不规则数据插入时，造成频繁的页分裂。</p></li></ul>
+<p>![image-20221109205205643](/Users/xieshijie/Library/Application Support/typora-user-images/image-20221109205205643.png)</p>
+<h2 id="section-3">三、[索引概念引申]</h2>
+<blockquote><p><strong>1.回表</strong></p></blockquote>
+<p>回表的概念涉及到主键索引和非主键索引的查询区别</p>
+<ul><li>如果语句是 <code>select * from T where ID=500</code>，<strong>即主键查询，则只需要搜索 ID 这棵树。</strong></li><li>如果语句是 <code>select * from T where k=5</code>，即非主键索引查询，则需要<strong>先搜索 k 索引树，得到 ID 的值为 500，再到 ID 索引树搜索一次。</strong></li><li><strong>从非主键索引回到主键索引的过程称为回表。</strong></li></ul>
+<p><strong>基于非主键索引的查询需要多扫描一棵索引树。</strong>因此，我们在应用中应该尽量使用主键查询。而从存储空间的角度讲，因为非主键索引树的叶结点存放的是主键的值，那么，应该<strong>考虑让主键的字段尽量短，这样非主键索引的叶子结点就越小，非主键索引占用的空间也就越小。</strong>一般情况下，建议创建一个自增主键，这样非主键索引占用的空间最小。</p>
+<blockquote><p><strong>2.索引覆盖</strong></p></blockquote>
+<ul><li>如果where子句中的一个条件是非主键索引，那么查询的时候，<strong>先通过非主键索引定位到主键索引（主键位于非主键索引搜索树的叶子节点）</strong>；然后通过主键索引定位到查询的内容。在这个过程中，回到主键索引树的过程，称为回表。</li><li>但是当我们的<strong>查询内容是主键值，那么可以直接提供查询结果，不需要回表</strong>。也就是说，<strong>在这个查询里，非主键索引 已经 “覆盖了” 我们的查询需求，故称为覆盖索引。</strong></li><li><strong>覆盖索引就是从辅助索引中就能直接得到查询结果，而不需要回表到聚簇索引中进行再次查询</strong>，所以可以减少搜索次数（不需要从辅助索引树回表到聚簇索引树），或者说减少 IO 操作（通过辅助索引树可以一次性从磁盘载入更多节点），从而提升性能。</li></ul>
+<blockquote><p><strong>3.联合索引</strong></p></blockquote>
+<p><strong>联合索引是指对表上的多个列进行索引。</strong></p>
+<p><strong>场景一：</strong></p>
+<p>联合索引 (a, b) 是<strong>根据 a, b 进行排序（先根据 a 排序，如果 a 相同则根据 b 排序）</strong>。因此，下列语句可以直接使用联合索引得到结果（事实上，也就是用到了最左前缀原则）</p>
+<ul><li><strong>select … from xxx where a=xxx;</strong></li><li><strong>select … from xxx where a=xxx order by b;</strong></li></ul>
+<p>而下列语句则不能使用联合查询：</p>
+<ul><li><strong>select … from xxx where b=xxx;</strong></li></ul>
+<p><strong>场景二：</strong></p>
+<p>对于联合索引 (a, b, c)，下列语句同样可以直接通过联合索引得到结果：</p>
+<ul><li><strong>select … from xxx where a=xxx order by b;</strong></li><li><strong>select … from xxx where a=xxx and b=xxx order by c;</strong></li></ul>
+<p>而下列语句则不行，需要执行一次 filesort 排序操作。</p>
+<ul><li><strong>select … from xxx where a=xxx order by c;</strong></li></ul>
+<p><strong>总结：</strong></p>
+<p><strong>以联合索引(a,b,c)为例，建立这样的索引相当于建立了索引a、ab、abc三个索引。</strong>一个索引顶三个索引当然是好事，毕竟每多一个索引，都会增加写操作的开销和磁盘空间的开销。</p>
+<blockquote><p><strong>4.最左匹配原则</strong></p></blockquote>
+<ul><li>从上面联合索引的例子，可以体会到最左前缀原则。</li><li><strong>不只是索引的全部定义，只要满足最左前缀，就可以利用索引来加速检索。这个最左前缀可以是联合索引的最左 N 个字段，也可以是字符串索引的最左 M 个字符。</strong>利用索引的 “最左前缀” 原则来定位记录，避免重复定义索引。</li><li>因此，基于最左前缀原则，我们在定义联合索引的时候，考虑如何安排索引内的字段顺序就至关重要了！评估的标准就是索引的复用能力，比如，<strong>当已经有了 (a,b) 字段的索引，一般就不需要再单独在 a 上建立索引了。</strong></li></ul>
+<blockquote><p><strong>5.索引下推</strong></p></blockquote>
+<p>MySQL 5.6 引入了索引下推优化，<strong>可以在索引遍历过程中，对索引中包含的字段先做判断，过滤掉不符合条件的记录，减少回表字数。</strong></p>
+<ul><li>建表</li></ul>
+<pre><code class="language-sql">CREATE TABLE `test` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '自增主键',
+  `age` int(11) NOT NULL DEFAULT '0',
+  `name` varchar(255) CHARACTER SET utf8 NOT NULL DEFAULT '',
+  PRIMARY KEY (`id`),
+  KEY `idx_name_age` (`name`,`age`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+</code></pre>
+<ul><li>创建数据</li></ul>
+<p>![image-20221113182446821](/Users/xieshijie/Library/Application Support/typora-user-images/image-20221113182446821.png)</p>
+<ul><li><p><code>SELECT * from user where  name like '陈%'</code> 最左匹配原则，命中idx_name_age索引</p></li><li><p><code>SELECT * from user where  name like '陈%' and age=20</code></p><ul><li>5.6版本之前，先根据name索引(此时是忽略<code>age=20</code>这个条件的)，匹配2条记录，然后找到对应的2个id。回表之后，在根据age=20进行过滤</li><li>5.6版本之后，会加入索引下推，在根据name匹配到2条数据之后，此时不会忽略<code>age=20</code>条件，在回表之前就会根据age进行过滤。此即索引下推，可以减少回表的数据量，增加查询性能</li></ul></li></ul>
+<blockquote><p><strong>6.前缀索引</strong></p></blockquote>
+<p>当<strong>索引是很长的字符序列时，这个索引将会很占内存，而且会很慢</strong>，这时候就会用到前缀索引了。通常可以索引开始的几个字符，而不是全部值，以节约空间并得到好的性能。所谓的<strong>前缀索引就是使用索引的前面几个字母作为索引</strong>，但是要降低索引的重复率，索引我们还必须要判断前缀索引的重复率。</p>
+<ul><li>先计算当前字符串字段的唯一性占比：<code>select 1.0*count(distinct name)/count(*) from test </code></li><li>在计算不同前缀的唯一性占比：<ul><li><code>select 1.0*count(distinct left(name,1))/count(*) from test</code> 取name字符串第一个作为前缀索引的占比</li><li><code>select 1.0*count(distinct left(name,2))/count(*) from test</code> 取name字符串前两个作为前缀索引的占比</li><li>…</li></ul></li><li>当<code>left(str, n)</code>的n不在显著增加时，此时可以选取n作为前缀索引的截取数</li><li>创建索引<code>alter table test add key(name(n));</code></li></ul>
+<p><strong>[引自]：</strong></p>
+<p>1.<a href="https://mp.weixin.qq.com/s?__biz=MzIxNzM0NjA1OQ==&amp;mid=2247483878&amp;idx=1&amp;sn=cb23e89199530981136ab2a7c1b90d92&amp;chksm=97fa7882a08df194efe0ce71d3b091bfdd6391573b48fdc21f179d1cb89c145c4b334d46a5d9&amp;token=1235000206&amp;lang=zh_CN#rd" rel="noopener noreferrer">再谈数据库索引</a></p>
+<p>2.<a href="https://segmentfault.com/a/1190000041290817" rel="noopener noreferrer">MySQL聚簇索引和非聚簇索引的理解</a></p>
+<p>3.<a href="https://www.jianshu.com/p/01313459b5a1" rel="noopener noreferrer">B+树作为Mysql索引结构的优点</a></p>
+<p>4.<a href="https://zhuanlan.zhihu.com/p/121084592" rel="noopener noreferrer">Mysql性能优化：什么是索引下推？</a></p>
+<footer class="article-source"><p>原题：索引的记账本 · 旧博客存档于 2024 年 6 月。</p><p><a class="text-link" href="https://github.com/coder-xieshijie/coder-xieshijie.github.io/blob/94073945f64517bee4b550a98b7b7837512e4e77/2022/11/13/%E6%95%B0%E6%8D%AE%E5%BA%93/MySQL/%E7%B4%A2%E5%BC%95%E7%9A%84%E8%AE%B0%E8%B4%A6%E6%9C%AC/index.html">查看旧仓库中的原文<span aria-hidden="true">↗</span></a></p></footer></article></div><nav class="article-pagination" aria-label="前后篇文章"><a href="../reflections-notes/"><span>上一篇</span><strong>reflections使用总结</strong></a></nav><div class="related"><a class="text-link" href="../../writing/">返回全部文章<span aria-hidden="true">↗</span></a><a class="text-link" href="../../">回到首页<span aria-hidden="true">↗</span></a></div></main><footer class="site-footer"><div class="wrap"><div class="footer-main"><div><h2>继续探索。</h2><p>探索 AI，也探索工作与成长的新可能。</p></div><div><div class="footer-links"><a class="text-link" href="https://github.com/coder-xieshijie">GitHub<span aria-hidden="true">↗</span></a><button class="copy-button" type="button" data-copy="AI游民谢世杰">公众号 · AI游民谢世杰 <span aria-hidden="true">⧉</span></button></div><span id="copy-status" class="copy-status" role="status" aria-live="polite"></span></div></div><div class="footer-meta"><span>© 2026 谢世杰 · AI ROAM</span><span class="filing"><a href="https://beian.miit.gov.cn/">鲁ICP备2026052690号-1</a></span><a href="../../sync-status/">同步状态</a><a href="../../about/">个人作品与实践 · 个人观点</a></div></div></footer></body></html>

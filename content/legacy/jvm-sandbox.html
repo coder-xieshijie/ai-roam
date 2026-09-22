@@ -1,0 +1,314 @@
+<h2 id="section-1">一、前言</h2>
+<p>在开始之前，我们先来模拟一下以下的场景：</p>
+<p>小李：“小明，你的接口没有返回数据，麻烦帮忙看一下？”</p>
+<p>小明：“我这边的数据也是从别人的服务器中拿到的，但是我不确定是因为逻辑处理有问题导致没有结果，还是因为我依赖的服务有问题而没有返回结果，我需要确认一下。”</p>
+<p>小明：“哎呀，线上没有日志，我需要加个日志上个线。”</p>
+<p>30 分钟之后……</p>
+<p>小明：“不好意思，日志加错地方了……稍等……”</p>
+<p>接来下隆重登场的就是本文的主角 JVM SandBox 了。基于 JVM SandBox，我们可以很容易地做到在不重新部署应用的情况下，给指定的某些类的某些方法加上日志功能。当然，动态加日志仅仅是 JVM SandBox 可以应用的一个小小的场景，JVM SandBox 的威力远不在于此。那么，JVM SandBox 是什么？JVM SandBox 从哪里来？JVM SandBox 怎么用？本文在第二章会回答这几个问题，如果你跟我一样对 JVM SandBox 的底层实现原理感兴趣，特别是 JVM 相关部分，那么第三章有相关的内容；如果你只想了解 JVM SandBox 自身具有哪些特性，以及 JVM SandBox 是如何设计实现的，那么可以跳过第三章，直接阅读第四章；最后，在第五章会简单地介绍其他两个可以应用 JVM SandBox 的场景。</p>
+<h2 id="section-2">二、JVM SandBox 简介</h2>
+<h3 id="section-3">2.1 AOP</h3>
+<p>在介绍 JVM SandBox 之前，我们先来回顾一下 AOP 技术。</p>
+<p>AOP（面向切面编程，Aspect Oriented Programming）技术已被业界广泛应用，其思想是面向业务处理过程的某个步骤或阶段进行编程，这个步骤或阶段被称为切面，其目的是降低业务逻辑的各部分之间的耦合，常见的 AOP 实现基本原理有两种：代理和行为注入。</p>
+<p><strong>1）代理模式</strong></p>
+<p>在代理模式下，我们会创建一个代理对象来代理原对象的行为，代理对象拥有原对象行为执行的控制权，在这种模式下，我们基于代理对象在原对象行为执行的前后插入代码来实现 AOP。</p>
+<p><img src="../../assets/articles/7e313562c3a9d0f2.webp" loading="lazy" decoding="async" alt="JVM sandbox原理和应用 · 原文配图"></p>
+<p>图 2-1 代理模式</p>
+<p><strong>2）行为注入模式</strong></p>
+<p>在行为注入模式下，我们不会创建一个新的对象，而是修改原对象，在原对象行为的执行前后注入代码来实现 AOP。</p>
+<p><img src="../../assets/articles/669d3b7fbbf5bf2b.webp" loading="lazy" decoding="async" alt="JVM sandbox原理和应用 · 原文配图"></p>
+<p>图 2-2 行为注入模式</p>
+<h3 id="section-4">2.2 JVM SandBox</h3>
+<p>JVM SandBox 是阿里开源的一款 JVM 平台非侵入式运行期 AOP 解决方案，本质上是一种 AOP 落地形式。那么可能有同学会问：已有成熟的 Spring AOP 解决方案，阿里巴巴为什么还要“重复造轮子”？这个问题要回到 JVM SandBox 诞生的背景中来回答。在 2016 年中，天猫双十一催动了阿里巴巴内部大量业务系统的改动，恰逢徐冬晨（阿里巴巴测试开发专家）所在的团队调整，测试资源保障严重不足，迫使他们必须考虑更精准、更便捷的老业务测试回归验证方案。开发团队面临的是新接手的老系统，老的业务代码架构难以满足可测性的要求，很多现有测试框架也无法应用到老的业务系统架构中，于是需要新的测试思路和测试框架。</p>
+<p>为什么不采用 Spring AOP 方案呢？Spring AOP 方案的痛点在于不是所有业务代码都托管在 Spring 容器中，而且更底层的中间件代码、三方包代码无法纳入到回归测试范围，更糟糕的是测试框架会引入自身所依赖的类库，经常与业务代码的类库产生冲突，因此，JVM SandBox 应运而生。</p>
+<p>JVM SandBox 本身是基于插件化的设计思想，允许用于以“模块”的方式基于 JVM SandBox 提供的 AOP 能力开发新的功能。基于 JVM SandBox，我们不需要关心如何在 JVM 层实现 AOP 的技术细节，只需要通过 JVM SandBox 提供的编程结构告诉“沙箱”，我们希望对哪些类哪些方法进行 AOP，在切面点做什么即可，JVM SandBox 模块功能编写起来非常简单。下面是一个示例模块代码：</p>
+<pre><code class="language-plaintext">@MetaInfServices(Module.class)
+@Information(id = "my-sandbox-module")//模块名
+public class MySandBoxModule implements Module {
+    private Logger LOG = Logger.getLogger(MySandBoxModule.class.getName());
+    @Resource
+    private ModuleEventWatcher moduleEventWatcher;
+
+    @Command("addLog")//模块命令名
+    public void addLog() {
+        new EventWatchBuilder(moduleEventWatcher)
+                .onClass("com.float.lu.DealGroupService")//想要对DealGroupService这个类进行切面
+                .onBehavior("loadDealGroup")//想要对上面类的loadDealGroup方法进行切面
+                .onWatch(new AdviceListener() {
+                    @Override
+                    protected void before(Advice advice) throws Throwable {
+                        LOG.info("方法名: " + advice.getBehavior().getName());//在方法执行前打印方法的名字
+                    }
+                });
+    }
+}
+</code></pre>
+<p>复制代码</p>
+<p>如上面代码所示，通过简单常规的编码即可实现对某个类的某个方法进行切面，不需要对底层技术有了解即可上手。上面的模块被 JVM SandBox 加载和初始化之后便可以被使用了。比如，只需要告诉 JVM SandBox 我们要执行 my-sandbox-module 这个模块的 addLog 这个方法，我们编写的功能的调用就会被注入到目标地方。</p>
+<p>JVM SandBox 使用起来非常很简单，但是 JVM SandBox 背后所涉及到的底层技术原理、实现细节却不简单，比如 Java Agent、Attach、JVMTI、Instrument、Class 字节码修改、ClassLoader、代码锁、事件驱动设计等等。如果要深究可能要究几本书，但这不是本文的目的。本文仅仅概括性地介绍 JVM SandBox 实现涉及到的一些核心技术点，力求通过本文可以回答如 JVMTI 是什么？Instrument 是什么？Java Agent 是什么？它们之间有什么关系？他们和 JVM SandBox 又是什么关系等问题。</p>
+<h2 id="section-5">三、JVM 核心技术</h2>
+<h3 id="section-6">3.1 Java Agent</h3>
+<p>JVM SandBox 容器的启动依赖 Java Agent，Java Agent（Java 代理）是 JDK 1.5 之后引入的技术。开发一个 Java Agent 有两种方式，一种是实现一个 premain 方法，但是这种方式实现的 Java Agent 只能在 JVM 启动的时候被加载；另一种是实现一个 agentmain 方法，这种方式实现的 Java Agent 可以在 JVM 启动之后被加载。当然，两种实现方法各有利弊、各有适用场景，这里不再过多介绍，JVM SandBox Agent 对于这两种方式都有实现，用户可以自行选择使用，因为在 JVM 层这两种方式底层的实现原理大同小异，因此本文只选择 agentmain 方式进行介绍，下文的脉络也仅跟 agentmain 方式相关。下面先通过两行代码，来看看基于 agentmain 方式实现的 Java Agent 是如何被加载的：</p>
+<pre><code class="language-plaintext">VirtualMachine vmObj = VirtualMachine.attach(targetJvmPid);//targetJvmPid为目标JVM的进程ID
+vmObj.loadAgent(agentJarPath, cfg);  // agentJarPath为agent jar包的路径，cfg为传递给agent的参数
+</code></pre>
+<p>复制代码</p>
+<p>在 Java Agent 被加载之后，JVM 会调用 Java Agent JAR 包中的 MANIFEST.MF 文件中的 Agent-Class 参数指定的类中的 agentmain 方法。下面两节会对这两行代码的背后 JVM 实现技术进行探究。</p>
+<h3 id="section-7">3.2 Attach</h3>
+<p><strong>1）Attach 工作机制</strong></p>
+<p>上面一节中第一行代码的背后，有一个重要的 JVM 支撑机制——Attach，为什么说重要？比如大家最熟悉的 jstack 就是要依赖这个机制来工作，那么，Attach 机制是什么呢？我们先来看看 Attach 机制都做了什么事儿。首先，Attach 机制对外提供了一种进程间的通信能力，能让一个进程传递命令给 JVM；其次，Attach 机制内置一些重要功能，可供外部进程调用。比如刚刚提到的 jstack，再比如上一节中提到的第二行代码：vmObj.loadAgent(agentJarPath, cfg); 这行代码实际上就是告诉 JVM 我们希望执行 load 命令，下面的代码片段可以更直观地看到 load 命令对应的行为是：JvmtiExport::load_agent_library，这行代码的行为是对 agentJarPath 指定的 Java Agent 进行加载：</p>
+<pre><code class="language-plaintext">//来源:attachListener.cpp
+static AttachOperationFunctionInfo funcs[] = {
+  { "agentProperties",  get_agent_properties },
+  { "datadump",         data_dump },
+  { "dumpheap",         dump_heap },
+  { "load",             JvmtiExport::load_agent_library },
+  { "properties",       get_system_properties },
+  { "threaddump",       thread_dump },
+  { "inspectheap",      heap_inspection },
+  { "setflag",          set_flag },
+  { "printflag",        print_flag },
+  { "jcmd",             jcmd },
+  { NULL,               NULL }
+};
+</code></pre>
+<p>复制代码</p>
+<p>那么，JVM Attach 机制是如何工作的呢？Attach 机制的核心组件是 Attach Listener，顾名思义，Attach Listener 是 JVM 内部的一个线程，这个线程的主要工作是监听和接收客户端进程通过 Attach 提供的通信机制发起的命令，如下图所示：</p>
+<p><img src="../../assets/articles/68ff99570bfec69a.webp" loading="lazy" decoding="async" alt="JVM sandbox原理和应用 · 原文配图"></p>
+<p>图 3-1 Attach Listener 工作机制</p>
+<p>Attach Listener 线程的主要工作是串流程，流程步骤包括：接收客户端命令、解析命令、查找命令执行器、执行命令等等，下面附上相关代码片段：</p>
+<p>片段一：AttachListener::init（启动 AttachListener 线程）：</p>
+<pre><code class="language-plaintext">//来源:attachListener.cpp
+{ MutexLocker mu(Threads_lock);
+    // 启动线程
+    JavaThread* listener_thread = new JavaThread(&amp;attach_listener_thread_entry);
+    // Check that thread and osthread were created
+    if (listener_thread == NULL || listener_thread-&gt;osthread() == NULL) {
+      vm_exit_during_initialization("java.lang.OutOfMemoryError",
+                                    "unable to create new native thread");
+    }
+    java_lang_Thread::set_thread(thread_oop(), listener_thread);
+    java_lang_Thread::set_daemon(thread_oop());
+
+    listener_thread-&gt;set_threadObj(thread_oop());
+    Threads::add(listener_thread);
+    Thread::start(listener_thread);
+  }
+</code></pre>
+<p>复制代码</p>
+<p>片段二：attach_listener_thread_entry（轮询队列）：</p>
+<pre><code class="language-plaintext">//来源:attachListener.cpp
+static void attach_listener_thread_entry(JavaThread* thread, TRAPS) {
+  os::set_priority(thread, NearMaxPriority);
+
+  thread-&gt;record_stack_base_and_size();
+
+  if (AttachListener::pd_init() != 0) {
+    return;
+  }
+  AttachListener::set_initialized();
+  for (;;) {
+    AttachOperation* op = AttachListener::dequeue();// 展开
+    if (op == NULL) {
+      return;   // dequeue failed or shutdown
+    }
+</code></pre>
+<p>复制代码</p>
+<p>片段三：dequeue（读取客户端 socket 内容）</p>
+<pre><code class="language-plaintext">//来源:attachListener_bsd.cpp
+BsdAttachOperation* BsdAttachListener::dequeue() {
+  for (;;) {
+    int s;
+    // wait for client to connect
+    struct sockaddr addr;
+    socklen_t len = sizeof(addr);
+    RESTARTABLE(::accept(listener(), &amp;addr, &amp;len), s);
+    if (s == -1) {
+      return NULL;      // log a warning?
+    }
+    // 省略……
+    // peer credential look okay so we read the request
+    BsdAttachOperation* op = read_request(s);
+  }
+}
+</code></pre>
+<p>复制代码</p>
+<p><strong>2）加载 Agent</strong></p>
+<p>回到上层，我们再看看 vmObj.loadAgent(agentJarPath, cfg)；这行 Java 代码代码是如何工作的？其实，这行代码背后主要做了一件事情：告诉 Attach 加载 instrument 库，instrument 库又是什么？instrument 库是基于 JVMTI 编程接口编写的一个 JVMTI Agent，其表现形式是一个动态链接库，下面上两个代码片段：</p>
+<pre><code class="language-plaintext">//来源：HotSpotVirtualMachine.java
+//片段1
+loadAgentLibrary("instrument", args);
+//片段2
+InputStream in = execute("load",
+                                 agentLibrary,
+                                 isAbsolute ? "true" : "false",
+                                 options);
+
+</code></pre>
+<p>复制代码</p>
+<p>Attach 接收到命令之后执行 load_agent_library 方法，主要做两件事情：1）加载 instrument 动态库；2）找到 instrument 动态库中实现的 Agent_OnAttach 方法并调用。Attach 的工作到这里就结束了，至于 Agent_OnAttach 这个方法做了什么事情，我们会在 JVMTI 部分进行介绍。下面先解释 Attach 相关的另外一个问题，Attach Listener 并不是在 JVM 启动的时候被启动的，而是基于一种懒启动策略实现。</p>
+<p><strong>3）Attach Listener 懒启动</strong></p>
+<p>为方便理解下面引入代码片段，这是从 JVM 启动路径上截取的两片代码：</p>
+<pre><code class="language-plaintext">//来源:thread.cpp
+// 片段1
+  os::signal_init();
+  if (!DisableAttachMechanism) {
+    AttachListener::vm_start();
+    if (StartAttachListener || AttachListener::init_at_startup()) {
+      AttachListener::init();
+    }
+  }
+// 片段2
+bool AttachListener::init_at_startup() {
+  if (ReduceSignalUsage) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
+</code></pre>
+<p>复制代码</p>
+<p>DisableAttachMechanism 这个参数默认是关闭的，也就是说 JVM 默认情况下启用 Attach 机制，但是 StartAttachListener 和 ReduceSignalUsage 这两个参数默认都是关闭的，因此 Attach Listener 线程默认并不会被初始化。那么 Attach Listener 线程是在什么时候被初始化的呢？这就有必要了解一下 Signal Dispatcher 组件了，Signal Dispatcher 本质上也是 JVM 提供的一种进程间通信机制，只是这种机制是基于信号量来实现的。</p>
+<p>我们先从 Signal Dispatcher 的服务端角度，来看看 Signal Dispatcher 是如何工作的，不知道大家有没有注意到上面的 os::signal_init()；这么一行代码，其作用是初始化和启动 Signal Dispatcher 线程，Signal Dispatcher 线程启动之后就会进入等待信号状态（os::signal_wait）。如下代码片段所示，SIGBREAK 信号是 SIGQUIT 信号的别名，Signal Dispatcher 接收到这个信号之后会调用 AttachListener 的 is_init_trigger 的方法初始化和启动 AttachListener 线程，同时会在 tmp 目录下面创建/tmp/.attach_pid${pid}这样的一个文件，代表进程号为 pid 的 JVM 已经初始化了 AttachListener 组件了。</p>
+<p>片段一：os::signal_init();（启动 Signal Dispatcher 线程）</p>
+<pre><code class="language-plaintext">//来源：os.cpp
+{ MutexLocker mu(Threads_lock);
+      JavaThread* signal_thread = new JavaThread(&amp;signal_thread_entry);//展开
+      if (signal_thread == NULL || signal_thread-&gt;osthread() == NULL) {
+        vm_exit_during_initialization("java.lang.OutOfMemoryError",
+                                      "unable to create new native thread");
+      }
+      java_lang_Thread::set_thread(thread_oop(), signal_thread);
+      java_lang_Thread::set_priority(thread_oop(), NearMaxPriority);
+      java_lang_Thread::set_daemon(thread_oop());
+
+      signal_thread-&gt;set_threadObj(thread_oop());
+      Threads::add(signal_thread);
+      Thread::start(signal_thread);
+    }
+</code></pre>
+<p>复制代码</p>
+<p>片段二：signal_thread_entry（监听信号）</p>
+<pre><code class="language-plaintext">//来源：os.cpp
+static void signal_thread_entry(JavaThread* thread, TRAPS) {
+  os::set_priority(thread, NearMaxPriority);
+  while (true) {
+    int sig;
+    {
+      sig = os::signal_wait();
+    }
+    switch (sig) {
+      case SIGBREAK: {
+        // Check if the signal is a trigger to start the Attach Listener - in that
+        // case don't print stack traces.
+        if (!DisableAttachMechanism &amp;&amp; AttachListener::is_init_trigger()) {//展开
+          continue;
+        }
+</code></pre>
+<p>复制代码</p>
+<p>片段三：is_init_trigger（启动 AttachListener）</p>
+<pre><code class="language-plaintext">//来源：attachListener_bsd.cpp
+bool AttachListener::is_init_trigger() {
+  char path[PATH_MAX + 1];
+  int ret;
+  struct stat st;
+  snprintf(path, PATH_MAX + 1, "%s/.attach_pid%d",os::get_temp_directory(), os::current_process_id());
+  RESTARTABLE(::stat(path, &amp;st), ret);
+  if (ret == 0) {
+    if (st.st_uid == geteuid()) {
+      init();//初始化Attach Listener
+      return true;
+    }
+  }
+  return false;
+}
+
+</code></pre>
+<p>复制代码</p>
+<p>我们再从客户端角度，来看看客户端是如何通过 Signal Dispatcher 来启动 AttachListener 线程的，这要又要回到 VirtualMachine.attach(pid)这行代码，这行代码的背后会执行具体 VirtualMachine 的初始化工作，我们拿 Linux 平台下的 LinuxVirtualMachine 实现来看，下面是 LinuxVirtualMachine 初始化的核心代码：</p>
+<pre><code class="language-plaintext">//来源：LinuxVirtualMachine.java
+//检查目标JVM对否存在标识文件
+path = findSocketFile(pid);
+if (path == null) {
+  File f = createAttachFile(pid);
+  try {
+    mpid = getLinuxThreadsManager(pid);
+    sendQuitToChildrenOf(mpid);
+</code></pre>
+<p>复制代码</p>
+<p>上面提到目标 JVM 一旦启动 attach 组件之后，会在/tmp 目录下创建名为.java_pid${pid}的文件。因此，客户端在每次初始化 LinuxVirtualMachine 对象的时候，会先查看目标 JVM 的这个文件是否存在，如果不存在则需要通过 SIGQUIT 信号来将 attach 组件拉起来。具体操作是进入 try 区域后，找到指定 pid 进程的父进程（Linux 平台下线程是通过进程实现的），给父进程的所有子进程都发送一个 SIGQUIT 信号，而 Signal Dispatcher 组件恰好在监听这个信号。</p>
+<h3 id="section-8">3.3 JVMTI</h3>
+<p>JVMTI(Java Virtual Machine Tool Interface)是一套由 Java 虚拟机提供的，为 JVM 相关的工具提供的本地编程接口集合。JVMTI 是从 Java SE 5 开始引入，整合和取代了以前使用的 Java Virtual Machine Profiler Interface (JVMPI) 和 the Java Virtual Machine Debug Interface (JVMDI)，而在 Java SE 6 中，JVMPI 和 JVMDI 已经消失了。JVMTI 提供了一套“代理”程序机制，可以支持第三方工具程序以代理的方式连接和访问 JVM，并利用 JVMTI 提供的丰富的编程接口，完成很多跟 JVM 相关的功能。JVMTI 的功能非常丰富，包括虚拟机中线程、内存/堆/栈，类/方法/变量，事件/定时器处理等等。使用 JVMTI 一个基本的方式就是设置回调函数，在某些事件发生的时候触发并作出相应的动作，这些事件包括虚拟机初始化、开始运行、结束，类的加载，方法出入，线程始末等等。如果想对这些事件进行处理，需要首先为该事件写一个函数，然后在 jvmtiEventCallbacks 这个结构中指定相应的函数指针。</p>
+<p>上面提到的 Instrument 就是一个基于 JVMTI 接口的，以代理方式连接和访问 JVM 的一个 Agent，Instrument 库被加载之后 JVM 会调用其 Agent_OnAttach 方法，如下代码片段：</p>
+<pre><code class="language-plaintext">//来源：InvocationAdapter.c
+//片段1：创建Instrument对象
+success = createInstrumentationImpl(jni_env, agent);
+//片段2：监听ClassFileLoadHook事件并设置回调函数为eventHandlerClassFileLoadHook
+callbacks.ClassFileLoadHook = &amp;eventHandlerClassFileLoadHook;
+jvmtierror = (*jvmtienv)-&gt;SetEventCallbacks(jvmtienv, &amp;callbacks, sizeof(callbacks));
+//片段3：调用java类的agentmain方法
+success = startJavaAgent(agent, jni_env, agentClass, options, agent-&gt;mAgentmainCaller);
+</code></pre>
+<p>复制代码</p>
+<p>Agent_OnAttach 方法被调用的时候主要做了几件事情：1）创建 Instrument 对象，这个对象就是 Java Agent 中通过 agentmain 方法拿到的 Instrument 对象；2）通过 JVMTI 监听 JVM 的 ClassFileLoadHook 事件并设置回调函数 eventHandlerClassFileLoadHook；3）调用 Java Agent 的 agentmain 方法，并将第 1）步创建的 Instrument 对象传入。通过上面的内容可以知道，在 JVM 进行类加载的都会回调 eventHandlerClassFileLoadHook 方法，我们可以猜到 eventHandlerClassFileLoadHook 方法做的事情就是调用 Java Agent 内部传入的 Instrument 的 ClassFileTransformer 的实现：</p>
+<pre><code class="language-plaintext">//来源Instrumentation.java
+void addTransformer(ClassFileTransformer transformer);
+</code></pre>
+<p>复制代码</p>
+<p>通过 JVMTI 的事件回调机制，Instrument 可以捕捉到每个类的加载事件，从而调用用户实现的 ClassFileTransformer 来对类进行转换，那么已经被加载的类怎么办呢？为解决这个问题，Instrument 提供了 retransformClasses 接口用于对已经加载的类进行转换：</p>
+<pre><code class="language-plaintext">//来源Instrumentation.java
+void retransformClasses(Class&lt;?&gt;... classes) throws UnmodifiableClassException;
+</code></pre>
+<p>复制代码</p>
+<p>Instrument 底层的实现实际上也是调用 JVMTI 提供的 RetransformClasses 接口，RetransformClasses 实现对已经加载的类进行重新定义（redefine），而重新定义类也会触发 ClassFileLoadHook 事件，Instrument 同样会监听到这个事件并对被加载的类进行处理。到这里，JVM SandBox 底层依赖 JVM 的核心机制已经介绍完了，下面通过一张时序图将一个 JavaAgent 的加载过程涉及到的相关组件及行为串起来：</p>
+<p><img src="../../assets/articles/5eb6721605952860.webp" loading="lazy" decoding="async" alt="JVM sandbox原理和应用 · 原文配图"></p>
+<p>图 3-2 Java Agent 加载流程</p>
+<h2 id="section-9">四、JVM SandBox 设计与实现</h2>
+<h3 id="section-10">4.1 可插拔</h3>
+<p>本文理解的 JVM SandBox 可插拔至少有两层含义：一层是 JVM 沙箱本身是可以被插拔的，可被动态地挂载到指定 JVM 进程上和可以被动态地卸载；另一层是 JVM 沙箱内部的模块是可以被插拔的，在沙箱启动期间，被加载的模块可以被动态地启用和卸载。</p>
+<p>一个典型的沙箱使用流程如下：</p>
+<pre><code class="language-plaintext">$./sandbox.sh -p 33342 #将沙箱挂载到进程号为33342的JVM进程上
+$./sandbox.sh -p 33342 -d 'my-sandbox-module/addLog' #运行指定模块, 模块功能生效
+$./sandbox.sh -p 33342 -S #卸载沙箱
+</code></pre>
+<p>复制代码</p>
+<p>JVM 沙箱可以被动态地挂载到某个正在运行的目标 JVM 进程之上（前提是目标 JVM 没有禁止 attach 功能），沙箱工作完之后还可以被动态地从目标 JVM 进程卸载掉，沙箱被卸载之后，沙箱对对目标 JVM 进程产生的影响会随即消失（这是沙箱的一个重要特性），沙箱工作示意图如下：</p>
+<p><img src="../../assets/articles/703649bfd99a38cc.webp" loading="lazy" decoding="async" alt="JVM sandbox原理和应用 · 原文配图"></p>
+<p>图 4-1 沙箱工作示意图</p>
+<p>客户端通过 Attach 将沙箱挂载到目标 JVM 进程上，沙箱的启动实际上是依赖 Java Agent，上文已经介绍过，启动之后沙箱会一直维护着 Instrument 对象引用，在沙箱中 Instrument 对象是一个非常重要的角色，它是沙箱访问和操作 JVM 的唯一通道，后续修改字节码和重定义类都要经过 Instrument。另外，沙箱启动之后同时会启动一个内部的 Jetty 服务器，这个服务器用于外部进程和沙箱进行通信，上面看到的./sandbox.sh -p 33342 -d ‘my-sandbox-module/addLog’ 这行代码，实际上就是通过 HTTP 协议来告诉沙箱执行 my-sanbox-module 这个模块的 addLog 这个功能的。</p>
+<h3 id="section-11">4.2 无侵入</h3>
+<p>沙箱内部定义了一个 Spy 类，该类被称为“间谍类”，所有的沙箱模块功能都会通过这个间谍类驱动执行。下面给出一张示意图将业务代码、间谍类和模块代码串起来来帮助理解：</p>
+<p><img src="../../assets/articles/a002f97c133f9f65.webp" loading="lazy" decoding="async" alt="JVM sandbox原理和应用 · 原文配图"></p>
+<p>图 4-2 沙箱无侵入核心实现</p>
+<p>上图是沙箱 AOP 核心实现的伪代码，实际实现会比上图更复杂一些，沙箱内部通过修改和重定义业务类来实现上述功能的。在接口设计方面，沙箱通过事件驱动的方式，让模块开发者可以监听到方法执行的某个事件并设置回调逻辑，这一切都可以通过实现 AdviceListener 接口来做到，通过 AdviceListener 接口定义的行为，我们可以了解沙箱支持的监听事件如下：</p>
+<p><img src="../../assets/articles/bf9e919088ec96c9.webp" loading="lazy" decoding="async" alt="JVM sandbox原理和应用 · 原文配图"></p>
+<h3 id="section-12">4.3 隔离</h3>
+<p>JVM 沙箱有自己的工作代码类，而这些代码类在沙箱被挂在到目标 JVM 之后，其涉及到的相关功能实现类都要被加载到目标 JVM 中，沙箱代码和业务代码共享 JVM 进程，这里有两个问题：1）如何避免沙箱代码和业务代码之间产生冲突；2）如何避免不同沙箱模块之间的代码产生冲突。为解决这两个问题，JVM SandBox 定义了自己的类加载器，严格控制类的加载，沙箱的核心类加载器有两个：SandBoxClassLoader 和 ModuleJarClassLoader。SandBoxClassLoader 用于加载沙箱自身的工作类，ModuleJarClassLoader 用于加载三方自己开发的模块功能类，如上面的 MySandBoxModule 类。在沙箱中类加载器继承关系如下图所示：</p>
+<p><img src="../../assets/articles/20c3edda48cb7bbd.webp" loading="lazy" decoding="async" alt="JVM sandbox原理和应用 · 原文配图"></p>
+<p>图 4-3 沙箱类加载器继承体系</p>
+<p>通过类加载器，沙箱将沙箱代码和业务代码以及不同沙箱模块之间的代码隔离开来。</p>
+<h3 id="section-13">4.4 多租户</h3>
+<p>JVM 沙箱提供的隔离机制也有两层含义，一层是沙箱容器和业务代码之间隔离以及沙箱内部模块之间隔离；另一层是不同用户的沙箱之间的隔离，这一层隔离用来支持多租户特性，也就是支持多个用户对同一个 JVM 同时使用沙箱功能且他们之间互不影响。沙箱的这种机制是通过支持创建多个 SandBoxClassLoader 的方式来实现的，每个 SandBoxClassLoader 关联唯一一个命名空间（namespace）用于标识不同的用户，示意图如下所示：</p>
+<p><img src="../../assets/articles/9fca43e13d7a4e47.webp" loading="lazy" decoding="async" alt="JVM sandbox原理和应用 · 原文配图"></p>
+<p>图 4-4 多租户实现示意图</p>
+<h2 id="section-14">五、JVM Sandbox 应用场景分析</h2>
+<p>JVM SandBox 让动态无侵入地对业务代码进行 AOP 这个事情实现起来非常容易，但是这个事情做起来非常容易只是前提条件，更重要的是我们基于 JVM SandBox 能做什么？可以做的很多，比如：故障模拟、动态黑名单，动态日志、动态开关、系统流控、热修复，方法请求录制和结果回放、动态去依赖、依赖超时时间动态修改、甚至是修改 JDK 基础类的功能等等，当然不限于此，这里大家可以打开脑洞，天马行空地思考一下，下面再给出两个 JVM SandBox 应用场景的实现思路。</p>
+<h3 id="section-15">5.1 故障模拟</h3>
+<p>我们可以开发一个沙箱模块，通过和前台页面的交互，我们可以对任意业务类的任意方法注入故障来达到故障模拟的效果，用户交互示意图如下：</p>
+<p><img src="../../assets/articles/b856de448953862d.webp" loading="lazy" decoding="async" alt="JVM sandbox原理和应用 · 原文配图"></p>
+<p>图 5-1 故障模拟交互示意图</p>
+<p>用户通过简单的界面操作即可完成故障注入，应用代码不需要提前埋点。</p>
+<h3 id="section-16">5.2 动态黑名单</h3>
+<p>我们还可以开发一个沙箱模块实现 IP 黑名单功能，针对指定 IP 的客户端，服务直接返回空结果，用户交互示意图如下：</p>
+<p><img src="../../assets/articles/0875b4e80597a543.webp" loading="lazy" decoding="async" alt="JVM sandbox原理和应用 · 原文配图"></p>
+<p>图 5-2 动态黑名单交互示意图</p>
+<p>引用 JVM SandBox 官网的一句话：“JVM-SANDBOX 还能帮助你做很多很多，取决于你的脑洞有多大了。”</p>
+<h2 id="section-17">总结</h2>
+<p>JVM SandBox 是一种无侵入，可动态插拔，JVM 层的 AOP 解决方案，基于 JVM SandBox 我们可以很容易地开发出很多有意思的工具，这完全归功于 JVM SandBox 为我们屏蔽了底层技术细节和实现复杂性。JVM SandBox 很强大，这里需要感谢 JVM SandBox 的作者。除了无侵入，可动态插拔这两个优势之外，JVM SandBox 在 JVM 层支持 AOP 这件事情本身就是一个绝对优势，因为我们开发的 AOP 能力不再依赖应用层所使用的容器，比如不管你使用的是 Spring 容器还是 Plexus 容器，不管你的 Web 容器是 Tomcat 还是 Jetty、统统都没有关系。</p>
+<p>回顾一下本文的内容：</p>
+<ul><li><p>回顾 AOP 技术；</p></li><li><p>介绍 JVM SandBox 是什么、来自哪里、怎么用；</p></li><li><p>通过 Java Agent 的加载介绍涉及到的 JVM 相关核心技术如：Attach 机制、JVMTI、Instrument 等；</p></li><li><p>介绍 JVM SandBox 的核心特性的设计与实现如：可插拔、无侵入、隔离、多租户；</p></li><li><p>介绍 JVM SandBox 可被应用的场景以及两个小例子。</p></li></ul>
+<h2 id="section-18">参考文档</h2>
+<p>【1】<a href="http://developer.51cto.com/art/201803/568224.htm" rel="noopener noreferrer">http://developer.51cto.com/art/201803/568224.htm</a>  </p>
+<p>【2】<a href="https://github.com/alibaba/jvm-sandbox" rel="noopener noreferrer">https://github.com/alibaba/jvm-sandbox</a>  </p>
+<p>【3】<a href="https://www.jianshu.com/p/b72f66da679f" rel="noopener noreferrer">https://www.jianshu.com/p/b72f66da679f</a>  </p>

@@ -1,0 +1,58 @@
+<h2 id="section-1">1、强制在join中使用索引</h2>
+<h2 id="section-2">2、concat函数</h2>
+<pre><code class="language-sql">select pi.* from package_info pi force index for join(idx_branch_id)
+left join repo_branch_collection rbc on pi.version_id = rbc.target_id and rbc.target_type = ? and rbc.deleted = ? and rbc.collector = ?
+where branch_id in (select id from branch where repo_id = ?)
+and creator = ?
+and version_type = ?
+order by concat(rbc.create_time is not null,pi.create_time) desc limit ?,?
+</code></pre>
+<ul><li><p>查询中使用了 <code>FORCE INDEX FOR JOIN(idx_branch_id)</code>，这表示你正在强制MySQL使用<code>idx_branch_id</code>索引进行join操作。</p></li><li><p><code>concat()</code>函数是MySQL中用来连接两个或更多字符串的函数。在这里，它首先将<code>rbc.create_time is not null</code>的布尔结果（TRUE or FALSE）转换为字符串（’1’ 或 ‘0’），然后将它与<code>pi.create_time</code>的字符串表示形式连接起来。这种做法可能是试图在一定程度上保持<code>rbc.create_time</code>的存在性以及<code>pi.create_time</code>的顺序。</p></li></ul>
+<p>注意：此种用法可能并不是最佳用法，首先，<code>concat()</code>会将所有参数都视为字符串进行连接。这意味着时间字段（<code>create_time</code>）会被视为字符串，而非日期类型，可能会导致排序行为出现问题。其次，<code>rbc.create_time is not null</code>的结果（0 或 1）会被置于<code>pi.create_time</code>之前，可能导致排序首先依据<code>rbc.create_time</code>是否存在，然后才是<code>pi.create_time</code>。</p>
+<p>一般来说，如果你想要基于多个字段进行排序，并考虑到某些字段可能为空</p>
+<pre><code class="language-sql">ORDER BY
+  CASE
+    WHEN rbc.create_time IS NULL THEN 1
+    ELSE rbc.create_time
+  END,
+  pi.create_time DESC
+</code></pre>
+<p>这样的语句会首先考虑<code>rbc.create_time</code>是否为空，然后再根据<code>pi.create_time</code>进行排序。如果<code>rbc.create_time</code>为空，该行会被放在结果的后部分。</p>
+<h2 id="section-3">3、在group by中同时使用多个聚合函数</h2>
+<p>– 查询所有两门及两门以上不及格的人的平均成绩 name、subject、score （having by）</p>
+<pre><code class="language-sql">SELECT name,sum(score&lt;60) as num, avg(score)
+From info
+GROUP BY name
+HAVING num &gt;= 1
+</code></pre>
+<h2 id="section-4">4、group by + count + order by + limit 统计前几最</h2>
+<p>–  统计重名最多的十个城市名字</p>
+<pre><code class="language-sql">select git_url
+from http_api_doc
+GROUP BY git_url
+ORDER BY count(git_url) DESC
+limit 0,10
+</code></pre>
+<p>——统计最近的5条记录，记录存在重复的情况(group by + order by + limit)</p>
+<p>Ps:limit 是在 order by 之后</p>
+<pre><code class="language-sql">select tool_id , max(update_time) as time
+from ee_tool_hot
+where tool_user = 'xie'
+group by tool_id
+order by time desc
+limit 0, 5
+</code></pre>
+<p>5、同样一张表，自身联表查询实现group by查全部信息</p>
+<pre><code class="language-sql">SELECT oi.*
+FROM openapi_info oi
+INNER JOIN (
+    SELECT module_name, branch_name, MAX(create_time) max_create_time
+    FROM openapi_info
+    WHERE koas_module_id = 633
+    GROUP BY module_name, branch_name
+) grouped_oi ON oi.module_name = grouped_oi.module_name
+    AND oi.branch_name = grouped_oi.branch_name
+    AND oi.create_time = grouped_oi.max_create_time
+
+-- 查询group by之后，根据返回的列与自身进行连表查询，返回表的全部字段
+</code></pre>

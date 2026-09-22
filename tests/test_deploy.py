@@ -1,5 +1,10 @@
 import importlib.util
 import io
+import base64
+import json
+import os
+import subprocess
+from unittest.mock import patch
 import hashlib
 from pathlib import Path
 import tarfile
@@ -22,6 +27,27 @@ def bundle(files):
 
 
 class DeployTests(unittest.TestCase):
+    def test_compact_command_preserves_payload_and_receiver_execution(self):
+        path = Path(__file__).resolve().parents[1] / 'scripts/deploy-aliyun.py'
+        spec = importlib.util.spec_from_file_location('deployer', path)
+        deployer = importlib.util.module_from_spec(spec)
+        with patch.dict(os.environ, {'ALIYUN_INSTANCE_ID': 'test-instance'}):
+            spec.loader.exec_module(deployer)
+        payload = {'sha': 'a' * 40, 'archive_sha256': 'b' * 64, 'manifest': {
+            'assets/articles/' + str(i) + '.webp': hashlib.sha256(str(i).encode()).hexdigest()
+            for i in range(220)}}
+        # Real receiver size must fit the service's encoded command limit.
+        self.assertLess(len(deployer.deployment_command(payload)), 24 * 1024)
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / 'scripts').mkdir()
+            (root / 'scripts/deploy-receive.py').write_text(
+                'import json, sys\nif __name__ == "__main__":\n    print(json.dumps(json.loads(sys.argv[1])))\n')
+            with patch.object(deployer, 'ROOT', root):
+                encoded = deployer.deployment_command(payload)
+            result = subprocess.run(['bash'], input=base64.b64decode(encoded), capture_output=True, check=True)
+            self.assertEqual(json.loads(result.stdout), payload)
+
     def test_only_verified_public_files_are_extracted(self):
         files = {'index.html': b'homepage', 'assets/favicon.ico': b'icon'}
         manifest = {name: hashlib.sha256(body).hexdigest() for name, body in files.items()}

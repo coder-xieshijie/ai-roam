@@ -1,0 +1,18 @@
+<h2 id="section-1"><strong>1.研发平台流量录制回放平台建设历程</strong></h2>
+<p><span>〔原文配图已省略，见页首整理说明〕</span></p>
+<h2 id="section-2"><strong>2.各方案架构概要</strong></h2>
+<p>包括我司在内，业内主流的流量录制实现方式主要是以下三种</p>
+<ol><li>中间件SDK硬编码（我司）</li><li>sandbox repeater (阿里)</li><li>类tcp copy方案（字节）</li></ol>
+<h2 id="section-3"><strong>2.1 中间件sdk硬编码方案</strong></h2>
+<p>录制动作硬编码在client sdk中， 与业务服务共享同一进程。</p>
+<p><span>〔原文配图已省略，见页首整理说明〕</span></p>
+<h2 id="section-4"><strong>2.2 采用sandbox repeater 方案</strong></h2>
+<p><span>〔原文配图已省略，见页首整理说明〕</span></p>
+<h2 id="section-5"><strong>2.3 类tcp copy方案</strong></h2>
+<p>字节bytecopy</p>
+<p><span>〔原文配图已省略，见页首整理说明〕</span></p>
+<h2 id="section-6"><strong>3.录制方案之间优劣势对比</strong></h2>
+<div class="table-scroll" tabindex="0" role="region" aria-label="可横向滚动的表格"><table><thead><tr><th><strong>能力方面</strong></th><th><strong>中间件SDK  硬编码（我司当前使用）</strong></th><th><strong>sandbox repeater</strong><strong>(阿里doom)</strong></th><th><strong>自研类tcp copy的网络层捕获方案****（字节bytecopy）</strong></th><th><strong>备注</strong></th></tr></thead><tbody><tr><td><strong>基本原理</strong></td><td>基于统一的中间件sdk</td><td>基于字节码增强</td><td>旁路复制网络包</td><td></td></tr><tr><td><strong>性能影响–开启录制</strong></td><td><strong>优：</strong>取决于被录制服务流量多少以及采样率</td><td><strong>优</strong>：取决于被录制服务流量多少以及采样率</td><td><strong>差：</strong> 会出现额外性能开销，原因在于：tcp copy在网络第四层进行录制，难以识别流量属于哪个接口以及哪种协议，这样会导致该进程下的所有tcp流量都会被录制需要有小流量环境</td><td>关于传出层流量的解析：如果想要实现针对协议、接口进行录制，我们需要将流量解析到应用层，解析复杂度随着协议种类增加而增加，例如http2.0的多路复用， 就难以区分req和resp针对api进行录制同样存在解析难度进而采样也不容易实现</td></tr><tr><td><strong>性能影响–不开启录制</strong></td><td><strong>优：****有极小影响</strong>（仅一个配置判断）</td><td><strong>优：</strong>无影响</td><td><strong>优：</strong>无影响</td><td></td></tr><tr><td><strong>稳定性影响（非性能类）</strong></td><td><strong>良：****有影响，</strong> 具体如下：sdk的正常流程会执行录制代码开发过程中，流量录制逻辑与sdk本身逻辑互相耦合</td><td><strong>良：****有影响</strong>，具体如下：在开启录制的情况下，录制代码编译成字节码后会增强到sdk代码中，会在同一线程中被执行。因sdk与录制代码完全解耦，开发过程中可能存在不同步的情况。例如sdk增加了某个功能，录制代码却没有增加，导致插桩不符合预期。需要有标准小流量环境</td><td><strong>优：</strong>无影响</td><td>sandbox与sdk硬编码对于被录服务的稳定性影响各有优劣，<strong>总体看来两者差异不大，而旁路录制则优势明显</strong></td></tr><tr><td><strong>代码可控性</strong></td><td>**优:**sdk维护人与录制代码维护人为相同团队，更熟悉代码逻辑</td><td><strong>良：</strong>sdk维护人与录制代码维护人为不同团队，开发风险相对稍高例如关于配置中心 、功能开关的录制需要了解其使用场景。</td><td><strong>优：</strong>在性能符合预期的情况下，不存在代码代码可控性问题</td><td></td></tr><tr><td><strong>录制数据完整性</strong></td><td><strong>良：</strong>只能支持固定协议</td><td><strong>优：</strong>能支持所有协议且能只会任意方法</td><td><strong>差：</strong>对于没有网络请求的动作，不支持录制，例如配置中心</td><td></td></tr><tr><td><strong>录制语言支持</strong></td><td><strong>优</strong>支持我司主流语言java和c++</td><td><strong>差：</strong>只支持java</td><td><strong>优</strong>支持所有语言</td><td></td></tr><tr><td><strong>业务方接入成本</strong></td><td><strong>优：</strong>基于root pom升级，仅重新编译部署即可</td><td><strong>优：但需要解决以下前提</strong>当前公司的基础设施没有在生产环境批量部署sandbox agent的能力生产环境是否允许使用sandbox agent需要确认，之前是不允许（如果2允许，1可以推动建设）</td><td><strong>优：需要解决以下前提</strong>公司基础设施支持在生产环境指定机器范围批量部署tcpcopy-agent,</td><td>tcpcopy和sandbox需要的基础设施建设成本比较高， 可能会需要单独设计一套小流量环境， 并在公司范围内推广使用规范。</td></tr><tr><td><strong>功能迭代速度</strong>（例如支持一种新的协议）</td><td><strong>差：</strong>牵涉团队过多，且各团队OKR不一致，沟通推动成本极高</td><td><strong>优：</strong></td><td><strong>优：</strong></td><td>tcpcopy与sandbox在基础设置完善的情况下，</td></tr></tbody></table></div>
+<p>（滴滴的sharingan是基于语言标准库拦截，且不支持java和c++，因此不在考虑范围之内)</p>
+<h2 id="section-7"><strong>4.升级成本</strong></h2>
+<ol><li><strong>全部录制逻辑需要重写，</strong>包括所有中间件的录制协议</li><li><strong>基础需要设施升级</strong>，无论采用sandbox repeater 还是 tcp copy都需升级基础设施， 在当前的环境下，推动升级难度较大</li><li><strong>业务方存在迁移成本</strong>，难以做到无缝迁移，例如至少业务方需要在使用流量录制回放的机器上增加环境变量，或修改流水线。</li></ol>
