@@ -6,6 +6,7 @@ import { resolve, extname, sep } from 'node:path';
 import { renderRobotDemo } from './robot-demo.mjs';
 import { renderTrailDemo } from './trail-demo.mjs';
 import { renderSwissDemo, renderHumanDemo } from './style-demo.mjs';
+import { renderFontDemo } from './font-demo.mjs';
 
 const root = resolve(import.meta.dirname, '..');
 const site = JSON.parse(await readFile(resolve(root, 'content/site.json'), 'utf8'));
@@ -48,7 +49,7 @@ ${switcher('vine')}</body></html>`;
 const robotDemo = renderRobotDemo(site, switcher);
 const trailDemos = {scarlet: renderTrailDemo(site, switcher, 'scarlet'), sketch: renderTrailDemo(site, switcher, 'sketch')};
 
-const styleDemos = {swiss: renderSwissDemo(site, switcher), human: renderHumanDemo(site, switcher)};
+const styleDemos = {swiss: renderSwissDemo(site, switcher), human: renderHumanDemo(site, switcher), fonts: renderFontDemo()};
 
 const mime = {'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=utf-8','.css':'text/css; charset=utf-8','.png':'image/png','.jpg':'image/jpeg','.ico':'image/x-icon','.svg':'image/svg+xml','.woff2':'font/woff2'};
 createServer(async (request, response) => {
@@ -65,7 +66,7 @@ createServer(async (request, response) => {
     if (!path.startsWith(resolve(root, 'dist') + sep)) { response.writeHead(403).end(); return; }
     if (url.pathname.endsWith('/')) path = resolve(path, 'index.html');
     // Prototype assets are served from source, so CSS/JS edits only need a reload.
-    if (/\/assets\/prototype-(vine|robot|trail|switcher|style)\.(css|js)$/.test(url.pathname)) path = resolve(root, 'assets', url.pathname.split('/').pop());
+    if (/\/assets\/prototype-(vine|robot|trail|switcher|style|fonts)\.(css|js)$/.test(url.pathname)) path = resolve(root, 'assets', url.pathname.split('/').pop());
     if (url.pathname.startsWith('/assets/prototype-style/')) path = resolve(root, 'assets/prototype-style', path.split(sep).pop());
     response.writeHead(200, {'Content-Type':mime[extname(path)] || 'application/octet-stream','Cache-Control':'no-store'}).end(await readFile(path));
   } catch { response.writeHead(404).end('Not found'); }

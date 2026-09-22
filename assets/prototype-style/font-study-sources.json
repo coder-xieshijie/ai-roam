@@ -1,0 +1,14 @@
+{
+  "date": "2026-09-22",
+  "sources": {
+    "wenkai.ttf": "https://raw.githubusercontent.com/lxgw/LxgwWenKai/8bd6319350fb3ae1904c1cb1a41595ab15d21140/fonts/TTF/LXGWWenKai-Regular.ttf",
+    "plex-sans-sc.woff2": "https://raw.githubusercontent.com/IBM/plex/78cd4223d8de9fcb78cba84eadecb269c56093c5/packages/plex-sans-sc/fonts/complete/woff2/hinted/IBMPlexSansSC-Regular.woff2",
+    "plex-mono.woff2": "https://raw.githubusercontent.com/IBM/plex/78cd4223d8de9fcb78cba84eadecb269c56093c5/packages/plex-mono/fonts/complete/woff2/IBMPlexMono-Regular.woff2",
+    "WenKai-OFL.txt": "https://raw.githubusercontent.com/lxgw/LxgwWenKai/8bd6319350fb3ae1904c1cb1a41595ab15d21140/OFL.txt",
+    "Plex-Sans-SC-LICENSE.txt": "https://raw.githubusercontent.com/IBM/plex/78cd4223d8de9fcb78cba84eadecb269c56093c5/packages/plex-sans-sc/LICENSE.txt",
+    "Plex-Mono-LICENSE.txt": "https://raw.githubusercontent.com/IBM/plex/78cd4223d8de9fcb78cba84eadecb269c56093c5/packages/plex-mono/LICENSE.txt",
+    "Zhuque-LICENSE.txt": "https://raw.githubusercontent.com/TrionesType/zhuque/803217b9663d1c6e1402e91acc94e4f572713d73/LICENSE.txt"
+  },
+  "zhuque_release": "https://github.com/TrionesType/zhuque/releases/download/v0.212/ZhuqueFangsong-v0.212.zip",
+  "note": "Fonts retain upstream outlines and names. WOFF2 subsets contain the one-page specimen text; they are not desktop font distributions. Regenerate if copy changes."
+}

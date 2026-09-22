@@ -16,3 +16,9 @@ Google Fonts CSS2 sources: Inter 400–700 (Latin); Noto Sans SC and Noto Serif 
 - Phosphor Core: https://github.com/phosphor-icons/core/tree/2b75f3ad12b420c9504ef05df8d2564a28f8500e (B, regular weight).
 
 The SVG sprites retain the upstream path geometry; symbol IDs and the enclosing SVG are adapted for local use. Six icons each: arrow up-right, arrow down, arrow up, copy, code, book open. See the accompanying licenses.
+
+## Font study additions
+
+The one-page font study uses LXGW WenKai Regular, IBM Plex Sans SC Regular, IBM Plex Mono Regular, and Zhuque Fangsong Regular v0.212. All are local WOFF2 subsets of the text shown on this page; original outlines and names are preserved. The current Noto pairing remains as a fourth reference.
+
+Pinned sources and the subset scope are recorded in `font-study-sources.json`; licenses are included alongside the fonts. These are web-only subsets, not installable font distributions. Regenerate when specimen text changes. The four additional fonts total approximately 199 KiB.
