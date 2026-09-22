@@ -15,21 +15,83 @@
       "slug": "agent-lord",
       "name": "Agent Lord",
       "type": "AGENT ORCHESTRATION",
-      "summary": "在一个对话里调度、查看和继续多个编程 Agent 的任务。",
-      "detail": "保存会话与执行记录，让任务可以追踪，也可以接着做。",
+      "summary": "把多个编程 Agent 组织成可继续、可核验的开发流程。",
+      "detail": "从交叉评审、计划重写，到并行实现和任务交接，让每一步都有记录、有验收。",
       "repo": "https://github.com/coder-xieshijie/agent-lord",
-      "revision": "36de09d7f128d522f4f0a271a5616e6460e92ff6",
-      "updated": "2026-09-10"
+      "revision": "158ef899f5fa7b68702ef28b5a3e754ad0cdfbca",
+      "updated": "2026-09-22",
+      "updateNote": "Agent Lord · 补齐计划评审与并行实现工作流",
+      "workflows": [
+        {
+          "slug": "cross-review",
+          "name": "交叉评审",
+          "description": "两个独立评审者先给结论，再相互质询；分歧解决后，由新的独立会话复核。"
+        },
+        {
+          "slug": "plan-cross-review",
+          "name": "计划交叉评审",
+          "description": "对照需求与源码评审计划，交叉质询并独立检查方案；新的作者会话重写完整计划，再自查覆盖情况。"
+        },
+        {
+          "slug": "plan-to-implement",
+          "name": "计划到实现",
+          "description": "按模块和依赖并行实现，各自提交后，由一个整合者合并、验证并创建 PR/MR。流程不会自动合入。"
+        },
+        {
+          "slug": "handoff",
+          "name": "任务交接",
+          "description": "把目标、进度与证据交给新的 CLI 会话，在原工作区继续，并记录交接关系。"
+        }
+      ]
     },
     {
       "slug": "dev-skills",
       "name": "dev-skills",
       "type": "REUSABLE SKILLS",
-      "summary": "把解释与代码评审的方法，写成 Agent 可以复用的指引。",
-      "detail": "从理解一个技术概念，到判断一条 Review 建议是否成立。",
+      "summary": "把开发中反复用到的判断与方法，整理成六个可手动调用的 Skills。",
+      "detail": "从解释概念、评审方案，到收敛决策、编写计划，再到读懂代码变化。",
       "repo": "https://github.com/coder-xieshijie/dev-skills",
-      "revision": "4b46de87aa09a092c6c375e8d1487aac9692f6d8",
-      "updated": "2026-09-10"
+      "revision": "be19ce4fdfc64d948698f3b2d7cc064985b52d2b",
+      "updated": "2026-09-22",
+      "updateNote": "dev-skills · 更新六个开发 Skills 的用途与示例",
+      "catalog": [
+        {
+          "name": "explain-as-fool",
+          "title": "把概念讲清楚",
+          "description": "面向没有相关知识的读者，从基础解释技术概念，直接、准确地表达。",
+          "example": "$explain-as-fool 解释一下什么是线程池"
+        },
+        {
+          "name": "review-rules",
+          "title": "让评审有依据",
+          "description": "检查代码、设计与已有评审建议，结合需求、现有实现和失败场景判断问题与修复方案。",
+          "example": "$review-rules 复核这条评审意见，说明依据与最小必要改动"
+        },
+        {
+          "name": "design-for-review",
+          "title": "让方案可独立阅读",
+          "description": "将需求和设计材料整理成技术评审文档，讲清问题、完整流程、改动范围与关键取舍。",
+          "example": "$design-for-review 根据已确认的设计，整理一份可独立阅读的评审文档"
+        },
+        {
+          "name": "core-spec",
+          "title": "留下明确的约定",
+          "description": "讨论结束后，把已确认的决定与约束收敛到一份 spec；突出核心决定，完整保留影响实现的边界。",
+          "example": "$core-spec 将当前讨论收敛为核心决策与约束，保存到 docs/feature-spec.md"
+        },
+        {
+          "name": "plan-for-agents",
+          "title": "把决定变成计划",
+          "description": "把需求和已确认决策展开成 Agent 可独立执行的完整计划，覆盖步骤、边界、产物与验收证据。",
+          "example": "$plan-for-agents 根据已确认的 spec，编写可独立执行的完整 plan"
+        },
+        {
+          "name": "mr-for-human",
+          "title": "读懂 AI 写的代码",
+          "description": "先看 PR/MR 的核心设计和关键决定，再沿主流程下钻到执行逻辑、失败边界与具体源码。",
+          "example": "$mr-for-human 带我读懂这个 PR，给出从核心设计到源码的阅读路线"
+        }
+      ]
     }
   ],
   "articles": [
@@ -42,6 +104,18 @@
       "topic": "AGENT 开发",
       "reading": "6 分钟",
       "sourceTitle": "一文讲透 Skills 与 MCP：从源码看清两者的真正边界"
+    }
+  ],
+  "contributions": [
+    {
+      "project": "MiniMax Code",
+      "number": 280,
+      "title": "性能变慢，还是机器在波动？",
+      "summary": "为性能 CI 增加成对复测，区分真实回退、环境波动与证据不足。",
+      "detail": "保留原有性能预算。常规检查遇到持续噪声时给出警告，完整性能检查仍要求明确结果。",
+      "merged": "2026-09-21",
+      "url": "https://github.com/MiniMax-AI/minimax-code/pull/280",
+      "updateNote": "MiniMax Code · 性能 CI 改进 PR #280 合入"
     }
   ]
 }
