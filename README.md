@@ -36,7 +36,7 @@ python3 -m http.server 4173 --directory dist
 
 八个页面：首页、作品列表、Agent Lord、dev-skills、文章列表、Skills 与 MCP 正文、关于我、同步状态。内部导航使用相对链接，兼容根路径和 `/ai-roam/` 子路径。`npm run check` 验证两种挂载路径下的本地资源、页面链接、锚点及生成文件一致性。
 
-新增文章：在 `content/` 添加 Markdown，并在 `site.json` 的 `articles` 中填写 slug、标题、摘要、原发表日期、修订日期、主题、阅读时间和原题。最近更新从文章修订日期与项目介绍更新日期生成，不代表上游项目发布日期。移除文章时，也需要移除它在根目录和 `dist/` 中的旧输出。
+新增文章：在 `content/` 添加 Markdown，并在 `site.json` 的 `articles` 中填写 slug、标题、摘要、原发表日期、修订日期、主题、阅读时间和原题。最近记录从项目介绍更新、文章修订和开源贡献合入日期生成，按日期取最近三条；项目介绍更新日期不代表上游项目发布日期。开源贡献只录入已核实的公开 PR，不将尚未成稿的选题列为文章。移除文章时，也需要移除它在根目录和 `dist/` 中的旧输出。
 
 ## 自动部署到阿里云
 
@@ -67,8 +67,8 @@ python3 -m http.server 4173 --directory dist
 
 ## 内容依据
 
-- [Agent Lord README，36de09d](https://github.com/coder-xieshijie/agent-lord/blob/36de09d7f128d522f4f0a271a5616e6460e92ff6/README.md)：用途、示例、运行条件与边界。
-- [dev-skills，4b46de8](https://github.com/coder-xieshijie/dev-skills/tree/4b46de87aa09a092c6c375e8d1487aac9692f6d8)：两个公开 Skill 及调用方式。
+- [Agent Lord README，158ef89](https://github.com/coder-xieshijie/agent-lord/blob/158ef899f5fa7b68702ef28b5a3e754ad0cdfbca/README.md)：用途、示例、运行条件与边界。
+- [dev-skills，be19ce4](https://github.com/coder-xieshijie/dev-skills/tree/be19ce4fdfc64d948698f3b2d7cc064985b52d2b)：六个公开 Skill 及手动调用方式。
 - Skills 与 MCP 文章在正文中链接官方来源，保留 2026-03-10 原发表日期，本站修订于 2026-09-10。
 - 关于页仅采用本人确认可公开的经历，不包含内部项目、数据和文档。
 
@@ -85,3 +85,5 @@ python3 -m http.server 4173 --directory dist
 - [霞鹜文楷 Regular](https://github.com/lxgw/LxgwWenKai/tree/8bd6319350fb3ae1904c1cb1a41595ab15d21140)，`assets/fonts/WenKai-OFL.txt`。
 - [IBM Plex Sans SC / Mono Regular](https://github.com/IBM/plex/tree/78cd4223d8de9fcb78cba84eadecb269c56093c5)，`assets/fonts/Plex-*-LICENSE.txt`。
 - [Phosphor Core](https://github.com/phosphor-icons/core/tree/2b75f3ad12b420c9504ef05df8d2564a28f8500e)，`assets/fonts/Phosphor-LICENSE.txt`；SVG 图形保持上游路径，合并为本地 sprite。
+
+首页内容于 2026-09-22 按上述固定版本复核。Agent Lord 的计划到实现流程图取自该版本的 `assets/diagrams/plan-to-implement.svg`，本地文件为 `assets/agent-lord-plan-to-implement.svg`，未改写图中内容。开源贡献依据 [MiniMax Code PR #280](https://github.com/MiniMax-AI/minimax-code/pull/280)，合入日期为 2026-09-21。
