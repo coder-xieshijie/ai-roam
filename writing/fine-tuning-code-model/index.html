@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light"><title>微调代码补全模型三个月 · 谢世杰｜AI游民</title><meta name="description" content="从数据构造、评测体系到超参实验，还有几个不报错、却让分数暴跌的坑。"><meta property="og:type" content="article"><meta property="og:title" content="微调代码补全模型三个月 · AI Roam"><meta property="og:description" content="从数据构造、评测体系到超参实验，还有几个不报错、却让分数暴跌的坑。"><meta name="theme-color" content="#f1efea"><link rel="icon" type="image/x-icon" href="../../assets/favicon.ico"><link rel="apple-touch-icon" sizes="180x180" href="../../assets/apple-touch-icon.png"><link rel="stylesheet" href="../../assets/site.css"><script src="../../assets/site.js" defer></script></head>
+<body><a class="skip" href="#main">跳到正文</a><header class="site-header wrap"><a class="brand" href="../../">谢世杰｜AI游民<span>AI ROAM</span></a><nav class="nav" aria-label="主导航"><a href="../../projects/">作品</a><a href="../../writing/" aria-current="page">文章与实践</a><a href="../../about/">关于</a><a class="nav-github" href="https://github.com/coder-xieshijie">GitHub ↗</a></nav></header><main id="main" class="wrap"><header class="page-intro article-header"><div class="breadcrumb"><a href="../../writing/">文章与实践</a><span>/</span><span>AI 实践</span></div><p class="eyebrow">AI 实践 / NOTES</p><h1>微调代码补全模型三个月</h1><p class="lead">从数据构造、评测体系到超参实验，还有几个不报错、却让分数暴跌的坑。</p><div class="article-meta"><span>谢世杰</span><span>原发表 <time datetime="2024-04-01">2024-04-01</time></span><span>约 9 分钟</span></div></header><div class="reading-layout"><nav class="toc" aria-label="文章目录"><h2>本文目录</h2><a href="#section-1">资源准备</a><a href="#section-5">微调实践</a><a href="#section-11">实验结论</a><a href="#section-12">踩过的坑</a><a href="#section-13">难点和后续</a></nav><article class="prose" id="article-body"><p>今年 1 月到 3 月，我做了一轮代码补全大模型的微调。这篇把过程和结论整理出来：准备什么、怎么做、效果如何，以及踩过的坑。</p>
+<h2 id="section-1">资源准备</h2>
+<h3 id="section-2">模型准备</h3>
+<p>目标是选一个性能良好的预训练模型。可以先看 <a href="https://huggingface.co/spaces/bigcode/bigcode-models-leaderboard">BigCode 的代码大模型排行榜</a>，榜单把模型分成三类：外部标准评估模型、在预训练基础上做过指令微调的模型、纯预训练模型。</p>
+<p>目前主流的代码大模型主要是 StarCoder 和 CodeLlama 及它们的变体。StarCoder 系列是开源社区 BigCode 发布的代码补全大模型；CodeLlama 基于 Llama 2，又做了大量代码训练。具体选多大的模型，要结合补全场景、GPU 种类和推理性能综合考虑。</p>
+<h3 id="section-3">数据准备</h3>
+<p>主流大模型基本已经把网上能拿到的代码都训练过了，所以用开源数据再做微调，效果通常不好。要解决特定下游任务的补全，就得用自己的代码来构造数据。构造时既要参考模型原始的数据结构，也要贴合下游的补全场景，两者都要兼容。</p>
+<p>微调需要高质量的数据集，通常是由 input 和 label 组成的数据对。代码补全模型属于自回归的因果语言模型：每一个输出都基于前面所有的输出。</p>
+<ul>
+<li><strong>分类、判断类模型</strong>：input 和 label 不一致，label 需要额外标注。</li>
+<li><strong>自回归补全模型</strong>：<code>input_ids</code> 和 <code>labels</code> 通常是同一段序列。模型从 <code>[token1, token2]</code> 预测 <code>token3</code>，从 <code>[token1, token2, token3]</code> 预测 <code>token4</code>，依此类推。</li>
+</ul>
+<p>回到代码补全，就是截取代码片段，加入合适的 special token。构造好的片段既是 input，也是 label。</p>
+<h3 id="section-4">理论准备</h3>
+<p><strong>微调是拿一个预训练模型，至少训练其中一部分内部参数。</strong> 相比从头预训练，它只需要少得多的标注数据和 GPU 资源，就能在特定任务上取得更好的效果。</p>
+<p>常见的三种方式：</p>
+<ol>
+<li><strong>全参更新</strong>：训练所有参数。最简单，但计算成本最高，还有灾难性遗忘的问题，模型会“忘记”预训练阶段学到的有用信息。</li>
+<li><strong>迁移学习</strong>：保留大部分参数，替换网络的“头部”。能降低计算成本，但不一定能解决灾难性遗忘。</li>
+<li><strong>参数高效微调（PEFT）</strong>：只用少量可训练参数增强基础模型，以很小的计算和存储成本，达到和全参更新相当的效果。LoRA 是其中最流行的方法，此外还有 QLoRA、AdaLoRA、P-Tuning 等。</li>
+</ol>
+<p>全参更新和 PEFT 所需的显存差异巨大，再加上灾难性遗忘，这次我选了 LoRA。</p>
+<p>用到的框架：PyTorch、transformers、datasets、peft、accelerate，训练过程用 wandb 可视化，后期加了 DeepSpeed。</p>
+<h2 id="section-5">微调实践</h2>
+<h3 id="section-6">步骤</h3>
+<ol>
+<li>明确目标</li>
+<li>选择预训练模型</li>
+<li>选择微调方式和框架</li>
+<li>构建特定任务数据集</li>
+<li>设置合适的超参</li>
+<li>建立评价体系，评估微调后的模型</li>
+<li>重复 4、5、6 步，直到得到符合预期的模型</li>
+<li>部署上线</li>
+</ol>
+<h3 id="section-7">明确目标</h3>
+<p>我先分析了现有补全场景的数据，挑出表现最差的 26 种补全场景，作为这次针对性提升的对象。目标有两条：</p>
+<ul>
+<li><strong>泛化能力保持不变或提升；</strong></li>
+<li><strong>这些特定场景的补全能力明显提升。</strong></li>
+</ul>
+<p>基础模型选 StarCoder-15B，微调方式是 LoRA。</p>
+<h3 id="section-8">构建数据集</h3>
+<p>处理流程：</p>
+<ol>
+<li><strong>收集代码样本</strong>：收集大量 Java 代码文件。</li>
+<li><strong>预处理</strong>：<ul>
+<li>过滤掉开源依赖的代码，只保留团队自己开发的文件；</li>
+<li>挑选长度在 1500 到 2000 token 之间的文件；</li>
+<li>用 tree-sitter 分析代码，按那 26 种语法节点类型切分；</li>
+<li>给切出的代码段加上 <code>&lt;fim_prefix&gt;</code>、<code>&lt;fim_middle&gt;</code>、<code>&lt;fim_suffix&gt;</code> 这些 special token；</li>
+<li>保留仓库、文件名、节点类型等额外信息，用于训练和评估。</li>
+</ul>
+</li>
+<li><strong>构造输入输出对</strong>：从代码样本中挖掉一段作为待补全部分。</li>
+<li><strong>切分数据集</strong>：训练集用于更新权重，验证集在训练过程中用来纠偏，测试集在训练完成后评估。</li>
+<li><strong>格式化</strong>：转成 transformers 能直接读取的 JSON。</li>
+</ol>
+<h3 id="section-9">为什么推理单卡够，微调却要好几张卡</h3>
+<p>训练时显存要装下四样东西：</p>
+<ol>
+<li>模型参数；</li>
+<li>激活值，前向传播时每一层计算出的 tensor；</li>
+<li>梯度，反向传播时计算出的梯度；</li>
+<li>优化器状态，比如 Adam，微调时这一部分占大头。</li>
+</ol>
+<p>推理只需要前向传播；微调还要反向传播，保存每层的激活值和梯度，内存需求因此大幅增加。</p>
+<h3 id="section-10">建立评价体系</h3>
+<p>评估分两部分：</p>
+<ol>
+<li><strong>泛化能力</strong>：用 <a href="https://github.com/nuprl/MultiPL-E">MultiPL-E</a> 跑 HumanEval 的多语言版本。</li>
+<li><strong>特定下游任务</strong>：用自建测试集评估，对测试集的补全结果打分。</li>
+</ol>
+<p>自建评测是我自己写的脚本：按语法节点类型分别统计，补全结果和原文完全一致才记 1 分。这样能看清模型在哪一类场景最差，而不只是一个总分。</p>
+<h2 id="section-11">实验结论</h2>
+<p>几轮实验下来，得到这些结论：</p>
+<ol>
+<li>试过不同的 batch size 和 learning rate 之后，batch size 为 64、learning rate 为 5e-5 时效果最好：HumanEval-Java 从 0.298 提升到 0.312，自建测试集也有明显提升。</li>
+<li><strong>learning rate 对微调效果影响很大。</strong> 依次验证了 6e-5、5e-5、5e-4、1e-4、5e-3、1e-3，无论是 loss 曲线还是实际效果，都有显著变化。取到 1e-3、5e-3 时，模型基本崩溃。</li>
+<li>batch size 影响一般。32、64、128 三种效果差距不明显，64 略好。</li>
+<li>只针对一种语言微调，也会提升其他语言的补全效果。</li>
+<li><strong>效果较好的那组，loss 曲线反而不收敛。</strong> loss 的收敛程度和最终效果无法对应，这一点我目前还解释不了。</li>
+</ol>
+<p>换成已经做过指令微调的 WizardCoder 再练，专项分数上涨，泛化分数有所下降。全参更新时，HumanEval 直接掉到接近 0。</p>
+<p>后期用 DeepSpeed 加速训练，一轮从大约 50 小时缩短到 10 小时左右，效果基本不变，可以更快地验证想法。训练 4800 步和 700 步的效果也差不多，说明这批数据很快就学饱和了。</p>
+<h2 id="section-12">踩过的坑</h2>
+<p>很多次分数暴跌，最后查下来都是工程问题，而且都不报错：</p>
+<ul>
+<li><strong>LoRA 合并选错 base 模型。</strong> 前两个版本合并时，误选了 StarCoder 的 base 去合并 WizardCoder 的 LoRA 权重，HumanEval 评分暴跌。第三版改对之后，分数才回到正常范围。</li>
+<li><strong>EOT token 写错。</strong> 从别的脚本抄过来的结束 token 不对，生成结果末尾总多一段。</li>
+<li><strong>peft 版本不一致。</strong> 训练和合并用了不同版本，合并直接失败。</li>
+<li><strong>不同模型的 special token id 不同。</strong> SantaCoder 和 StarCoder 的特殊 token id 不一样，换模型时要重新核对。</li>
+<li><strong>评测脚本的 prompt 格式。</strong> 同一个模型，评测时加不加 FIM token，分数能差出将近一半。换用 StarCoder2 时，自建集几乎是 0 分，很可能也是格式没对上。</li>
+</ul>
+<p>最后一条提醒我：<strong>评测流程本身的写法，就可能决定分数高低。</strong> 拿分数下结论之前，先确认评测没问题。</p>
+<p>顺带纠正一个我之前理解错的概念：采样 20 次、只要有一次通过就算通过，算的是 pass@k，不是 pass@1。</p>
+<h2 id="section-13">难点和后续</h2>
+<p>难点有三个：</p>
+<ol>
+<li><strong>充足的 GPU 资源；</strong></li>
+<li><strong>数据构造</strong>，高质量的数据对微调影响非常大；</li>
+<li><strong>超参的种类多且杂。</strong></li>
+</ol>
+<p>后续计划：</p>
+<ol>
+<li>尝试更好的模型，比如 StarCoder2、CodeLlama；</li>
+<li>尝试更多超参组合；</li>
+<li>跨文件代码片段的微调；</li>
+<li>推理优化，量化和蒸馏；</li>
+<li>验证微调模型能否复现效果，再上线做 AB 测试，看它对采纳率的实际影响。</li>
+</ol>
+</article></div><nav class="article-pagination" aria-label="前后篇文章"><a href="../ai-code-review-precision/"><span>上一篇</span><strong>AI Code Review：宁可少报，不要乱报</strong></a><a href="../self-hosting-code-completion/"><span>下一篇</span><strong>一个 Java 后端，从零部署代码补全模型</strong></a></nav><div class="related"><a class="text-link" href="../../writing/">返回全部文章<span aria-hidden="true">↗</span></a><a class="text-link" href="../../">回到首页<span aria-hidden="true">↗</span></a></div></main><footer class="site-footer"><div class="wrap"><div class="footer-main"><div><h2>继续探索。</h2><p>探索 AI，也探索工作与成长的新可能。</p></div><div><div class="footer-links"><a class="text-link" href="https://github.com/coder-xieshijie">GitHub<span aria-hidden="true">↗</span></a><button class="copy-button" type="button" data-copy="AI游民谢世杰">公众号 · AI游民谢世杰 <span aria-hidden="true">⧉</span></button></div><span id="copy-status" class="copy-status" role="status" aria-live="polite"></span></div></div><div class="footer-meta"><span>© 2026 谢世杰 · AI ROAM</span><span class="filing"><a href="https://beian.miit.gov.cn/">鲁ICP备2026052690号-1</a></span><a href="../../sync-status/">同步状态</a><a href="../../about/">个人作品与实践 · 个人观点</a></div></div></footer></body></html>

@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light"><title>一个 Java 后端，从零部署代码补全模型 · 谢世杰｜AI游民</title><meta name="description" content="先跑通，再压测，再调 prompt：启动参数、卡数与并发、显存参数和 FIM 格式的实测。"><meta property="og:type" content="article"><meta property="og:title" content="一个 Java 后端，从零部署代码补全模型 · AI Roam"><meta property="og:description" content="先跑通，再压测，再调 prompt：启动参数、卡数与并发、显存参数和 FIM 格式的实测。"><meta name="theme-color" content="#f1efea"><link rel="icon" type="image/x-icon" href="../../assets/favicon.ico"><link rel="apple-touch-icon" sizes="180x180" href="../../assets/apple-touch-icon.png"><link rel="stylesheet" href="../../assets/site.css"><script src="../../assets/site.js" defer></script></head>
+<body><a class="skip" href="#main">跳到正文</a><header class="site-header wrap"><a class="brand" href="../../">谢世杰｜AI游民<span>AI ROAM</span></a><nav class="nav" aria-label="主导航"><a href="../../projects/">作品</a><a href="../../writing/" aria-current="page">文章与实践</a><a href="../../about/">关于</a><a class="nav-github" href="https://github.com/coder-xieshijie">GitHub ↗</a></nav></header><main id="main" class="wrap"><header class="page-intro article-header"><div class="breadcrumb"><a href="../../writing/">文章与实践</a><span>/</span><span>AI 实践</span></div><p class="eyebrow">AI 实践 / NOTES</p><h1>一个 Java 后端，从零部署代码补全模型</h1><p class="lead">先跑通，再压测，再调 prompt：启动参数、卡数与并发、显存参数和 FIM 格式的实测。</p><div class="article-meta"><span>谢世杰</span><span>原发表 <time datetime="2024-03-25">2024-03-25</time></span><span>约 9 分钟</span></div></header><div class="reading-layout"><nav class="toc" aria-label="文章目录"><h2>本文目录</h2><a href="#section-1">最开始的待办清单</a><a href="#section-2">目标：单次补全 1 秒以内</a><a href="#section-3">启动参数：哪些有用，哪些没用</a><a href="#section-4">压测：卡数和并发</a><a href="#section-5">显存参数：并发上限从 30 提到 85</a><a href="#section-6">Prompt：选模型，也选写法</a><a href="#section-7">StarCoder2：新模型的兼容问题</a><a href="#section-8">这半年的感受</a></nav><article class="prose" id="article-body"><p>去年 9 月，我从 Java 后端转去做代码智能。第一件事，是把一个开源代码大模型部署起来，给补全插件用。这篇记录这半年从零开始的过程：先跑通，再压测，再调 prompt。</p>
+<h2 id="section-1">最开始的待办清单</h2>
+<p>刚接手时，我对大模型部署几乎一无所知，列的待办是这样的：</p>
+<ol>
+<li>如何部署模型</li>
+<li>指定 CPU 和 GPU</li>
+<li>把模型放到 Docker 上部署</li>
+<li>通过 API 请求模型</li>
+<li>现有模型的交互方式</li>
+<li>水平扩展模型的性能</li>
+<li>如何通过硬件扩展当前模型的性能</li>
+</ol>
+<p>入门阶段读过、试过的东西：</p>
+<ul>
+<li>ChatGLM-6B 和 CodeGeeX2，了解国内开源模型的情况；</li>
+<li>一篇把 Falcon-180B 所需显存从 360G 压到 100G 左右的文章，顺带认识了 accelerate；</li>
+<li>用 Docker 跑 Hugging Face 模型，搭 GPU 版的 Docker 环境；</li>
+<li>阿里云当时有免费算力活动，我在上面试着部署过；</li>
+<li>模型下载经常被网络卡住，试过镜像站，也试过 huggingface_hub 加 token 下载；</li>
+<li>OpenLLM，以及 Hugging Face 的 Model Memory Calculator，用来估算一个模型需要多少显存。</li>
+</ul>
+<h2 id="section-2">目标：单次补全 1 秒以内</h2>
+<p>正式的目标分三步：</p>
+<ol>
+<li><strong>运行模型并访问成功</strong>：拿到测试服务器权限、下载模型、尝试不同的启动器、运行 StarCoder、通过 HTTP 远程调用拿到 response，最后构建 Docker 镜像，测试完可以直接部署。</li>
+<li><strong>搭建 Python 服务并运行</strong>，熟悉相关实现。</li>
+<li><strong>优化</strong>：<ul>
+<li>通过各种手段，把单次补全时间降到 1 秒以内；</li>
+<li>引入压测，先并发执行 curl 请求，记录每次耗时；</li>
+<li>调整不同参数做性能优化；</li>
+<li>跨文件提示：获取工程内容，根据其他文件的内容做提示。</li>
+</ul>
+</li>
+</ol>
+<p>启动器最后选了 Hugging Face 的 text-generation-inference（TGI）。</p>
+<h2 id="section-3">启动参数：哪些有用，哪些没用</h2>
+<p><strong>量化没有降低延迟。</strong> 单卡上试了非量化、<code>bitsandbytes-nf4</code>、<code>eetq</code>、<code>gptq</code> 四种，单次请求耗时基本没有变化。</p>
+<p><strong>双 shard 做到了 1 秒以内。</strong> 用两张卡做张量并行，单次补全压到了 1 秒以内。作为对比，直接用 transformers 加载 StarCoder 推理，平均要 2.4 秒左右。</p>
+<p><strong>请求参数里，只有 <code>max_new_tokens</code> 真正影响速度。</strong> 我逐个试过：</p>
+<ol>
+<li>减少 <code>max_new_tokens</code>：控制每次生成的最大 token 数，输出变短，响应变快；</li>
+<li>调整 <code>top_k</code>、<code>top_p</code>：和采样有关，理论上可能减少计算；</li>
+<li>调整 <code>temperature</code>；</li>
+<li>关掉 <code>details</code>、<code>decoder_input_details</code>、<code>return_full_text</code> 这些不需要的返回；</li>
+<li>固定 <code>seed</code>，这不改变速度，但能让结果更确定。</li>
+</ol>
+<p>除了 <code>max_new_tokens</code>，其他参数对生成速度的影响都可以忽略。所以最直接可行的方案就是：少生成 token。</p>
+<h2 id="section-4">压测：卡数和并发</h2>
+<p>之后我在两种显卡上做了系统的压测。主要看两个指标：每个 token 的平均生成时间（time-per-token），以及首 token 耗时（prefill latency）。</p>
+<p><strong>token 平均生成速度：</strong></p>
+<ul>
+<li>单卡 A800，1 batch，21ms/token；10 batch，24ms/token</li>
+<li>双卡 A800，1 batch，17ms/token；10 batch，20ms/token</li>
+<li>双卡 A100，1 batch，20ms/token；10 batch，30ms/token</li>
+<li>4 卡 A100，1 batch，21ms/token；10 batch，35ms/token</li>
+</ul>
+<p><strong>首 token：</strong> 双 shard 的 A800 在 30 到 50ms，双 shard 的 A100 在 70 到 100ms。</p>
+<p>结论有三条：</p>
+<ol>
+<li><strong>卡数不是越多越好。</strong> 4 卡、8 卡都没有比 2 卡更快，并发下反而更慢。</li>
+<li><strong>并发度维持在 20 以下比较合适。</strong> 从吞吐量看，batch 从 1 到 16，吞吐基本线性增长，平均每个 token 的生成时间只从 22ms 变成 25ms；batch 从 16 到 32，吞吐只从 600 多涨到 800 多，已经是亚线性。</li>
+<li><strong>并发提升时，请求耗时有一个爬坡过程。</strong> 刚开始 token 生成还比较快，后面会逐渐变慢。</li>
+</ol>
+<p>同样配置的 A800 和 A100 性能差异，我猜测和 CUDA 版本有关：一台是 11.4，另一台是 12.2。这一点还没来得及验证。</p>
+<p>还有一个没想通的现象：4 shard 时，1024 token 的输入反而比 10 token 的输入生成得更快。不同 shard 数下，也许存在一个让生成最快的输入长度，这个还待验证。</p>
+<h2 id="section-5">显存参数：并发上限从 30 提到 85</h2>
+<p>默认参数下，4k 上下文、batch 到 30 左右就会 OOM，报错出现在 Prefill 阶段。调整了三个参数：</p>
+<ul>
+<li><code>--cuda-memory-fraction 0.8</code></li>
+<li><code>--max-total-tokens 18192</code></li>
+<li><code>--max-batch-prefill-tokens 18000</code></li>
+</ul>
+<p>调整后，并发上限提高到 85 到 90 才出现 OOM，而且 batch 从 1 到 32 的 benchmark 中，性能没有明显下降，prefill 甚至略有提升。</p>
+<h2 id="section-6">Prompt：选模型，也选写法</h2>
+<p>我对比了 StarCoder 和 OctoCoder。OctoCoder 的底座是 StarCoder，在此基础上又做了指令微调。两者性能基本相同，在 batch 为 1、8、16、32 时，每个 token 都在 18 到 22ms 之间。最后选了 OctoCoder。</p>
+<p>验证方法很简单：<strong>同一个 prompt 执行 100 次，统计返回结果有几种。</strong></p>
+<ul>
+<li><strong>带 FIM token 时</strong>，StarCoder 返回 43 种不同的补全，而且无法保证只补全单个函数；OctoCoder 只返回 5 种，全部是单函数补全，其中 95 次和 Copilot 的补全形式一致，只差在变量名上。</li>
+<li><strong>不带 FIM token、直接用 Copilot 风格的 prompt 时</strong>，OctoCoder 有一半场景像是触发了对话模式：补全代码之后，紧跟着出现一个 <code>Answer</code>。</li>
+</ul>
+<p><strong><code>temperature=0.01</code> 能保证幂等。</strong> 0.1 时有 13 种结果；0.01 时只有 2 种，而且比例是 99:1，基本可以认为只会出现一种。</p>
+<p><strong>token 的位置很关键。</strong> 把跨文件的参考代码放在 FIM token 中间，补全效果非常好：正确识别了要补全的方法，参数正确，而且只补全一个函数。</p>
+<h2 id="section-7">StarCoder2：新模型的兼容问题</h2>
+<p>StarCoder2 上个月底刚发布，用了新的架构，很多推理框架都需要额外兼容，部署对版本要求非常严格。</p>
+<ul>
+<li>vLLM 版本不低于 0.3.3 时，可以正常部署；</li>
+<li>最新版 TGI 一开始部署失败，只能跟着 GitHub 上的 issue 等修复；3 月 25 日换了新的基础镜像、手动安装 TGI 后，部署成功；</li>
+<li>StarCoder2 新增了 <code>&lt;file_sep&gt;</code> 这个 special token，可以作为停止条件；</li>
+<li>初步看，StarCoder2-15B 的 FIM 能力比 StarCoder-15B 要差。</li>
+</ul>
+<h2 id="section-8">这半年的感受</h2>
+<p>作为后端开发，我的路径是：先跑通，再压测，再调 prompt，最后才回头补理论。压测、容量评估、定位报错，这些后端的老本行在这里都用得上。</p>
+<p>从今年 1 月开始，我也在同步做微调：用自己的代码数据，让模型在补全最差的那些场景上变好。那部分的结论整理好后单独写。</p>
+</article></div><nav class="article-pagination" aria-label="前后篇文章"><a href="../fine-tuning-code-model/"><span>上一篇</span><strong>微调代码补全模型三个月</strong></a><a href="../elasticsearch-concepts/"><span>下一篇</span><strong>elasticsearch 概念介绍</strong></a></nav><div class="related"><a class="text-link" href="../../writing/">返回全部文章<span aria-hidden="true">↗</span></a><a class="text-link" href="../../">回到首页<span aria-hidden="true">↗</span></a></div></main><footer class="site-footer"><div class="wrap"><div class="footer-main"><div><h2>继续探索。</h2><p>探索 AI，也探索工作与成长的新可能。</p></div><div><div class="footer-links"><a class="text-link" href="https://github.com/coder-xieshijie">GitHub<span aria-hidden="true">↗</span></a><button class="copy-button" type="button" data-copy="AI游民谢世杰">公众号 · AI游民谢世杰 <span aria-hidden="true">⧉</span></button></div><span id="copy-status" class="copy-status" role="status" aria-live="polite"></span></div></div><div class="footer-meta"><span>© 2026 谢世杰 · AI ROAM</span><span class="filing"><a href="https://beian.miit.gov.cn/">鲁ICP备2026052690号-1</a></span><a href="../../sync-status/">同步状态</a><a href="../../about/">个人作品与实践 · 个人观点</a></div></div></footer></body></html>

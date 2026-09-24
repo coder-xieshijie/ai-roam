@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light"><title>搭了一年代码 RAG 之后 · 谢世杰｜AI游民</title><meta name="description" content="补全和 CR 里的两套召回，遇到的问题，以及模型能自己查代码以后的疑问。"><meta property="og:type" content="article"><meta property="og:title" content="搭了一年代码 RAG 之后 · AI Roam"><meta property="og:description" content="补全和 CR 里的两套召回，遇到的问题，以及模型能自己查代码以后的疑问。"><meta name="theme-color" content="#f1efea"><link rel="icon" type="image/x-icon" href="../../assets/favicon.ico"><link rel="apple-touch-icon" sizes="180x180" href="../../assets/apple-touch-icon.png"><link rel="stylesheet" href="../../assets/site.css"><script src="../../assets/site.js" defer></script></head>
+<body><a class="skip" href="#main">跳到正文</a><header class="site-header wrap"><a class="brand" href="../../">谢世杰｜AI游民<span>AI ROAM</span></a><nav class="nav" aria-label="主导航"><a href="../../projects/">作品</a><a href="../../writing/" aria-current="page">文章与实践</a><a href="../../about/">关于</a><a class="nav-github" href="https://github.com/coder-xieshijie">GitHub ↗</a></nav></header><main id="main" class="wrap"><header class="page-intro article-header"><div class="breadcrumb"><a href="../../writing/">文章与实践</a><span>/</span><span>AI 实践</span></div><p class="eyebrow">AI 实践 / NOTES</p><h1>搭了一年代码 RAG 之后</h1><p class="lead">补全和 CR 里的两套召回，遇到的问题，以及模型能自己查代码以后的疑问。</p><div class="article-meta"><span>谢世杰</span><span>原发表 <time datetime="2025-04-15">2025-04-15</time></span><span>约 6 分钟</span></div></header><div class="reading-layout"><nav class="toc" aria-label="文章目录"><h2>本文目录</h2><a href="#section-1">代码补全里的 RAG</a><a href="#section-2">智能 CR 里的 RAG</a><a href="#section-3">遇到的问题</a><a href="#section-4">为什么当初需要这么复杂的流程</a><a href="#section-5">现在的疑问</a></nav><article class="prose" id="article-body"><p>过去一年多，我在两个场景里搭过代码 RAG：代码补全，以及智能 Code Review。最近我开始重新思考它，这篇把当时的做法和现在的疑问一起记下来。</p>
+<h2 id="section-1">代码补全里的 RAG</h2>
+<p>补全分为两部分：</p>
+<ol>
+<li><strong>离线构造</strong>：用 AST 切分代码段，做向量化，同时建 BM25 关键词索引。</li>
+<li><strong>在线推理</strong>：粗排、精排、rerank，然后构造 prompt、生成。</li>
+</ol>
+<p>补全的召回以仓库内为主。我们主要取光标所在位置的前缀、后缀，以及所在函数的完整签名，用这个签名去召回相似代码片段；再加上最近打开的文件，一起放进 prompt。</p>
+<p>AST 解析用 tree-sitter，关注几类节点：常量、函数和方法、import、类。</p>
+<p>检索用向量加关键词：</p>
+<ul>
+<li><strong>稠密向量</strong>：由向量模型生成，负责语义搜索；</li>
+<li><strong>稀疏向量</strong>：BM25 关键词切分召回，适合搜错误码这类精确内容；</li>
+<li>召回之后做粗排和精排，再用 rerank 模型重排。</li>
+</ul>
+<p>当时参考的主流插件做法：GitHub Copilot 的上下文大约 2000 token，用 Jaccard 算法找相似代码，用 LSP 服务获取函数和签名信息；通义灵码走向量数据库召回，有本地向量化和远端向量化两种方式。</p>
+<h2 id="section-2">智能 CR 里的 RAG</h2>
+<p>智能 CR 的 RAG，召回的是案例。</p>
+<p>离线建库时，针对收集到的 case 做知识获取和向量化。每个代码片段会生成五种知识：function、structure、concept、hierarchy、high_keyword。知识由开源大模型生成，向量化用 bge 和 jina 两个模型，case 分别存入关系数据库和向量数据库。</p>
+<p>检索时，CR 工具传入代码片段，RAG 系统按规则生成多种知识，把代码向量化后到向量库里按相似度召回；召回的 case 带着代码和五种知识，再交给模型打分，按分数排序后返回得分高的 case。</p>
+<p>召回的 case 放进 review prompt 的示例部分，通过 case 上的高价值、低价值标签，帮模型判断哪些问题该报、哪些不该报。</p>
+<p>所以两者的异同是：</p>
+<ul>
+<li><strong>相同</strong>：都是向量加关键词。</li>
+<li><strong>不同</strong>：一个召回 case，一个召回纯代码；CR 是离线的，补全是近实时的。</li>
+</ul>
+<p>另外，不是所有问题都该交给 RAG：RAG 解决 case，prompt 保留通用或特定的规则，仍然解决不了的，可能要引入 SFT。</p>
+<h2 id="section-3">遇到的问题</h2>
+<p><strong>第一，case 库的增长无法收敛。</strong> 没有控制手段的话，库会一直增长。后来想到用相似度控制，超过一定相似度就不再存入，但这也有问题：阈值怎么定都有取舍。</p>
+<p><strong>第二，召回会带来大量噪音。</strong></p>
+<p><strong>第三，召回链路太长。</strong> 现在的策略是用 RAG 召回代码和 issue 放进 prompt，经过大模型识别之后，有效性会进一步下降。如果把 RAG 后置，直接用它对生成的 issue 做过滤，效果可能会更立竿见影。</p>
+<p><strong>第四，相关度提升没有带来采纳率提升。</strong> 这是最近这段时间最大的教训：RAG 召回的相关度提高了，但并没有线性转化成更高的采纳率。我优化的是一个中间指标。</p>
+<h2 id="section-4">为什么当初需要这么复杂的流程</h2>
+<p>又是 RAG 召回，又是粗排、精排、rerank，还要做 Fill-in-the-Middle 等各种 prompt 组合策略。为什么需要这么复杂？</p>
+<p>我的回答是：在发展初期，模型能力不够。这个“不够”指两件事：</p>
+<ol>
+<li>窗口比较小；</li>
+<li>场景本身是“用一段代码生成另一段代码”。代码不是用户直接表达的意图，只能从上下文去推断，而推断必然有失真。我们做的这些，都是在尽量弥补这部分失真。</li>
+</ol>
+<h2 id="section-5">现在的疑问</h2>
+<p>而在 Agent 式的编程工具里，用户是直接说出意图的，意图足够明确。拿着这个意图去搜索相关代码，再加上窗口从当时的 8K 涨到了 200K，还能多轮压缩，上下文多了，也更清晰了；模型甚至会通过多轮交互进一步澄清用户的诉求。</p>
+<p>那么，也许就不需要预先做整套召回，而是让模型以 Agent 的方式自己去理解。</p>
+<p>这就引出我现在最想弄清的问题：<strong>相较于向量召回，Claude Code 这类工具用什么方式找代码？</strong> 为什么它们逐渐回到了最朴素的 grep、glob？效果为什么反而会比向量召回好，或者说，为什么不用向量召回？</p>
+<p>我还没有完整的答案，接下来要去读它的实现，看它的探索过程都用了哪些工具。目前能想到的几点：代码里有大量精确的名字，精确搜索比语义相似更可靠；搜的是当前文件，不存在索引滞后；模型看到第一轮结果后，可以决定下一轮查什么，这是一次性召回做不到的。</p>
+<p>另一个已经确定的教训是：<strong>搭完系统只是起点，持续追踪效果闭环才是核心。</strong> 开发是为了达成效果，不是为了开发而开发。之后再做任何改动，我会先建好可观测，让每一步都有数据验证。</p>
+</article></div><nav class="article-pagination" aria-label="前后篇文章"><a href="../lint-rules-for-agents/"><span>上一篇</span><strong>Agent 每犯一类错，就多一条 lint 规则</strong></a><a href="../ai-code-review-precision/"><span>下一篇</span><strong>AI Code Review：宁可少报，不要乱报</strong></a></nav><div class="related"><a class="text-link" href="../../writing/">返回全部文章<span aria-hidden="true">↗</span></a><a class="text-link" href="../../">回到首页<span aria-hidden="true">↗</span></a></div></main><footer class="site-footer"><div class="wrap"><div class="footer-main"><div><h2>继续探索。</h2><p>探索 AI，也探索工作与成长的新可能。</p></div><div><div class="footer-links"><a class="text-link" href="https://github.com/coder-xieshijie">GitHub<span aria-hidden="true">↗</span></a><button class="copy-button" type="button" data-copy="AI游民谢世杰">公众号 · AI游民谢世杰 <span aria-hidden="true">⧉</span></button></div><span id="copy-status" class="copy-status" role="status" aria-live="polite"></span></div></div><div class="footer-meta"><span>© 2026 谢世杰 · AI ROAM</span><span class="filing"><a href="https://beian.miit.gov.cn/">鲁ICP备2026052690号-1</a></span><a href="../../sync-status/">同步状态</a><a href="../../about/">个人作品与实践 · 个人观点</a></div></div></footer></body></html>
