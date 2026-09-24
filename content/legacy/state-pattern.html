@@ -1,15 +1,15 @@
 <h2 id="section-1">状态模式</h2>
 <h2 id="section-2">意图</h2>
 <p><strong>状态模式</strong>是一种行为设计模式， 让你能在一个对象的内部状态变化时改变其行为， 使其看上去就像改变了自身所属的类一样。</p>
-<p><img src="../../assets/articles/a3db470fee9bce69.webp" alt="状态设计模式" loading="lazy" decoding="async"></p>
+<p><img src="https://coder-xieshijie-img-1253784930.cos.ap-beijing.myqcloud.com/1687838996-1f5dace4bd23e47fe095a52e31d11525.png" alt="状态设计模式" loading="lazy" decoding="async"></p>
 <h2 id="section-3">问题</h2>
 <p>状态模式与<strong>有限状态机</strong> 的概念紧密相关。</p>
-<p><img src="../../assets/articles/8ceb372c2b084616.webp" alt="有限状态机" loading="lazy" decoding="async"></p>
+<p><img src="https://coder-xieshijie-img-1253784930.cos.ap-beijing.myqcloud.com/1687838996-a0105417ed6e6c8b61b838cb97e7b9cd.png" alt="有限状态机" loading="lazy" decoding="async"></p>
 <p>有限状态机。</p>
 <p>其主要思想是程序在任意时刻仅可处于几种_有限_的_状态_中。 在任何一个特定状态中， 程序的行为都不相同， 且可瞬间从一个状态切换到另一个状态。 不过， 根据当前状态， 程序可能会切换到另外一种状态， 也可能会保持当前状态不变。 这些数量有限且预先定义的状态切换规则被称为_转移_。</p>
 <p>你还可将该方法应用在对象上。 假如你有一个 <code>文档</code>Document类。 文档可能会处于 <code>草稿</code>Draft 、  <code>审阅中</code>Moderation和 <code>已发布</code>Published三种状态中的一种。 文档的 <code>publish</code>发布方法在不同状态下的行为略有不同：</p>
 <ul><li>处于 <code>草稿</code>状态时， 它会将文档转移到审阅中状态。</li><li>处于 <code>审阅中</code>状态时， 如果当前用户是管理员， 它会公开发布文档。</li><li>处于 <code>已发布</code>状态时， 它不会进行任何操作。</li></ul>
-<p><img src="../../assets/articles/ff161176f1f306fa.webp" alt="文档对象的全部状态" loading="lazy" decoding="async"></p>
+<p><img src="https://coder-xieshijie-img-1253784930.cos.ap-beijing.myqcloud.com/1687838996-ff8c9b7256e3e66ea3930d214b902c33.png" alt="文档对象的全部状态" loading="lazy" decoding="async"></p>
 <p>文档对象的全部状态和转移。</p>
 <p>状态机通常由众多条件运算符 （ <code>if</code>或 <code>switch</code> ） 实现， 可根据对象的当前状态选择相应的行为。  “状态” 通常只是对象中的一组成员变量值。 即使你之前从未听说过有限状态机， 你也很可能已经实现过状态模式。 下面的代码应该能帮助你回忆起来。</p>
 <pre><code class="language-plaintext">class Document is
@@ -34,7 +34,7 @@
 <h2 id="section-4">解决方案</h2>
 <p>状态模式建议为对象的所有可能状态新建一个类， 然后将所有状态的对应行为抽取到这些类中。</p>
 <p>原始对象被称为_上下文_ （context）， 它并不会自行实现所有行为， 而是会保存一个指向表示当前状态的状态对象的引用， 且将所有与状态相关的工作委派给该对象。</p>
-<p><img src="../../assets/articles/6aafeb41fc804801.webp" alt="文档将工作委派给一个状态对象" loading="lazy" decoding="async"></p>
+<p><img src="https://coder-xieshijie-img-1253784930.cos.ap-beijing.myqcloud.com/1687838996-8d0a63ca2ae550c20c0a31a4f2404123.png" alt="文档将工作委派给一个状态对象" loading="lazy" decoding="async"></p>
 <p>文档将工作委派给一个状态对象。</p>
 <p>如需将上下文转换为另外一种状态， 则需将当前活动的状态对象替换为另外一个代表新状态的对象。 采用这种方式是有前提的： 所有状态类都必须遵循同样的接口， 而且上下文必须仅通过接口与这些对象进行交互。</p>
 <p>这个结构可能看上去与<a href="https://refactoringguru.cn/design-patterns/strategy" rel="noopener noreferrer">策略</a>模式相似， 但有一个关键性的不同——在状态模式中， 特定状态知道其他所有状态的存在， 且能触发从一个状态到另一个状态的转换； 策略则几乎完全不知道其他策略的存在。</p>
@@ -42,11 +42,11 @@
 <p>智能手机的按键和开关会根据设备当前状态完成不同行为：</p>
 <ul><li>当手机处于解锁状态时， 按下按键将执行各种功能。</li><li>当手机处于锁定状态时， 按下任何按键都将解锁屏幕。</li><li>当手机电量不足时， 按下任何按键都将显示充电页面。</li></ul>
 <h2 id="section-6">状态模式结构</h2>
-<p><img src="../../assets/articles/cd50caaff5db5603.webp" alt="状态设计模式的结构" loading="lazy" decoding="async"></p>
+<p><img src="https://coder-xieshijie-img-1253784930.cos.ap-beijing.myqcloud.com/1687838996-bbd4143421b2d03c517a477ed08dbb3d.png" alt="状态设计模式的结构" loading="lazy" decoding="async"></p>
 <ol><li><p><strong>上下文</strong> （Context） 保存了对于一个具体状态对象的引用， 并会将所有与该状态相关的工作委派给它。 上下文通过状态接口与状态对象交互， 且会提供一个设置器用于传递新的状态对象。</p></li><li><p><strong>状态</strong> （State） 接口会声明特定于状态的方法。 这些方法应能被其他所有具体状态所理解， 因为你不希望某些状态所拥有的方法永远不会被调用。</p></li><li><p><strong>具体状态</strong> （Concrete States） 会自行实现特定于状态的方法。 为了避免多个状态中包含相似代码， 你可以提供一个封装有部分通用行为的中间抽象类。</p><p>状态对象可存储对于上下文对象的反向引用。 状态可以通过该引用从上下文处获取所需信息， 并且能触发状态转移。</p></li><li><p>上下文和具体状态都可以设置上下文的下个状态， 并可通过替换连接到上下文的状态对象来完成实际的状态转换。</p></li></ol>
 <h2 id="section-7">伪代码</h2>
 <p>在本例中， <strong>状态</strong>模式将根据当前回放状态， 让媒体播放器中的相同控件完成不同的行为。</p>
-<p><img src="../../assets/articles/c965c79859f74bdf.webp" alt="状态模式示例的结构" loading="lazy" decoding="async"></p>
+<p><img src="https://coder-xieshijie-img-1253784930.cos.ap-beijing.myqcloud.com/1687838996-6ec77b761096bed25ee61bccb472b268.png" alt="状态模式示例的结构" loading="lazy" decoding="async"></p>
 <p>使用状态对象更改对象行为的示例。</p>
 <p>播放器的主要对象总是会连接到一个负责播放器绝大部分工作的状态对象中。 部分操作会更换播放器当前的状态对象， 以此改变播放器对于用户互动所作出的反应。</p>
 <pre><code class="language-plaintext">// 音频播放器（Audio­Player）类即为上下文。它还会维护指向状态类实例的引用，

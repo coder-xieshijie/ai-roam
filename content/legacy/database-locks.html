@@ -1,12 +1,12 @@
 <h2 id="section-1">数据库锁</h2>
 <h2 id="section-2">前言</h2>
-<p><img src="../../assets/articles/92e204817ea12a24.webp" alt="图片" loading="lazy" decoding="async"></p>
+<p><img src="https://coder-xieshijie-img-1253784930.cos.ap-beijing.myqcloud.com/1686046776-32492148fccd82b903b680ef3732e749.png" alt="图片" loading="lazy" decoding="async"></p>
 <h2 id="section-3">1. 为什么需要加锁</h2>
 <blockquote><p>在日常生活中，如果你心情不好想静静，不想被比别人打扰，你就可以把自己关进房间里，并且反锁。这就是生活中的<strong>加锁</strong>。</p></blockquote>
 <p>同理，对于MySQL数据库来说的话，一般的对象都是一个事务一个事务来说的。所以，如果一个事务内，一个SQL正在更新某条记录，我们肯定不想它被别的事务影响到嘛？因此，数据库设计大叔，给该行数据加上锁(行锁)。</p>
 <blockquote><p>专业一点的说法: 如果有多个并发请求存取数据，在数据就可能会产生多个事务同时操作同一行数据。如果并发操作不加控制，不加锁的话，就可能写入了不正确的数据，或者导致读取了不正确的数据，破坏了数据的一致性。因此需要考虑加锁。</p></blockquote>
 <h2 id="section-4">2. InnoDB有哪些锁？</h2>
-<p><img src="../../assets/articles/65f6790c56a843c0.webp" alt="图片" loading="lazy" decoding="async"></p>
+<p><img src="https://coder-xieshijie-img-1253784930.cos.ap-beijing.myqcloud.com/1686046776-058986c18b10e8bdfd629401a5110246.png" alt="图片" loading="lazy" decoding="async"></p>
 <h3 id="section-5">2.1 共享/排他锁</h3>
 <p>InnoDB呢实现了两种标准的<strong>行级锁</strong>：共享锁（简称S锁）、排他锁（简称X锁）。</p>
 <ul><li><p>共享锁：简称为S锁，在事务要读取一条记录时，需要先获取该记录的S锁。</p></li><li><p>排他锁：简称X锁，在事务需要改动一条记录时，需要先获取该记录的X锁。</p></li></ul>
@@ -14,7 +14,7 @@
 <ul><li><p>T2 请求<code>S</code>锁立即被允许，结果<code>T1和T2</code>都持有R行的<code>S</code>锁</p></li><li><p>T2 请求<code>X</code>锁不能被立即允许,此操作会阻塞</p></li></ul>
 <p>如果<code>T1</code>持有行R的<code>X</code>锁，那么<code>T2</code>请求R的<code>X、S</code>锁都不能被立即允许，<code>T2</code>必须等待<code>T1</code>释放<code>X</code>锁才可以，因为<code>X</code>锁与任何的锁都不兼容。</p>
 <p>S锁和X锁的兼容关系如下图表格：</p>
-<p><img src="../../assets/articles/2412db8f08c657f3.webp" alt="图片" loading="lazy" decoding="async"></p>
+<p><img src="https://coder-xieshijie-img-1253784930.cos.ap-beijing.myqcloud.com/1686046776-c07ede16b6be0f0f50fa643cc65b319f.png" alt="图片" loading="lazy" decoding="async"></p>
 <p><code>X</code>锁和<code>S</code>锁是对于行记录来说的话，因此可以称它们为行级锁或者行锁。我们认为行锁的粒度就比较细，其实一个事务也可以在表级别下加锁，对应的，我们称之为表锁。给表加的锁，也是可以分为<code>X</code>锁和<code>S</code>锁的哈。</p>
 <p>如果一个事务给表已经加了<code>S</code>锁，则：</p>
 <ul><li><p>别的事务可以继续获得该表的<code>S</code>锁，也可以获得该表中某些记录的<code>S</code>锁。</p></li><li><p>别的事务不可以继续获得该表的<code>X</code>锁，也不可以获得该表中某些记录的<code>X</code>锁。</p></li></ul>
@@ -32,7 +32,7 @@
 <p>意向锁又是如何解决这个效率低的问题呢：</p>
 <blockquote><p>如果一个事务A获取到某一行的排他锁，并未提交,这时候表上就有<code>意向排他锁</code>和这一行的<code>排他锁</code>。这时候事务B想要获取这个表的共享锁，此时因为检测到事务A持有了表的<code>意向排他锁</code>，因此事务A必然持有某些行的排他锁，也就是说事务B对表的加锁请求需要阻塞等待，不再需要去检测表的每一行数据是否存在排他锁啦。</p></blockquote>
 <p>意向锁仅仅表明意向的锁，意向锁之间不会互斥，是可以并行的，整体兼容性如下：</p>
-<p><img src="../../assets/articles/4a7b13ab6c250743.webp" alt="图片" loading="lazy" decoding="async"></p>
+<p><img src="https://coder-xieshijie-img-1253784930.cos.ap-beijing.myqcloud.com/1686046776-67680187d8a0954715cd73714f110da3.png" alt="图片" loading="lazy" decoding="async"></p>
 <h3 id="section-7">2.3 记录锁（Record Lock）</h3>
 <p>记录锁是最简单的行锁，仅仅锁住一行。如：<code>SELECT c1 FROM t WHERE c1 = 10 FOR UPDATE</code>，如果C1字段是主键或者是唯一索引的话，这个SQL会加一个记录锁（Record Lock）</p>
 <p>记录锁永远都是加在索引上的，即使一个表没有索引，InnoDB也会隐式的创建一个索引，并使用这个索引实施记录锁。它会阻塞其他事务对这行记录的插入、更新、删除。</p>
@@ -51,7 +51,7 @@
 <p>假设有索引值4、7，几个不同的事务准备插入5、6，每个锁都在获得插入行的独占锁之前用插入意向锁各自锁住了4、7之间的间隙，但是不阻塞对方因为插入行不冲突。以下就是一个插入意向锁的日志：</p>
 <p><code>RECORD LOCKS space id 31 page no 3 n bits 72 index `PRIMARY` of table `test`.`child`   trx id 8731 lock_mode X locks gap before rec insert intention waiting   Record lock, heap no 3 PHYSICAL RECORD: n_fields 3; compact format; info bits 0    0: len 4; hex 80000066; asc    f;;    1: len 6; hex 000000002215; asc     " ;;    2: len 7; hex 9000000172011c; asc     r  ;;...      </code></p>
 <p>锁模式兼容矩阵（横向是已持有锁，纵向是正在请求的锁）：</p>
-<p><img src="../../assets/articles/c9d1b3d7de8fa194.webp" alt="图片" loading="lazy" decoding="async"></p>
+<p><img src="https://coder-xieshijie-img-1253784930.cos.ap-beijing.myqcloud.com/1686046776-56abd3f23255a70823bafe379f43c5d1.png" alt="图片" loading="lazy" decoding="async"></p>
 <h3 id="section-11">2.7 自增锁</h3>
 <p><strong>自增锁是一种特殊的表级别锁</strong>。它是专门针对<code>AUTO_INCREMENT</code>类型的列，对于这种列，如果表中新增数据时就会去持有自增锁。简言之，如果一个事务正在往表中插入记录，所有其他事务的插入必须等待，以便第一个事务插入的行，是连续的主键值。</p>
 <p>官方文档是这么描述的：</p>
@@ -59,7 +59,7 @@
 <p>假设有表：</p>
 <p><code>mysql&gt; create table t0 (id int NOT NULL AUTO_INCREMENT,name varchar(16),primary key ( id));      mysql&gt; show variables like '%innodb_autoinc_lock_mode%';   +--------------------------+-------+   | Variable_name            | Value |   +--------------------------+-------+   | innodb_autoinc_lock_mode | 1     |   +--------------------------+-------+   1 row in set, 1 warning (0.01 sec)   </code></p>
 <p>设置事务A和B交替执行流程如下：</p>
-<p><img src="../../assets/articles/dc77e1c5bcd2789a.webp" alt="图片" loading="lazy" decoding="async"></p>
+<p><img src="https://coder-xieshijie-img-1253784930.cos.ap-beijing.myqcloud.com/1686046776-51745fe5ad3a4b5b9bafbf62b72d2444.png" alt="图片" loading="lazy" decoding="async"></p>
 <p>通过上图我们可以看到，当我们在事务A中进行自增列的插入操作时，另外会话事务B也进行插入操作，这种情况下会发生2个奇怪的现象：</p>
 <ul><li><p>事务A会话中的自增列好像直接增加了2个值。（如上图中步骤7、8）</p></li><li><p>事务B会话中的自增列直接从2开始增加的。（如上图步骤5、6）</p></li></ul>
 <p>自增锁是一个表级别锁，那为什么会话A事务还没结束，事务B可以执行插入成功呢？不是应该锁表嘛？这是因为在参数<code>innodb_autoinc_lock_mode</code>上，这个参数设置为<code>1</code>的时候，相当于将这种<code>auto_inc lock</code>弱化为了一个更轻量级的互斥自增长机制去实现，官方称之为<code>mutex</code>。</p>
@@ -69,16 +69,16 @@
 <h2 id="section-12">3. 什么是死锁？如何防止死锁？</h2>
 <p><strong>什么是死锁？</strong></p>
 <p>死锁是指两个或多个事务在同一资源上相互占用，并请求锁定对方的资源，从而导致恶性循环的现象。</p>
-<p><img src="../../assets/articles/22020e2909d5a515.webp" alt="图片" loading="lazy" decoding="async"></p>
+<p><img src="https://coder-xieshijie-img-1253784930.cos.ap-beijing.myqcloud.com/1686046776-b8786b28a7b725a279e6ed368cff6577.png" alt="图片" loading="lazy" decoding="async"></p>
 <p><strong>如何防止死锁？</strong></p>
 <ul><li><p>尽量约定固定的顺序访问表，因为交叉访问更容易造成事务等待回路。</p></li><li><p>尽量避免大事务，建议拆成多个小事务。因为大事务占用的锁资源越多，越容易出现死锁。</p></li><li><p>降低数据库隔离级别，比如RR降低为RC，因为RR隔离级别，存在GAP锁，死锁概率大很多。</p></li><li><p>死锁与索引是密不可分的，合理优化你的索引，死锁概率降低。</p></li><li><p>如果业务处理不好可以用分布式事务锁或者使用乐观锁</p></li></ul>
 <h2 id="section-13">4.数据库的乐观锁和悲观锁</h2>
 <p><strong>悲观锁：</strong></p>
 <blockquote><p>悲观锁她专一且缺乏安全感了，她的心只属于当前事务，每时每刻都担心着它 心爱的数据可能被别的事务修改，所以一个事务拥有（获得）悲观锁后，其他任何事务都不能对数据进行修改啦，只能等待锁被释放才可以执行。<code>select…for update</code>就是<strong>MySQL悲观锁</strong>的应用。</p></blockquote>
-<p><img src="../../assets/articles/8e346b228e612b1c.webp" alt="图片" loading="lazy" decoding="async"></p>
+<p><img src="https://coder-xieshijie-img-1253784930.cos.ap-beijing.myqcloud.com/1686046776-d2c5a2f2968ad5c1e5f9b4f246dc19ad.png" alt="图片" loading="lazy" decoding="async"></p>
 <p><strong>乐观锁：</strong></p>
 <blockquote><p>乐观锁的“乐观情绪”体现在，它认为数据的变动不会太频繁。因此，它允许多个事务同时对数据进行变动。实现方式：乐观锁一般会通过version版本号/时间戳判断记录是否被更改过，一般配合CAS算法实现。</p></blockquote>
-<p><img src="../../assets/articles/2b7ae1ccc55fb23a.webp" alt="图片" loading="lazy" decoding="async"></p>
+<p><img src="https://coder-xieshijie-img-1253784930.cos.ap-beijing.myqcloud.com/1686046776-3b3ea79ee40fa48120d18007caaaf21b.png" alt="图片" loading="lazy" decoding="async"></p>
 <p>大家可以看下这篇文章哈：<a href="https://mp.weixin.qq.com/s?__biz=Mzg3NzU5NTIwNg==&amp;mid=2247487996&amp;idx=1&amp;sn=cafae3423e5ffa903a0c0a94a355f981&amp;source=41&amp;scene=21#wechat_redirect" rel="noopener noreferrer">图文并茂的带你彻底理解悲观锁与乐观锁</a></p>
 <h2 id="section-14">5. select for update加的是表锁还是行锁</h2>
 <p>这道面试题，一般需要分两种数据库隔离级别（RR和RC），还需要分查询条件是唯一索引、主键、一般索引、无索引等几种情况分开讨论</p>
