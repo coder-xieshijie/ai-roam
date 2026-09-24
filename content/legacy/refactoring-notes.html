@@ -18,11 +18,11 @@
 <p><strong>PS</strong> : 其实这里，个人感觉，更多情况下，还是会有很强的个人主观意识，比如 空格，table 之争，但是，核心还是是否按照各自的软件设计和编码规范即可，细节可能会带有浓重的个人主观意识色彩，大局还是仍需要按照规范进行</p>
 <h2 id="section-8">如何重构</h2>
 <h2 id="section-9">1.SOLID原则</h2>
-<p>  <img src="../../assets/articles/77e620130bd79401.webp" alt="file" loading="lazy" decoding="async"></p>
+<p>  <img src="https://coder-xieshijie-img-1253784930.cos.ap-beijing.myqcloud.com/1686548772-7f4e128060877635a18c09937b37f1d6.png" alt="file" loading="lazy" decoding="async"></p>
 <h2 id="section-10">2.设计模式</h2>
-<ul><li><p>软件开发人员在软件开发过程中面临的一般问题的解决方案。</p></li><li><p>这些解决方案是众多软件开发人员经过相当长的一段时间的试验和错误总结出来的。</p></li><li><p>每种模式都描述了一个在我们周围不断重复发生的问题，以及该问题的核心解决方案。</p><p><img src="../../assets/articles/513878808a8cdc20.webp" alt="file" loading="lazy" decoding="async"></p></li></ul>
+<ul><li><p>软件开发人员在软件开发过程中面临的一般问题的解决方案。</p></li><li><p>这些解决方案是众多软件开发人员经过相当长的一段时间的试验和错误总结出来的。</p></li><li><p>每种模式都描述了一个在我们周围不断重复发生的问题，以及该问题的核心解决方案。</p><p><img src="https://coder-xieshijie-img-1253784930.cos.ap-beijing.myqcloud.com/1686548772-827700a9b966d053c03c39acc4b131c8.png" alt="file" loading="lazy" decoding="async"></p></li></ul>
 <h2 id="section-11">3.代码分层</h2>
-<p>  <img src="../../assets/articles/6ebec72c007c28d1.webp" alt="file" loading="lazy" decoding="async"></p>
+<p>  <img src="https://coder-xieshijie-img-1253784930.cos.ap-beijing.myqcloud.com/1686548772-7370d65a15eb983a625d1fbed28c2851.png" alt="file" loading="lazy" decoding="async"></p>
 <p><strong>模块结构说明</strong></p>
 <ul><li><p>server_main：配置层，负责整个项目的module管理，maven配置管理、资源管理等；</p></li><li><p>server_application：应用接入层，承接外部流量入口，例如：RPC接口实现、消息处理、定时任务等；不要在此包含业务逻辑；</p></li><li><p>server_biz：核心业务层，用例服务、领域实体、领域事件等</p></li><li><p>server_irepository：资源接口层，负责资源接口的暴露</p></li><li><p>server_repository：资源层，负责资源的proxy访问，统一外部资源访问，隔离变化。注意：这里强调的是弱业务性，强数据性；</p></li><li><p>server_common：公共层，vo、工具等</p></li></ul>
 <p>代码开发要遵守各层的规范，并注意层级之间的依赖关系。</p>
@@ -299,8 +299,8 @@ TDD要求测试可以完全自动化地运行，并在对代码重构前后必�
 <p>TDD的最终目标是整洁可用的代码（clean code that works）。大多数的开发者大部分时间无法得到整洁可用的代码。办法是分而治之。首先解决目标中的“可用”问题，然后再解决“代码的整洁”问题。这与体系结构驱动（architecture-driven）的开发相反。</p>
 <p>采用TDD另一个好处就是让我们拥有一套伴随代码产生的详尽的自动化测试集。将来无论出于任何原因（需求、重构、性能改进）需要对代码进行维护时，在这套测试集的驱动下工作，我们代码将会一直是健壮的。</p>
 <h2 id="section-30">2.TDD的开发周期</h2>
-<p><img src="../../assets/articles/663c7cd98ebfd929.webp" alt="file" loading="lazy" decoding="async"><br>添加一个测试 -&gt; 运行所有测试并检查测试结果 -&gt; 编写代码以通过测试 -&gt; 运行所有测试且全部通过 -&gt; 重构代码，以消除重复设计，优化设计结构</p>
+<p><img src="https://coder-xieshijie-img-1253784930.cos.ap-beijing.myqcloud.com/1686548772-4f07230ea98c4d7113eb1ba444191518.png" alt="file" loading="lazy" decoding="async"><br>添加一个测试 -&gt; 运行所有测试并检查测试结果 -&gt; 编写代码以通过测试 -&gt; 运行所有测试且全部通过 -&gt; 重构代码，以消除重复设计，优化设计结构</p>
 <h2 id="section-31">3.两个基本原则</h2>
 <ul><li>仅在测试失败时才编写代码并且只编写刚好使测试通过的代码</li><li>编写下一个测试之前消除现有的重复设计，优化设计结构<br>关注点分离是这两条规则隐含的另一个非常重要的原则。其表达的含义指在编码阶段先达到代码“可用”的目标，在重构阶段再追求“整洁”目标，每次只关注一件事！</li></ul>
 <h2 id="section-32">4.分层测试</h2>
-<p><img src="../../assets/articles/6fc95bf5a96c9f94.webp" alt="file" loading="lazy" decoding="async"></p>
+<p><img src="https://coder-xieshijie-img-1253784930.cos.ap-beijing.myqcloud.com/1686548772-55c86cf61f26d86d8e0c990b2c4e8a52.png" alt="file" loading="lazy" decoding="async"></p>

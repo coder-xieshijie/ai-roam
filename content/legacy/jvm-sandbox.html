@@ -12,11 +12,11 @@
 <p>AOP（面向切面编程，Aspect Oriented Programming）技术已被业界广泛应用，其思想是面向业务处理过程的某个步骤或阶段进行编程，这个步骤或阶段被称为切面，其目的是降低业务逻辑的各部分之间的耦合，常见的 AOP 实现基本原理有两种：代理和行为注入。</p>
 <p><strong>1）代理模式</strong></p>
 <p>在代理模式下，我们会创建一个代理对象来代理原对象的行为，代理对象拥有原对象行为执行的控制权，在这种模式下，我们基于代理对象在原对象行为执行的前后插入代码来实现 AOP。</p>
-<p><img src="../../assets/articles/7e313562c3a9d0f2.webp" loading="lazy" decoding="async" alt="JVM sandbox原理和应用 · 原文配图"></p>
+<p><img src="https://coder-xieshijie-img-1253784930.cos.ap-beijing.myqcloud.com/1691118593-bb0029db289737ca786cf11c2677811c.png" loading="lazy" decoding="async" alt="JVM sandbox原理和应用 · 配图"></p>
 <p>图 2-1 代理模式</p>
 <p><strong>2）行为注入模式</strong></p>
 <p>在行为注入模式下，我们不会创建一个新的对象，而是修改原对象，在原对象行为的执行前后注入代码来实现 AOP。</p>
-<p><img src="../../assets/articles/669d3b7fbbf5bf2b.webp" loading="lazy" decoding="async" alt="JVM sandbox原理和应用 · 原文配图"></p>
+<p><img src="https://coder-xieshijie-img-1253784930.cos.ap-beijing.myqcloud.com/1691118593-325e7b5209ed2ea9105d9ff20e9e1b0b.png" loading="lazy" decoding="async" alt="JVM sandbox原理和应用 · 配图"></p>
 <p>图 2-2 行为注入模式</p>
 <h3 id="section-4">2.2 JVM SandBox</h3>
 <p>JVM SandBox 是阿里开源的一款 JVM 平台非侵入式运行期 AOP 解决方案，本质上是一种 AOP 落地形式。那么可能有同学会问：已有成熟的 Spring AOP 解决方案，阿里巴巴为什么还要“重复造轮子”？这个问题要回到 JVM SandBox 诞生的背景中来回答。在 2016 年中，天猫双十一催动了阿里巴巴内部大量业务系统的改动，恰逢徐冬晨（阿里巴巴测试开发专家）所在的团队调整，测试资源保障严重不足，迫使他们必须考虑更精准、更便捷的老业务测试回归验证方案。开发团队面临的是新接手的老系统，老的业务代码架构难以满足可测性的要求，很多现有测试框架也无法应用到老的业务系统架构中，于是需要新的测试思路和测试框架。</p>
@@ -74,7 +74,7 @@ static AttachOperationFunctionInfo funcs[] = {
 </code></pre>
 <p>复制代码</p>
 <p>那么，JVM Attach 机制是如何工作的呢？Attach 机制的核心组件是 Attach Listener，顾名思义，Attach Listener 是 JVM 内部的一个线程，这个线程的主要工作是监听和接收客户端进程通过 Attach 提供的通信机制发起的命令，如下图所示：</p>
-<p><img src="../../assets/articles/68ff99570bfec69a.webp" loading="lazy" decoding="async" alt="JVM sandbox原理和应用 · 原文配图"></p>
+<p><img src="https://coder-xieshijie-img-1253784930.cos.ap-beijing.myqcloud.com/1691118593-f850866f1fc03ad3b3eafdf97ec54b57.png" loading="lazy" decoding="async" alt="JVM sandbox原理和应用 · 配图"></p>
 <p>图 3-1 Attach Listener 工作机制</p>
 <p>Attach Listener 线程的主要工作是串流程，流程步骤包括：接收客户端命令、解析命令、查找命令执行器、执行命令等等，下面附上相关代码片段：</p>
 <p>片段一：AttachListener::init（启动 AttachListener 线程）：</p>
@@ -262,7 +262,7 @@ void retransformClasses(Class&lt;?&gt;... classes) throws UnmodifiableClassExcep
 </code></pre>
 <p>复制代码</p>
 <p>Instrument 底层的实现实际上也是调用 JVMTI 提供的 RetransformClasses 接口，RetransformClasses 实现对已经加载的类进行重新定义（redefine），而重新定义类也会触发 ClassFileLoadHook 事件，Instrument 同样会监听到这个事件并对被加载的类进行处理。到这里，JVM SandBox 底层依赖 JVM 的核心机制已经介绍完了，下面通过一张时序图将一个 JavaAgent 的加载过程涉及到的相关组件及行为串起来：</p>
-<p><img src="../../assets/articles/5eb6721605952860.webp" loading="lazy" decoding="async" alt="JVM sandbox原理和应用 · 原文配图"></p>
+<p><img src="https://coder-xieshijie-img-1253784930.cos.ap-beijing.myqcloud.com/1691118593-4e5bba9090208c6bba5672ec30f5902e.png" loading="lazy" decoding="async" alt="JVM sandbox原理和应用 · 配图"></p>
 <p>图 3-2 Java Agent 加载流程</p>
 <h2 id="section-9">四、JVM SandBox 设计与实现</h2>
 <h3 id="section-10">4.1 可插拔</h3>
@@ -274,34 +274,34 @@ $./sandbox.sh -p 33342 -S #卸载沙箱
 </code></pre>
 <p>复制代码</p>
 <p>JVM 沙箱可以被动态地挂载到某个正在运行的目标 JVM 进程之上（前提是目标 JVM 没有禁止 attach 功能），沙箱工作完之后还可以被动态地从目标 JVM 进程卸载掉，沙箱被卸载之后，沙箱对对目标 JVM 进程产生的影响会随即消失（这是沙箱的一个重要特性），沙箱工作示意图如下：</p>
-<p><img src="../../assets/articles/703649bfd99a38cc.webp" loading="lazy" decoding="async" alt="JVM sandbox原理和应用 · 原文配图"></p>
+<p><img src="https://coder-xieshijie-img-1253784930.cos.ap-beijing.myqcloud.com/1691118593-32faa51603df23a30d0503493878b31b.png" loading="lazy" decoding="async" alt="JVM sandbox原理和应用 · 配图"></p>
 <p>图 4-1 沙箱工作示意图</p>
 <p>客户端通过 Attach 将沙箱挂载到目标 JVM 进程上，沙箱的启动实际上是依赖 Java Agent，上文已经介绍过，启动之后沙箱会一直维护着 Instrument 对象引用，在沙箱中 Instrument 对象是一个非常重要的角色，它是沙箱访问和操作 JVM 的唯一通道，后续修改字节码和重定义类都要经过 Instrument。另外，沙箱启动之后同时会启动一个内部的 Jetty 服务器，这个服务器用于外部进程和沙箱进行通信，上面看到的./sandbox.sh -p 33342 -d ‘my-sandbox-module/addLog’ 这行代码，实际上就是通过 HTTP 协议来告诉沙箱执行 my-sanbox-module 这个模块的 addLog 这个功能的。</p>
 <h3 id="section-11">4.2 无侵入</h3>
 <p>沙箱内部定义了一个 Spy 类，该类被称为“间谍类”，所有的沙箱模块功能都会通过这个间谍类驱动执行。下面给出一张示意图将业务代码、间谍类和模块代码串起来来帮助理解：</p>
-<p><img src="../../assets/articles/a002f97c133f9f65.webp" loading="lazy" decoding="async" alt="JVM sandbox原理和应用 · 原文配图"></p>
+<p><img src="https://coder-xieshijie-img-1253784930.cos.ap-beijing.myqcloud.com/1691118593-b5bb7c654f3cc4a2e25a80e569019e81.png" loading="lazy" decoding="async" alt="JVM sandbox原理和应用 · 配图"></p>
 <p>图 4-2 沙箱无侵入核心实现</p>
 <p>上图是沙箱 AOP 核心实现的伪代码，实际实现会比上图更复杂一些，沙箱内部通过修改和重定义业务类来实现上述功能的。在接口设计方面，沙箱通过事件驱动的方式，让模块开发者可以监听到方法执行的某个事件并设置回调逻辑，这一切都可以通过实现 AdviceListener 接口来做到，通过 AdviceListener 接口定义的行为，我们可以了解沙箱支持的监听事件如下：</p>
-<p><img src="../../assets/articles/bf9e919088ec96c9.webp" loading="lazy" decoding="async" alt="JVM sandbox原理和应用 · 原文配图"></p>
+<p><img src="https://coder-xieshijie-img-1253784930.cos.ap-beijing.myqcloud.com/1691118593-45313ec06eaf196a7b60c3d26f8fa57c.png" loading="lazy" decoding="async" alt="JVM sandbox原理和应用 · 配图"></p>
 <h3 id="section-12">4.3 隔离</h3>
 <p>JVM 沙箱有自己的工作代码类，而这些代码类在沙箱被挂在到目标 JVM 之后，其涉及到的相关功能实现类都要被加载到目标 JVM 中，沙箱代码和业务代码共享 JVM 进程，这里有两个问题：1）如何避免沙箱代码和业务代码之间产生冲突；2）如何避免不同沙箱模块之间的代码产生冲突。为解决这两个问题，JVM SandBox 定义了自己的类加载器，严格控制类的加载，沙箱的核心类加载器有两个：SandBoxClassLoader 和 ModuleJarClassLoader。SandBoxClassLoader 用于加载沙箱自身的工作类，ModuleJarClassLoader 用于加载三方自己开发的模块功能类，如上面的 MySandBoxModule 类。在沙箱中类加载器继承关系如下图所示：</p>
-<p><img src="../../assets/articles/20c3edda48cb7bbd.webp" loading="lazy" decoding="async" alt="JVM sandbox原理和应用 · 原文配图"></p>
+<p><img src="https://coder-xieshijie-img-1253784930.cos.ap-beijing.myqcloud.com/1691118593-e535b7a578691852256b98115257cf84.png" loading="lazy" decoding="async" alt="JVM sandbox原理和应用 · 配图"></p>
 <p>图 4-3 沙箱类加载器继承体系</p>
 <p>通过类加载器，沙箱将沙箱代码和业务代码以及不同沙箱模块之间的代码隔离开来。</p>
 <h3 id="section-13">4.4 多租户</h3>
 <p>JVM 沙箱提供的隔离机制也有两层含义，一层是沙箱容器和业务代码之间隔离以及沙箱内部模块之间隔离；另一层是不同用户的沙箱之间的隔离，这一层隔离用来支持多租户特性，也就是支持多个用户对同一个 JVM 同时使用沙箱功能且他们之间互不影响。沙箱的这种机制是通过支持创建多个 SandBoxClassLoader 的方式来实现的，每个 SandBoxClassLoader 关联唯一一个命名空间（namespace）用于标识不同的用户，示意图如下所示：</p>
-<p><img src="../../assets/articles/9fca43e13d7a4e47.webp" loading="lazy" decoding="async" alt="JVM sandbox原理和应用 · 原文配图"></p>
+<p><img src="https://coder-xieshijie-img-1253784930.cos.ap-beijing.myqcloud.com/1691118593-cf7acf83600b2cfeaa24d61ddf3821d1.png" loading="lazy" decoding="async" alt="JVM sandbox原理和应用 · 配图"></p>
 <p>图 4-4 多租户实现示意图</p>
 <h2 id="section-14">五、JVM Sandbox 应用场景分析</h2>
 <p>JVM SandBox 让动态无侵入地对业务代码进行 AOP 这个事情实现起来非常容易，但是这个事情做起来非常容易只是前提条件，更重要的是我们基于 JVM SandBox 能做什么？可以做的很多，比如：故障模拟、动态黑名单，动态日志、动态开关、系统流控、热修复，方法请求录制和结果回放、动态去依赖、依赖超时时间动态修改、甚至是修改 JDK 基础类的功能等等，当然不限于此，这里大家可以打开脑洞，天马行空地思考一下，下面再给出两个 JVM SandBox 应用场景的实现思路。</p>
 <h3 id="section-15">5.1 故障模拟</h3>
 <p>我们可以开发一个沙箱模块，通过和前台页面的交互，我们可以对任意业务类的任意方法注入故障来达到故障模拟的效果，用户交互示意图如下：</p>
-<p><img src="../../assets/articles/b856de448953862d.webp" loading="lazy" decoding="async" alt="JVM sandbox原理和应用 · 原文配图"></p>
+<p><img src="https://coder-xieshijie-img-1253784930.cos.ap-beijing.myqcloud.com/1691118593-7b72ac371c69d14ef20f4752769dcd44.png" loading="lazy" decoding="async" alt="JVM sandbox原理和应用 · 配图"></p>
 <p>图 5-1 故障模拟交互示意图</p>
 <p>用户通过简单的界面操作即可完成故障注入，应用代码不需要提前埋点。</p>
 <h3 id="section-16">5.2 动态黑名单</h3>
 <p>我们还可以开发一个沙箱模块实现 IP 黑名单功能，针对指定 IP 的客户端，服务直接返回空结果，用户交互示意图如下：</p>
-<p><img src="../../assets/articles/0875b4e80597a543.webp" loading="lazy" decoding="async" alt="JVM sandbox原理和应用 · 原文配图"></p>
+<p><img src="https://coder-xieshijie-img-1253784930.cos.ap-beijing.myqcloud.com/1691118593-c07b14ab3aa7c3c187251df2d477766a.png" loading="lazy" decoding="async" alt="JVM sandbox原理和应用 · 配图"></p>
 <p>图 5-2 动态黑名单交互示意图</p>
 <p>引用 JVM SandBox 官网的一句话：“JVM-SANDBOX 还能帮助你做很多很多，取决于你的脑洞有多大了。”</p>
 <h2 id="section-17">总结</h2>

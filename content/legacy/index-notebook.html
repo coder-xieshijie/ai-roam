@@ -11,7 +11,7 @@
 <ul><li>B树 / B+树 (mysql的innodb引擎默认选择B+树作为索引的数据结构)</li><li>HASH表</li><li>有序数组</li></ul>
 <blockquote><p><strong>3.选用B+树而不选用B树作为索引</strong></p></blockquote>
 <ul><li>B树的数据结构：record记录存放在树的节点中</li><li>B+树的数据结构: record记录只存放在树的叶子节点中</li></ul>
-<p><img src="../../assets/articles/312086dd888b9d44.webp" alt="B树" loading="lazy" decoding="async"><br><img src="../../assets/articles/620c58b2bc3b1d8d.webp" alt="B+树" loading="lazy" decoding="async"></p>
+<p><img src="https://coder-xieshijie-img-1253784930.cos.ap-beijing.myqcloud.com/%E6%95%B0%E6%8D%AE%E5%BA%93/%E7%B4%A2%E5%BC%95%E8%AE%B0%E8%B4%A6%E6%9C%AC/%E7%B4%A2%E5%BC%95%E8%AE%B0%E8%B4%A6%E6%9C%AC-1.png" alt="B树" loading="lazy" decoding="async"><br><img src="https://coder-xieshijie-img-1253784930.cos.ap-beijing.myqcloud.com/%E6%95%B0%E6%8D%AE%E5%BA%93/%E7%B4%A2%E5%BC%95%E8%AE%B0%E8%B4%A6%E6%9C%AC/%E7%B4%A2%E5%BC%95%E8%AE%B0%E8%B4%A6%E6%9C%AC-2.png" alt="B+树" loading="lazy" decoding="async"></p>
 <ul><li>假设一条数据大小1KB，索引大小16B，数据库采用磁盘数据页存储，磁盘页默认大小是16K。同样三次IO:<ol><li>B树能获取16*16*16=4096条数据</li><li>B+树能够获取1000*1000*1000=10亿条数据</li></ol></li></ul>
 <h2 id="section-2">二、[索引类型]</h2>
 <blockquote><p><strong>1.主键索引和二级索引</strong></p></blockquote>

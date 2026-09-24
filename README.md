@@ -24,7 +24,7 @@ python3 -m http.server 4173 --directory dist
 | 位置 | 用途 |
 | --- | --- |
 | `content/site.json` | 站点信息、项目与文章元数据、公开联系入口、备案配置 |
-| `content/skills-and-mcp.md` | 文章正文；保留原发表日期和本站修订说明 |
+| `content/*.md` / `content/legacy/*.html` | 文章正文 |
 | `scripts/build.mjs` | 共用导航、页脚、页面模板与静态生成 |
 | `scripts/home.mjs` / `assets/home.css` / `assets/home-trail.js` | 首页人文科技排版、字体及朱红探索线 |
 | `assets/site.css` / `assets/site.js` | 全站样式、公众号名称复制和同步状态展示 |
@@ -34,9 +34,9 @@ python3 -m http.server 4173 --directory dist
 
 修改源文件后运行构建，同时生成 GitHub Pages 根目录文件与 `dist/` 预览文件。根目录生成的 HTML 需要一起提交；不要直接修改这些生成文件。`dist/` 和 `node_modules/` 不提交。
 
-46 个页面：首页、作品列表、两个项目详情、文章列表、39 篇文章正文、关于我和同步状态。内部导航使用相对链接，兼容根路径和 `/ai-roam/` 子路径。`npm run check` 验证两种挂载路径下的本地资源、页面链接、锚点及生成文件一致性。
+44 个页面：首页、作品列表、两个项目详情、文章列表、37 篇文章正文、关于我和同步状态。内部导航使用相对链接，兼容根路径和 `/ai-roam/` 子路径。`npm run check` 验证两种挂载路径下的本地资源、页面链接、锚点及生成文件一致性。
 
-新增文章：在 `content/` 添加 Markdown，并在 `site.json` 的 `articles` 中按原发表日期倒序的位置填写 slug、标题、摘要、原发表日期、修订日期、主题和阅读时间；转载的文章另填原题。修订日期与原发表日期相同时，文章页不显示修订日期。最近记录从项目介绍更新、文章修订和开源贡献合入日期生成，按日期取最近三条；项目介绍更新日期不代表上游项目发布日期。开源贡献只录入已核实的公开 PR，不将尚未成稿的选题列为文章。移除文章时，也需要移除它在根目录和 `dist/` 中的旧输出。
+新增文章：在 `content/` 添加 Markdown，并在 `site.json` 的 `articles` 中按发表日期倒序的位置填写 slug、标题、摘要、发表日期、主题和阅读时间（`updated` 仅用于首页“最近记录”）。最近记录从项目介绍更新、文章修订和开源贡献合入日期生成，按日期取最近三条；项目介绍更新日期不代表上游项目发布日期。开源贡献只录入已核实的公开 PR，不将尚未成稿的选题列为文章。移除文章时，也需要移除它在根目录和 `dist/` 中的旧输出。
 
 ## 自动部署到阿里云
 
@@ -89,13 +89,11 @@ python3 -m http.server 4173 --directory dist
 首页内容于 2026-09-22 按上述固定版本复核。Agent Lord 的计划到实现流程图取自该版本的 `assets/diagrams/plan-to-implement.svg`，本地文件为 `assets/agent-lord-plan-to-implement.svg`，未改写图中内容。开源贡献依据 [MiniMax Code PR #280](https://github.com/MiniMax-AI/minimax-code/pull/280)，合入日期为 2026-09-21。
 
 
-## 旧文文章库
+## 文章库
 
-收录旧博客中选定的 32 篇文章，保留已有 Skills 与 MCP，共 33 篇。首页精选由 `content/site.json` 的 `featuredArticles` 指定；文章列表按原发表时间倒序排列，可按六个主题筛选。无 JavaScript 时仍显示完整列表。旧文迁入不会改写原发表日期，也不会被当作近期新发表文章。
+本站是全部文章的唯一来源，共 37 篇：早期笔记维护于 `content/legacy/*.html`，其余文章为 `content/*.md`。每篇只标注作者谢世杰和发表日期，不显示迁入、修订或整理说明。首页精选由 `content/site.json` 的 `featuredArticles` 指定；文章列表按发表时间倒序排列，可按主题筛选。无 JavaScript 时仍显示完整列表。
 
-- 旧文来源：`coder-xieshijie/coder-xieshijie.github.io` 的 `94073945f64517bee4b550a98b7b7837512e4e77`；每篇 metadata 记录原文链接、原题、迁入日期、类型和整理说明。
-- 旧文正文维护于 `content/legacy/*.html`，为清理后的静态内容；不要直接重新覆盖旧博客 HTML，以免重新引入内网链接或凭据。新文章继续使用 Markdown。
-- 清除旧主题脚本、行号和内联样式，保留代码换行及正文表格。157 张公开配图已转存 `assets/articles/*.webp`，来源映射见 `content/legacy-assets.json`。多帧素材以静态首帧呈现。
-- 内部平台与账号截图、凭据、内网地址、业务运行数据按各篇整理说明省略或替换；原仓库未改动。来源不明的资料不标作本站原创，技术描述保留历史语境。
-- 本次选择编号：1、2、4、5、12、13、14、16、17、18、24–40、46、49、50、51、54。排除代码索引 SCIP 与 Code Review 转载；精选为研发竞争优势、早期 AI 实践和个人手记。
+- `content/legacy/*.html` 为清理后的静态正文：清除旧主题脚本、行号和内联样式，保留代码换行及正文表格；不要用旧博客 HTML 直接覆盖，以免重新引入内网链接或凭据。新文章使用 Markdown。
+- 配图直接引用腾讯云 COS 图床 `coder-xieshijie-img-1253784930.cos.ap-beijing.myqcloud.com` 上的原图，仓库不保存图片副本。图床需保持公开读，并允许本站域名的 Referer。
+- 内部平台与账号截图、凭据、内网地址、业务运行数据已从正文中省略或替换。
 - 部署命令采用 zlib 压缩传输，使图片较多时仍符合 Cloud Assistant 的 24 KiB 限制；归档与逐文件校验、安装范围和健康检查回滚不变。

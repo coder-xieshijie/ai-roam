@@ -111,8 +111,7 @@
       "published": "2026-03-10",
       "updated": "2026-09-10",
       "topic": "AI 实践",
-      "reading": "6 分钟",
-      "sourceTitle": "一文讲透 Skills 与 MCP：从源码看清两者的真正边界"
+      "reading": "6 分钟"
     },
     {
       "slug": "lint-rules-for-agents",
@@ -165,15 +164,10 @@
       "summary": "整理 Elasticsearch 的索引、文档与倒排索引等基础概念，配合示例理解搜索过程。",
       "published": "2023-08-29",
       "updated": "2023-08-29",
-      "migrated": "2026-09-22",
       "topic": "数据库与搜索",
       "kind": "学习笔记",
       "reading": "14 分钟",
-      "sourceTitle": "elasticsearch 概念介绍",
-      "sourceUrl": "https://github.com/coder-xieshijie/coder-xieshijie.github.io/blob/94073945f64517bee4b550a98b7b7837512e4e77/2023/08/29/%E6%95%B0%E6%8D%AE%E5%BA%93/elasticsearch-%E6%A6%82%E5%BF%B5%E4%BB%8B%E7%BB%8D/index.html",
       "legacy": true,
-      "selectionNumber": 24,
-      "editorNote": "从旧博客迁入，保留当时的正文与技术语境；示例和工具版本未经本次重新运行验证。",
       "toc": [
         {
           "id": "section-1",
@@ -199,15 +193,10 @@
       "summary": "从点击一个链接开始，串起 DNS、HTTP、TCP 与网络传输的基础知识。",
       "published": "2023-08-25",
       "updated": "2023-08-25",
-      "migrated": "2026-09-22",
       "topic": "工具与基础知识",
       "kind": "学习笔记",
       "reading": "34 分钟",
-      "sourceTitle": "网络概念详解",
-      "sourceUrl": "https://github.com/coder-xieshijie/coder-xieshijie.github.io/blob/94073945f64517bee4b550a98b7b7837512e4e77/2023/08/25/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%2B%E7%BD%91%E7%BB%9C/%E7%BD%91%E7%BB%9C%E6%A6%82%E5%BF%B5%E8%AF%A6%E8%A7%A3/index.html",
       "legacy": true,
-      "selectionNumber": 54,
-      "editorNote": "从旧博客迁入，保留当时的正文与技术语境；示例和工具版本未经本次重新运行验证。",
       "toc": [
         {
           "id": "section-1",
@@ -221,15 +210,10 @@
       "summary": "梳理数据库与缓存双写中的不一致窗口，以及更新顺序和补偿策略的取舍。",
       "published": "2023-08-06",
       "updated": "2023-08-06",
-      "migrated": "2026-09-22",
       "topic": "数据库与搜索",
       "kind": "学习笔记",
       "reading": "4 分钟",
-      "sourceTitle": "redis和mysql的双写问题",
-      "sourceUrl": "https://github.com/coder-xieshijie/coder-xieshijie.github.io/blob/94073945f64517bee4b550a98b7b7837512e4e77/2023/08/06/%E6%95%B0%E6%8D%AE%E5%BA%93/Redis/redis%E5%92%8Cmysql%E7%9A%84%E5%8F%8C%E5%86%99%E9%97%AE%E9%A2%98/index.html",
       "legacy": true,
-      "selectionNumber": 25,
-      "editorNote": "从旧博客迁入，保留当时的正文与技术语境；示例和工具版本未经本次重新运行验证。",
       "toc": [
         {
           "id": "section-1",
@@ -255,15 +239,10 @@
       "summary": "从真实流量的录制、回放、Mock 到差异分析，梳理回归测试平台的工作方式。",
       "published": "2023-08-04",
       "updated": "2023-08-04",
-      "migrated": "2026-09-22",
       "topic": "研发效能",
       "kind": "实践整理",
       "reading": "7 分钟",
-      "sourceTitle": "流量录制回放介绍",
-      "sourceUrl": "https://github.com/coder-xieshijie/coder-xieshijie.github.io/blob/94073945f64517bee4b550a98b7b7837512e4e77/2023/08/04/%E4%B8%AA%E4%BA%BA%E6%88%90%E9%95%BF/%E5%B7%A5%E4%BD%9C%E9%A2%86%E5%9F%9F%E6%B1%87%E6%80%BB/%E6%B5%81%E9%87%8F%E5%BD%95%E5%88%B6%E5%9B%9E%E6%94%BE%E4%BB%8B%E7%BB%8D/index.html",
       "legacy": true,
-      "selectionNumber": 4,
-      "editorNote": "旧文实践整理。已省略内部平台截图、内网链接与具体内部组件名称，保留录制、回放、Mock 和 Diff 的工作方式。",
       "toc": [
         {
           "id": "section-1",
@@ -313,15 +292,10 @@
       "summary": "比较中间件 SDK、字节码增强与网络流量复制三种录制方案，记录接入与维护成本的取舍。",
       "published": "2023-08-03",
       "updated": "2023-08-03",
-      "migrated": "2026-09-22",
       "topic": "研发效能",
       "kind": "方案笔记",
       "reading": "4 分钟",
-      "sourceTitle": "流量录制方案梳理",
-      "sourceUrl": "https://github.com/coder-xieshijie/coder-xieshijie.github.io/blob/94073945f64517bee4b550a98b7b7837512e4e77/2023/08/03/%E4%B8%AA%E4%BA%BA%E6%88%90%E9%95%BF/%E5%B7%A5%E4%BD%9C%E9%A2%86%E5%9F%9F%E6%B1%87%E6%80%BB/%E6%B5%81%E9%87%8F%E5%BD%95%E5%88%B6%E6%96%B9%E6%A1%88%E6%A2%B3%E7%90%86/index.html",
       "legacy": true,
-      "selectionNumber": 5,
-      "editorNote": "旧文方案笔记。已省略内部架构截图和内部链接；方案比较描述的是当时的环境与约束，不代表当前各工具的能力。",
       "toc": [
         {
           "id": "section-1",
@@ -359,15 +333,10 @@
       "summary": "沿 Java Agent、Attach 与字节码增强理解 JVM Sandbox 的设计和应用。",
       "published": "2023-08-02",
       "updated": "2023-08-02",
-      "migrated": "2026-09-22",
       "topic": "Java 与代码设计",
       "kind": "学习笔记",
       "reading": "30 分钟",
-      "sourceTitle": "JVM sandbox原理和应用",
-      "sourceUrl": "https://github.com/coder-xieshijie/coder-xieshijie.github.io/blob/94073945f64517bee4b550a98b7b7837512e4e77/2023/08/02/java/java%E5%9F%BA%E7%A1%80/JVM-sandbox%E5%8E%9F%E7%90%86%E5%92%8C%E5%BA%94%E7%94%A8/index.html",
       "legacy": true,
-      "selectionNumber": 16,
-      "editorNote": "从旧博客迁入，保留当时的正文与技术语境；示例和工具版本未经本次重新运行验证。",
       "toc": [
         {
           "id": "section-1",
@@ -405,15 +374,10 @@
       "summary": "结合执行计划中的 type、key、rows 和 Extra，整理 MySQL 查询分析的方法。",
       "published": "2023-07-26",
       "updated": "2023-07-26",
-      "migrated": "2026-09-22",
       "topic": "数据库与搜索",
       "kind": "学习笔记",
       "reading": "24 分钟",
-      "sourceTitle": "mysql的explain关键字使用说明",
-      "sourceUrl": "https://github.com/coder-xieshijie/coder-xieshijie.github.io/blob/94073945f64517bee4b550a98b7b7837512e4e77/2023/07/26/%E6%95%B0%E6%8D%AE%E5%BA%93/MySQL/mysql%E7%9A%84explain%E5%85%B3%E9%94%AE%E5%AD%97%E4%BD%BF%E7%94%A8%E8%AF%B4%E6%98%8E/index.html",
       "legacy": true,
-      "selectionNumber": 27,
-      "editorNote": "从旧博客迁入，保留当时的正文与技术语境；示例和工具版本未经本次重新运行验证。",
       "toc": [
         {
           "id": "section-1",
@@ -435,15 +399,10 @@
       "summary": "通过关联、过滤、分组和排序，理解 SQL 各个关键字在逻辑执行中的顺序。",
       "published": "2023-07-24",
       "updated": "2023-07-24",
-      "migrated": "2026-09-22",
       "topic": "数据库与搜索",
       "kind": "学习笔记",
       "reading": "5 分钟",
-      "sourceTitle": "sql语句各个关键字的执行顺序",
-      "sourceUrl": "https://github.com/coder-xieshijie/coder-xieshijie.github.io/blob/94073945f64517bee4b550a98b7b7837512e4e77/2023/07/24/%E6%95%B0%E6%8D%AE%E5%BA%93/MySQL/sql%E8%AF%AD%E5%8F%A5%E5%90%84%E4%B8%AA%E5%85%B3%E9%94%AE%E5%AD%97%E7%9A%84%E6%89%A7%E8%A1%8C%E9%A1%BA%E5%BA%8F/index.html",
       "legacy": true,
-      "selectionNumber": 28,
-      "editorNote": "从旧博客迁入，保留当时的正文与技术语境；示例和工具版本未经本次重新运行验证。",
       "toc": [
         {
           "id": "section-1",
@@ -457,15 +416,10 @@
       "summary": "从一个 key 怎样找到 value 的问题出发，追踪 Redis 的字典与查找过程。",
       "published": "2023-07-22",
       "updated": "2023-07-22",
-      "migrated": "2026-09-22",
       "topic": "数据库与搜索",
       "kind": "学习笔记",
       "reading": "4 分钟",
-      "sourceTitle": "redis key值如何定位到value",
-      "sourceUrl": "https://github.com/coder-xieshijie/coder-xieshijie.github.io/blob/94073945f64517bee4b550a98b7b7837512e4e77/2023/07/22/%E6%95%B0%E6%8D%AE%E5%BA%93/Redis/redis-key%E5%80%BC%E5%A6%82%E4%BD%95%E5%AE%9A%E4%BD%8D%E5%88%B0value/index.html",
       "legacy": true,
-      "selectionNumber": 26,
-      "editorNote": "从旧博客迁入，保留当时的正文与技术语境；示例和工具版本未经本次重新运行验证。",
       "toc": [
         {
           "id": "section-1",
@@ -491,15 +445,10 @@
       "summary": "比较 DISTINCT 与 GROUP BY 的去重语义、执行方式和不同场景下的差异。",
       "published": "2023-07-21",
       "updated": "2023-07-21",
-      "migrated": "2026-09-22",
       "topic": "数据库与搜索",
       "kind": "学习笔记",
       "reading": "13 分钟",
-      "sourceTitle": "MySQL 中的 distinct 和 group by 哪个效率更高？",
-      "sourceUrl": "https://github.com/coder-xieshijie/coder-xieshijie.github.io/blob/94073945f64517bee4b550a98b7b7837512e4e77/2023/07/21/%E6%95%B0%E6%8D%AE%E5%BA%93/MySQL/MySQL-%E4%B8%AD%E7%9A%84-distinct-%E5%92%8C-group-by-%E5%93%AA%E4%B8%AA%E6%95%88%E7%8E%87%E6%9B%B4%E9%AB%98%EF%BC%9F/index.html",
       "legacy": true,
-      "selectionNumber": 29,
-      "editorNote": "从旧博客迁入，保留当时的正文与技术语境；示例和工具版本未经本次重新运行验证。",
       "toc": [
         {
           "id": "section-1",
@@ -521,15 +470,10 @@
       "summary": "先明确目标，再比较替代方案、模拟执行路径。记录逐渐形成的工作方法。",
       "published": "2023-07-17",
       "updated": "2023-07-17",
-      "migrated": "2026-09-22",
       "topic": "工作与成长",
       "kind": "个人手记",
       "reading": "1 分钟",
-      "sourceTitle": "灵光和感悟",
-      "sourceUrl": "https://github.com/coder-xieshijie/coder-xieshijie.github.io/blob/94073945f64517bee4b550a98b7b7837512e4e77/2023/07/17/%E4%B8%AA%E4%BA%BA%E6%88%90%E9%95%BF/%E7%81%B5%E5%85%89%E5%92%8C%E6%84%9F%E6%82%9F/index.html",
       "legacy": true,
-      "selectionNumber": 35,
-      "editorNote": "从旧博客迁入，保留当时的正文与技术语境；示例和工具版本未经本次重新运行验证。",
       "toc": []
     },
     {
@@ -538,15 +482,10 @@
       "summary": "两道逻辑推理题，以及分析条件、排除可能性的解题过程。",
       "published": "2023-07-13",
       "updated": "2023-07-13",
-      "migrated": "2026-09-22",
       "topic": "工具与基础知识",
       "kind": "学习笔记",
       "reading": "3 分钟",
-      "sourceTitle": "智力测验题",
-      "sourceUrl": "https://github.com/coder-xieshijie/coder-xieshijie.github.io/blob/94073945f64517bee4b550a98b7b7837512e4e77/2023/07/13/%E5%85%B6%E4%BB%96%E6%8A%80%E8%83%BD/%E6%99%BA%E5%8A%9B%E6%B5%8B%E9%AA%8C%E9%A2%98/index.html",
       "legacy": true,
-      "selectionNumber": 51,
-      "editorNote": "从旧博客迁入，保留当时的正文与技术语境；示例和工具版本未经本次重新运行验证。",
       "toc": [
         {
           "id": "section-1",
@@ -564,15 +503,10 @@
       "summary": "用状态模式组织随状态变化的行为，整理结构、应用场景与代码示例。",
       "published": "2023-06-27",
       "updated": "2023-06-27",
-      "migrated": "2026-09-22",
       "topic": "Java 与代码设计",
       "kind": "学习笔记",
       "reading": "12 分钟",
-      "sourceTitle": "状态机/状态模式",
-      "sourceUrl": "https://github.com/coder-xieshijie/coder-xieshijie.github.io/blob/94073945f64517bee4b550a98b7b7837512e4e77/2023/06/27/CodeAesthetic/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/%E7%8A%B6%E6%80%81%E6%9C%BA-%E7%8A%B6%E6%80%81%E6%A8%A1%E5%BC%8F/index.html",
       "legacy": true,
-      "selectionNumber": 12,
-      "editorNote": "设计模式学习笔记，保留旧文示例与引用。原始资料的作者信息待补充，不标作本站原创。",
       "toc": [
         {
           "id": "section-1",
@@ -630,15 +564,10 @@
       "summary": "从需求判断、系统性设计到上线验证，思考研发在完成需求之外还能贡献什么。",
       "published": "2023-06-22",
       "updated": "2023-06-22",
-      "migrated": "2026-09-22",
       "topic": "工作与成长",
       "kind": "旧文整理",
       "reading": "8 分钟",
-      "sourceTitle": "只是完成了需求，研发的竞争优势在哪里？",
-      "sourceUrl": "https://github.com/coder-xieshijie/coder-xieshijie.github.io/blob/94073945f64517bee4b550a98b7b7837512e4e77/2023/06/22/%E4%B8%AA%E4%BA%BA%E6%88%90%E9%95%BF/%E6%99%8B%E5%8D%87/%E5%8F%AA%E6%98%AF%E5%AE%8C%E6%88%90%E4%BA%86%E9%9C%80%E6%B1%82%EF%BC%8C%E7%A0%94%E5%8F%91%E7%9A%84%E7%AB%9E%E4%BA%89%E4%BC%98%E5%8A%BF%E5%9C%A8%E5%93%AA%E9%87%8C%EF%BC%9F/index.html",
       "legacy": true,
-      "selectionNumber": 36,
-      "editorNote": "从旧博客迁入，保留原题与正文，调整排版并恢复表格。",
       "toc": [
         {
           "id": "section-1",
@@ -664,15 +593,10 @@
       "summary": "围绕挑战、解决过程与能力成长，整理晋升汇报的思考视角和表达框架。",
       "published": "2023-06-22",
       "updated": "2023-06-22",
-      "migrated": "2026-09-22",
       "topic": "工作与成长",
       "kind": "资料整理",
       "reading": "9 分钟",
-      "sourceTitle": "晋升汇报之道(打怪兽版)",
-      "sourceUrl": "https://github.com/coder-xieshijie/coder-xieshijie.github.io/blob/94073945f64517bee4b550a98b7b7837512e4e77/2023/06/22/%E4%B8%AA%E4%BA%BA%E6%88%90%E9%95%BF/%E6%99%8B%E5%8D%87/%E6%99%8B%E5%8D%87%E6%B1%87%E6%8A%A5%E4%B9%8B%E9%81%93-%E6%89%93%E6%80%AA%E5%85%BD%E7%89%88/index.html",
       "legacy": true,
-      "selectionNumber": 37,
-      "editorNote": "从旧博客迁入的汇报方法整理，保留材料结构；原始来源信息待补充，不标作本站原创。",
       "toc": [
         {
           "id": "section-1",
@@ -745,88 +669,15 @@
       ]
     },
     {
-      "slug": "promotion-template",
-      "title": "专业晋升模板(ks版)",
-      "summary": "保留旧版述职材料的组织框架：个人贡献、关键决策、影响力与待提升项。",
-      "published": "2023-06-22",
-      "updated": "2023-06-22",
-      "migrated": "2026-09-22",
-      "topic": "工作与成长",
-      "kind": "模板整理",
-      "reading": "2 分钟",
-      "sourceTitle": "专业晋升模板(ks版)",
-      "sourceUrl": "https://github.com/coder-xieshijie/coder-xieshijie.github.io/blob/94073945f64517bee4b550a98b7b7837512e4e77/2023/06/22/%E4%B8%AA%E4%BA%BA%E6%88%90%E9%95%BF/%E6%99%8B%E5%8D%87/%E4%B8%93%E4%B8%9A%E6%99%8B%E5%8D%87%E6%A8%A1%E6%9D%BF-ks%E7%89%88/index.html",
-      "legacy": true,
-      "selectionNumber": 38,
-      "editorNote": "保留旧版述职模板的内容组织方法；已省略公司内部的评审时长安排与部门要求，不作为现行晋升规则。",
-      "toc": [
-        {
-          "id": "section-1",
-          "label": "专业晋升述职模板(2023快手版)"
-        },
-        {
-          "id": "section-2",
-          "label": "2023年个人晋升汇报的模板"
-        }
-      ]
-    },
-    {
-      "slug": "promotion-reflection-2023",
-      "title": "2023年2月 晋升答辩(2b-3a)",
-      "summary": "回看 API 管理与监控平台的建设过程，记录问题分析、技术取舍和个人成长。",
-      "published": "2023-06-22",
-      "updated": "2023-06-22",
-      "migrated": "2026-09-22",
-      "topic": "工作与成长",
-      "kind": "实践记录",
-      "reading": "7 分钟",
-      "sourceTitle": "2023年2月 晋升答辩(2b-3a)",
-      "sourceUrl": "https://github.com/coder-xieshijie/coder-xieshijie.github.io/blob/94073945f64517bee4b550a98b7b7837512e4e77/2023/06/22/%E4%B8%AA%E4%BA%BA%E6%88%90%E9%95%BF/%E6%99%8B%E5%8D%87/2023%E5%B9%B42%E6%9C%88-%E6%99%8B%E5%8D%87%E7%AD%94%E8%BE%A9-2b-3a/index.html",
-      "legacy": true,
-      "selectionNumber": 39,
-      "editorNote": "本页为旧答辩材料的公开整理版：省略内部截图、业务规模、成功率等具体经营与运行数据，以及内部平台标识；保留问题、解决过程和个人成长。",
-      "toc": [
-        {
-          "id": "section-1",
-          "label": "个人简介"
-        },
-        {
-          "id": "section-2",
-          "label": "主要工作及成果"
-        },
-        {
-          "id": "section-3",
-          "label": "一、API管理平台"
-        },
-        {
-          "id": "section-11",
-          "label": "二、Sentry平台"
-        },
-        {
-          "id": "section-18",
-          "label": "思考规划"
-        },
-        {
-          "id": "section-19",
-          "label": "成长总结"
-        }
-      ]
-    },
-    {
       "slug": "sql-query-notes",
       "title": "复杂查询sql整理",
       "summary": "保留 JOIN、聚合、分组和排序等查询片段，用通用示例记录具体问题的解法。",
       "published": "2023-06-20",
       "updated": "2023-06-20",
-      "migrated": "2026-09-22",
       "topic": "数据库与搜索",
       "kind": "实践笔记",
       "reading": "4 分钟",
-      "sourceTitle": "复杂查询sql整理",
-      "sourceUrl": "https://github.com/coder-xieshijie/coder-xieshijie.github.io/blob/94073945f64517bee4b550a98b7b7837512e4e77/2023/06/20/%E6%95%B0%E6%8D%AE%E5%BA%93/MySQL/%E5%A4%8D%E6%9D%82%E6%9F%A5%E8%AF%A2sql%E6%95%B4%E7%90%86/index.html",
       "legacy": true,
-      "selectionNumber": 30,
-      "editorNote": "从旧博客迁入，保留当时的正文与技术语境；示例和工具版本未经本次重新运行验证。",
       "toc": [
         {
           "id": "section-1",
@@ -852,15 +703,10 @@
       "summary": "从代码坏味道到具体重构手法，整理保持行为不变、降低维护成本的方法。",
       "published": "2023-06-12",
       "updated": "2023-06-12",
-      "migrated": "2026-09-22",
       "topic": "Java 与代码设计",
       "kind": "资料整理",
       "reading": "18 分钟",
-      "sourceTitle": "代码重构技巧(from kstack)",
-      "sourceUrl": "https://github.com/coder-xieshijie/coder-xieshijie.github.io/blob/94073945f64517bee4b550a98b7b7837512e4e77/2023/06/12/CodeAesthetic/%E4%BB%A3%E7%A0%81%E9%87%8D%E6%9E%84/%E4%BB%A3%E7%A0%81%E9%87%8D%E6%9E%84%E6%8A%80%E5%B7%A7-from-kstack/index.html",
       "legacy": true,
-      "selectionNumber": 13,
-      "editorNote": "旧文标题注明 from kstack。本页按资料整理保留，原始作者信息待补充，不标作本站原创。",
       "toc": [
         {
           "id": "section-1",
@@ -998,15 +844,10 @@
       "summary": "通过代码示例比较模板、策略与工厂模式，思考条件分支应该放在哪里。",
       "published": "2023-06-12",
       "updated": "2023-06-12",
-      "migrated": "2026-09-22",
       "topic": "Java 与代码设计",
       "kind": "学习笔记",
       "reading": "10 分钟",
-      "sourceTitle": "消灭if-else (模板+策略+工厂)",
-      "sourceUrl": "https://github.com/coder-xieshijie/coder-xieshijie.github.io/blob/94073945f64517bee4b550a98b7b7837512e4e77/2023/06/12/CodeAesthetic/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/%E6%B6%88%E7%81%ADif-else-%E6%A8%A1%E6%9D%BF-%E7%AD%96%E7%95%A5-%E5%B7%A5%E5%8E%82/index.html",
       "legacy": true,
-      "selectionNumber": 14,
-      "editorNote": "从旧博客迁入，保留当时的正文与技术语境；示例和工具版本未经本次重新运行验证。",
       "toc": [
         {
           "id": "section-1",
@@ -1028,15 +869,10 @@
       "summary": "从 Stream 与生产者消费者模式出发，整理在 Java 中实现生成器和流式操作的思路。",
       "published": "2023-06-07",
       "updated": "2023-06-07",
-      "migrated": "2026-09-22",
       "topic": "Java 与代码设计",
       "kind": "学习笔记",
       "reading": "17 分钟",
-      "sourceTitle": "为Java加入生成器(Generator)特性",
-      "sourceUrl": "https://github.com/coder-xieshijie/coder-xieshijie.github.io/blob/94073945f64517bee4b550a98b7b7837512e4e77/2023/06/07/java/java%E5%9F%BA%E7%A1%80/%E4%B8%BAJava%E5%8A%A0%E5%85%A5%E7%94%9F%E6%88%90%E5%99%A8-Generator-%E7%89%B9%E6%80%A7/index.html",
       "legacy": true,
-      "selectionNumber": 17,
-      "editorNote": "从旧博客迁入，保留当时的正文与技术语境；示例和工具版本未经本次重新运行验证。",
       "toc": [
         {
           "id": "section-1",
@@ -1058,15 +894,10 @@
       "summary": "整理连接 MySQL、导出数据与导入 SQL 文件的常用命令。",
       "published": "2023-06-07",
       "updated": "2023-06-07",
-      "migrated": "2026-09-22",
       "topic": "数据库与搜索",
       "kind": "工具笔记",
       "reading": "2 分钟",
-      "sourceTitle": "常用sql命令整理",
-      "sourceUrl": "https://github.com/coder-xieshijie/coder-xieshijie.github.io/blob/94073945f64517bee4b550a98b7b7837512e4e77/2023/06/07/%E6%95%B0%E6%8D%AE%E5%BA%93/MySQL/%E5%B8%B8%E7%94%A8sql%E5%91%BD%E4%BB%A4%E6%95%B4%E7%90%86/index.html",
       "legacy": true,
-      "selectionNumber": 31,
-      "editorNote": "旧文中的服务器地址、账户和凭据均已替换为通用示例。连接命令使用 -p 交互输入密码，不把密码写进命令或 shell 历史。",
       "toc": [
         {
           "id": "section-1",
@@ -1088,15 +919,10 @@
       "summary": "记录曾经使用的 Mac 应用、开发工具网站与 IDEA 插件。",
       "published": "2023-06-07",
       "updated": "2023-06-07",
-      "migrated": "2026-09-22",
       "topic": "工具与基础知识",
       "kind": "工具清单",
       "reading": "2 分钟",
-      "sourceTitle": "MAC应用、工具网站、插件大合集",
-      "sourceUrl": "https://github.com/coder-xieshijie/coder-xieshijie.github.io/blob/94073945f64517bee4b550a98b7b7837512e4e77/2023/06/07/%E5%85%B6%E4%BB%96%E6%8A%80%E8%83%BD/%E5%B7%A5%E5%85%B7/MAC%E5%BA%94%E7%94%A8%E3%80%81%E5%B7%A5%E5%85%B7%E7%BD%91%E7%AB%99%E3%80%81%E6%8F%92%E4%BB%B6%E5%A4%A7%E5%90%88%E9%9B%86/index.html",
       "legacy": true,
-      "selectionNumber": 49,
-      "editorNote": "2023 年工具清单，保留当时的使用记录；已省略激活、支付和与开发无关的旧推荐链接。软件功能与可用性以当前官方说明为准。",
       "toc": [
         {
           "id": "section-1",
@@ -1118,15 +944,10 @@
       "summary": "整理 InnoDB 的锁类型、加锁场景、并发控制与死锁问题。",
       "published": "2023-06-06",
       "updated": "2023-06-06",
-      "migrated": "2026-09-22",
       "topic": "数据库与搜索",
       "kind": "学习笔记",
       "reading": "17 分钟",
-      "sourceTitle": "数据库锁",
-      "sourceUrl": "https://github.com/coder-xieshijie/coder-xieshijie.github.io/blob/94073945f64517bee4b550a98b7b7837512e4e77/2023/06/06/%E6%95%B0%E6%8D%AE%E5%BA%93/MySQL/%E6%95%B0%E6%8D%AE%E5%BA%93%E9%94%81/index.html",
       "legacy": true,
-      "selectionNumber": 32,
-      "editorNote": "从旧博客迁入，保留当时的正文与技术语境；示例和工具版本未经本次重新运行验证。",
       "toc": [
         {
           "id": "section-1",
@@ -1192,15 +1013,10 @@
       "summary": "从并发执行的 SQL 和死锁日志出发，分析事务持有的锁与等待关系。",
       "published": "2023-06-06",
       "updated": "2023-06-06",
-      "migrated": "2026-09-22",
       "topic": "数据库与搜索",
       "kind": "阅读笔记",
       "reading": "17 分钟",
-      "sourceTitle": "实际分析Mysql死锁问题",
-      "sourceUrl": "https://github.com/coder-xieshijie/coder-xieshijie.github.io/blob/94073945f64517bee4b550a98b7b7837512e4e77/2023/06/06/%E6%95%B0%E6%8D%AE%E5%BA%93/MySQL/%E5%AE%9E%E9%99%85%E5%88%86%E6%9E%90Mysql%E6%AD%BB%E9%94%81%E9%97%AE%E9%A2%98/index.html",
       "legacy": true,
-      "selectionNumber": 33,
-      "editorNote": "从旧博客迁入，保留当时的正文与技术语境；示例和工具版本未经本次重新运行验证。",
       "toc": [
         {
           "id": "section-1",
@@ -1242,15 +1058,10 @@
       "summary": "整理 Arthas 的原理和常用排障命令，覆盖方法观察、线程、类加载与性能分析。",
       "published": "2023-06-01",
       "updated": "2023-06-01",
-      "migrated": "2026-09-22",
       "topic": "工具与基础知识",
       "kind": "工具笔记",
       "reading": "52 分钟",
-      "sourceTitle": "arthas使用指南",
-      "sourceUrl": "https://github.com/coder-xieshijie/coder-xieshijie.github.io/blob/94073945f64517bee4b550a98b7b7837512e4e77/2023/06/01/%E5%85%B6%E4%BB%96%E6%8A%80%E8%83%BD/%E9%97%AE%E9%A2%98%E5%AE%9A%E4%BD%8D/arthas%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/index.html",
       "legacy": true,
-      "selectionNumber": 46,
-      "editorNote": "旧版排障笔记。已省略内部平台截图与接入信息，代码中的业务类名、内部域名和账户信息已作通用化处理。执行会影响程序的诊断命令前，应确认目标进程和影响范围。",
       "toc": [
         {
           "id": "section-1",
@@ -1284,15 +1095,10 @@
       "summary": "从自动上传博客图片的小脚本开始，记录一次早期 ChatGPT 编程尝试，以及描述需求、拆分任务的体会。",
       "published": "2023-04-13",
       "updated": "2023-04-13",
-      "migrated": "2026-09-22",
       "topic": "AI 实践",
       "kind": "实践记录",
       "reading": "21 分钟",
-      "sourceTitle": "AI大模型的仰望星空和脚踏实地",
-      "sourceUrl": "https://github.com/coder-xieshijie/coder-xieshijie.github.io/blob/94073945f64517bee4b550a98b7b7837512e4e77/2023/04/13/AIGC/AI%E5%A4%A7%E6%A8%A1%E5%9E%8B%E7%9A%84%E4%BB%B0%E6%9C%9B%E6%98%9F%E7%A9%BA%E5%92%8C%E8%84%9A%E8%B8%8F%E5%AE%9E%E5%9C%B0/index.html",
       "legacy": true,
-      "selectionNumber": 1,
-      "editorNote": "保留 2023 年的探索过程与当时观点，不作为当前产品能力说明。文中关于省去文档阅读的判断是当时的体会；今天使用生成代码仍需对照文档并验证结果。",
       "toc": [
         {
           "id": "section-1",
@@ -1370,15 +1176,10 @@
       "summary": "保留 2023 年注册 ChatGPT 的过程记录，作为早期使用体验的存档。",
       "published": "2023-04-12",
       "updated": "2023-04-12",
-      "migrated": "2026-09-22",
       "topic": "AI 实践",
       "kind": "历史教程",
       "reading": "5 分钟",
-      "sourceTitle": "注册ChatGPT保姆级攻略(长期有效~)",
-      "sourceUrl": "https://github.com/coder-xieshijie/coder-xieshijie.github.io/blob/94073945f64517bee4b550a98b7b7837512e4e77/2023/04/12/AIGC/%E6%B3%A8%E5%86%8Cchatgpt%E4%BF%9D%E5%A7%86%E7%BA%A7%E6%94%BB%E7%95%A5-%E9%95%BF%E6%9C%9F%E6%9C%89%E6%95%88/index.html",
       "legacy": true,
-      "selectionNumber": 2,
-      "editorNote": "2023 年历史教程，原题中的“长期有效”不再作为有效承诺。注册、验证与服务可用性可能已变化；涉及账号的截图和旧推荐链接已省略，请以官方当前说明为准。",
       "toc": [
         {
           "id": "section-1",
@@ -1404,15 +1205,10 @@
       "summary": "记录 Hutool、Apache Commons Lang 与代码生成工具的用途。",
       "published": "2023-01-06",
       "updated": "2023-01-06",
-      "migrated": "2026-09-22",
       "topic": "工具与基础知识",
       "kind": "工具清单",
       "reading": "2 分钟",
-      "sourceTitle": "好用的工具轮子(持续更新~)",
-      "sourceUrl": "https://github.com/coder-xieshijie/coder-xieshijie.github.io/blob/94073945f64517bee4b550a98b7b7837512e4e77/2023/01/06/%E5%85%B6%E4%BB%96%E6%8A%80%E8%83%BD/%E5%A5%BD%E7%94%A8%E7%9A%84%E5%B7%A5%E5%85%B7%E8%BD%AE%E5%AD%90-%E6%8C%81%E7%BB%AD%E6%9B%B4%E6%96%B0/index.html",
       "legacy": true,
-      "selectionNumber": 50,
-      "editorNote": "旧版工具清单。版本与效率描述保留原文语境，属于当时的资料整理，未作为本站实测结论。",
       "toc": []
     },
     {
@@ -1421,15 +1217,10 @@
       "summary": "从代码、系统设计与业务理解出发，思考怎样把工作中的经验沉淀为自己的能力。",
       "published": "2022-12-28",
       "updated": "2022-12-28",
-      "migrated": "2026-09-22",
       "topic": "工作与成长",
       "kind": "个人手记",
       "reading": "1 分钟",
-      "sourceTitle": "如何提升工作能力",
-      "sourceUrl": "https://github.com/coder-xieshijie/coder-xieshijie.github.io/blob/94073945f64517bee4b550a98b7b7837512e4e77/2022/12/28/%E4%B8%AA%E4%BA%BA%E6%88%90%E9%95%BF/%E5%A6%82%E4%BD%95%E6%8F%90%E5%8D%87%E5%B7%A5%E4%BD%9C%E8%83%BD%E5%8A%9B/index.html",
       "legacy": true,
-      "selectionNumber": 40,
-      "editorNote": "从旧博客迁入，保留当时的正文与技术语境；示例和工具版本未经本次重新运行验证。",
       "toc": [
         {
           "id": "section-1",
@@ -1451,15 +1242,10 @@
       "summary": "从解析 JAR、扫描注解的需求出发，阅读 Reflections 的配置、扫描和索引查询流程。",
       "published": "2022-11-13",
       "updated": "2022-11-13",
-      "migrated": "2026-09-22",
       "topic": "Java 与代码设计",
       "kind": "实践记录",
       "reading": "11 分钟",
-      "sourceTitle": "reflections使用总结",
-      "sourceUrl": "https://github.com/coder-xieshijie/coder-xieshijie.github.io/blob/94073945f64517bee4b550a98b7b7837512e4e77/2022/11/13/java/reflections%E4%BD%BF%E7%94%A8%E6%80%BB%E7%BB%93/index.html",
       "legacy": true,
-      "selectionNumber": 18,
-      "editorNote": "从旧博客迁入，保留当时的正文与技术语境；示例和工具版本未经本次重新运行验证。",
       "toc": [
         {
           "id": "section-1",
@@ -1489,15 +1275,10 @@
       "summary": "用记账本的类比理解索引，整理索引类型及其背后的数据结构。",
       "published": "2022-11-13",
       "updated": "2022-11-13",
-      "migrated": "2026-09-22",
       "topic": "数据库与搜索",
       "kind": "学习笔记",
       "reading": "9 分钟",
-      "sourceTitle": "索引的记账本",
-      "sourceUrl": "https://github.com/coder-xieshijie/coder-xieshijie.github.io/blob/94073945f64517bee4b550a98b7b7837512e4e77/2022/11/13/%E6%95%B0%E6%8D%AE%E5%BA%93/MySQL/%E7%B4%A2%E5%BC%95%E7%9A%84%E8%AE%B0%E8%B4%A6%E6%9C%AC/index.html",
       "legacy": true,
-      "selectionNumber": 34,
-      "editorNote": "从旧博客迁入，保留当时的正文与技术语境；示例和工具版本未经本次重新运行验证。",
       "toc": [
         {
           "id": "section-1",
