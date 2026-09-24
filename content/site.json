@@ -96,6 +96,15 @@
   ],
   "articles": [
     {
+      "slug": "prompt-context-harness",
+      "title": "Prompt、Context、Harness：我的工作对象换了三次",
+      "summary": "14 个月、三个阶段：模型能不能听懂，能不能看到对的信息，能不能持续做对。",
+      "published": "2026-03-30",
+      "updated": "2026-03-30",
+      "topic": "AI 实践",
+      "reading": "15 分钟"
+    },
+    {
       "slug": "skills-and-mcp",
       "title": "Skills 与 MCP，究竟是什么关系？",
       "summary": "用一次代码评审拆开看：工作方法、工具接口，以及真正需要验证的结果。",
@@ -104,6 +113,51 @@
       "topic": "AI 实践",
       "reading": "6 分钟",
       "sourceTitle": "一文讲透 Skills 与 MCP：从源码看清两者的真正边界"
+    },
+    {
+      "slug": "lint-rules-for-agents",
+      "title": "Agent 每犯一类错，就多一条 lint 规则",
+      "summary": "架构约束从一份大文档，走到按需加载的说明，最后落进 ESLint 规则。",
+      "published": "2026-02-01",
+      "updated": "2026-02-01",
+      "topic": "AI 实践",
+      "reading": "7 分钟"
+    },
+    {
+      "slug": "from-rag-to-agentic-search",
+      "title": "搭了一年代码 RAG 之后",
+      "summary": "补全和 CR 里的两套召回，遇到的问题，以及模型能自己查代码以后的疑问。",
+      "published": "2025-04-15",
+      "updated": "2025-04-15",
+      "topic": "AI 实践",
+      "reading": "6 分钟"
+    },
+    {
+      "slug": "ai-code-review-precision",
+      "title": "AI Code Review：宁可少报，不要乱报",
+      "summary": "以函数为单位审查、多轮选举与过滤、few-shot 实验，以及怎么判断建议被采纳了。",
+      "published": "2025-02-06",
+      "updated": "2025-02-06",
+      "topic": "AI 实践",
+      "reading": "10 分钟"
+    },
+    {
+      "slug": "fine-tuning-code-model",
+      "title": "微调代码补全模型三个月",
+      "summary": "从数据构造、评测体系到超参实验，还有几个不报错、却让分数暴跌的坑。",
+      "published": "2024-04-01",
+      "updated": "2024-04-01",
+      "topic": "AI 实践",
+      "reading": "9 分钟"
+    },
+    {
+      "slug": "self-hosting-code-completion",
+      "title": "一个 Java 后端，从零部署代码补全模型",
+      "summary": "先跑通，再压测，再调 prompt：启动参数、卡数与并发、显存参数和 FIM 格式的实测。",
+      "published": "2024-03-25",
+      "updated": "2024-03-25",
+      "topic": "AI 实践",
+      "reading": "9 分钟"
     },
     {
       "slug": "elasticsearch-concepts",
