@@ -31,7 +31,7 @@ function observer() {
 export function renderHome(site) {
   const l=link,[lord,skills]=site.projects,a=site.articles.find(article=>article.slug===site.featuredArticles[0]);
   const moreArticles=site.featuredArticles.slice(1).map(slug=>site.articles.find(article=>article.slug===slug));
-  const articleTitle = esc(a.title).replace('，', '，<wbr>');
+  const articleTitle = esc(a.title).replace(/[，：]/, '$&<wbr>');
   return start(site)+header(site)+`
 <main id="main">
 <section class="h-hero d-wrap"><p class="d-eyebrow">A PERSONAL JOURNAL OF MAKING & LEARNING</p><h1>带着好奇心，<br>把想法<span>做出来。</span></h1><p class="h-hero-description">帮技术人把 AI 变成工作能力、判断力和职业杠杆。<br>这里是我的作品、实践，以及一路探索的记录。</p><div class="d-actions">${l('#journey','开始探索','d-button','arrow-down')}${l('./writing/','先读一篇文章')}</div><div class="h-author"><img src="./assets/brand-robot.png" width="76" height="76" alt="AI游民的朱红机器人"><div><strong>你好，我是谢世杰。</strong><p>开发者，也是一名持续记录的 AI 探索者。</p></div><span class="h-author-mark">AI<br>ROAM.</span></div><div class="h-hero-bottom"><span>一些作品，一些笔记，还有尚未写完的想法。</span><a href="#journey" aria-label="向下探索">${icon('arrow-down')}</a></div></section>

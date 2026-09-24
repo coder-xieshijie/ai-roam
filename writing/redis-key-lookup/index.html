@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light"><title>redis key值如何定位到value · 谢世杰｜AI游民</title><meta name="description" content="从一个 key 怎样找到 value 的问题出发，追踪 Redis 的字典与查找过程。"><meta property="og:type" content="article"><meta property="og:title" content="redis key值如何定位到value · AI Roam"><meta property="og:description" content="从一个 key 怎样找到 value 的问题出发，追踪 Redis 的字典与查找过程。"><meta name="theme-color" content="#f4f0e6"><link rel="icon" type="image/x-icon" href="../../assets/favicon.ico"><link rel="apple-touch-icon" sizes="180x180" href="../../assets/apple-touch-icon.png"><link rel="stylesheet" href="../../assets/site.css"><script src="../../assets/site.js" defer></script></head>
+<body><a class="skip" href="#main">跳到正文</a><header class="site-header wrap"><nav class="nav" aria-label="主导航"><a href="../../projects/">作品</a><a href="../../writing/" aria-current="page">文章</a><a href="../../about/">关于</a></nav><a class="brand" href="../../" aria-label="AI游民首页"><img src="../../assets/brand-robot.png" width="36" height="36" alt=""><span>AI游民<small>SHIJIE / KEEP ROAMING</small></span></a><a class="nav-github" href="https://github.com/coder-xieshijie">GitHub ↗</a></header><main id="main" class="wrap"><header class="page-intro article-header"><div class="breadcrumb"><a href="../../writing/">文章</a><span>/</span><span>数据库与搜索</span></div><h1>redis key值如何定位到value</h1><p class="lead">从一个 key 怎样找到 value 的问题出发，追踪 Redis 的字典与查找过程。</p><div class="article-meta"><span>谢世杰</span><span>发表于 <time datetime="2023-07-22">2023-07-22</time></span><span>约 4 分钟</span></div></header><div class="reading-layout"><nav class="toc" aria-label="文章目录"><h2>本文目录</h2><a href="#section-1">问题：</a><a href="#section-5">Redis的存储</a><a href="#section-6">根据key查找value的流程</a><a href="#section-7">其他网址</a></nav><article class="prose" id="article-body"><h2 id="section-1">问题：</h2>
+<p>我想往redis中设置一个缓存，其中key是由两部分组成</p>
+<ul><li>业务标识，REDIS_CACHE_XXX，这是固定不变的</li><li>用户名，user_name，根据业务使用不同而不同</li></ul>
+<p>现在key可能有两种情况</p>
+<ul><li>REDIS_CACHE_XXX_user_name</li><li>user_name_REDIS_CACHE_XXX</li></ul>
+<p>请问这两种key的查询性能有区别吗？</p>
+<h3 id="section-2">错误思路：</h3>
+<p>认为key是匹配是字符串匹配，那么差异性大的(user_name)放前面，可以快速匹配返回</p>
+<h3 id="section-3">实际</h3>
+<p>redis底层定位实际上是hash定位的，无论key怎么声明，在没有hash碰撞的时候，查询性能都是O(1)</p>
+<p>本质就是一个分布式hashMap</p>
+<h3 id="section-4">引申问题</h3>
+<p>数据库联合索引/索引（仅对于B+树索引），为什么要尽量把索引建立在有区别度的索引上</p>
+<p>提示：索引需要排序，按照的是字符串的自然顺序，不能进行hash</p>
+<hr>
+<h2 id="section-5">Redis的存储</h2>
+<p><strong>redis的总的数据结构</strong></p>
+<p>        redis 中的每一个数据库，都由一个 redisDb 的结构存储。其中，redisDb.id 存储着 redis 数据库的号码（以整数表示）。redisDb.dict 存储着该库所有的键值对数据。redisDb.expires 保存着每一个键的过期时间。</p>
+<p><strong>数据库号</strong></p>
+<p>        当redis 服务器初始化时，会预先分配 16 个数据库（该数量可以通过配置文件配置），所有数据库保存到结构 redisServer 的一个成员 redisServer.db 数组中。当我们选择数据库 select number  时，程序直接通过 redisServer.db[number] 来切换数据库。有时候当程序需要知道自己是在哪个数据库时，直接读取 redisDb.id 即可。</p>
+<p><strong>字典结构</strong></p>
+<p>        一个数据库的所有键值都存储在redisDb.dict中，要找到key的位置，就要了解一下dict 的结构：</p>
+<pre><code class="language-cpp">typedef struct dict {
+// 特定于类型的处理函数
+dictType *type;
+
+// 类型处理函数的私有数据
+void *privdata;
+
+// 哈希表（2个）
+dictht ht[2];
+
+// 记录 rehash 进度的标志，值为-1 表示 rehash 未进行
+int rehashidx;
+
+// 当前正在运作的安全迭代器数量
+int iterators;
+} dict;
+</code></pre>
+<p>        由上述结构可以看出，redis 的字典使用哈希表作为其底层实现。dict 类型使用的两个指向哈希表的指针，其中 0 号哈希表（ht[0]）主要用于存储数据库的所有键值，而1号哈希表主要用于程序对 0 号哈希表进行 rehash 时使用，rehash 一般是在添加新值时会触发，这里不做过多的赘述。所以redis 中查找一个key，其实就是对进行该dict 结构中的 ht[0] 进行查找操作。</p>
+<p><strong>哈希碰撞</strong></p>
+<p>        既然是哈希，就会有哈希碰撞，那么当多个键哈希之后为同一个值怎么办呢？redis采取链表的方式来存储多个哈希碰撞的键。也就是说，当根据key的哈希值找到该列表后，如果列表的长度大于1，那么我们需要遍历该链表来找到我们所查找的key。当然，一般情况下链表长度都为是1，所以时间复杂度可看作O(1)。</p>
+<h2 id="section-6">根据key查找value的流程</h2>
+<p>了解上述内容之后，本处分析redis如何通过key在内存中找到value。</p>
+<p>1、当拿到一个key后， redis 先判断当前库的0号哈希表是否为空，即：if (dict-&gt;ht[0].size == 0)。如果为true直接返回NULL。</p>
+<p>2、判断该0号哈希表是否需要rehash，因为如果在进行rehash，那么两个表中者有可能存储该key。如果正在进行rehash，将调用一次_dictRehashStep方法，_dictRehashStep 用于对数据库字典、以及哈希键的字典进行被动 rehash，这里不作赘述。</p>
+<p>3、计算哈希表，根据当前字典与key进行哈希值的计算。</p>
+<p>4、根据哈希值与当前字典计算哈希表的索引值。</p>
+<p>5、根据索引值在哈希表中取出链表，遍历该链表找到key的位置。一般情况，该链表长度为1。</p>
+<p>6、当 ht[0] 查找完了之后，再进行了次rehash判断，如果未在rehashing，则直接结束，否则对ht[1]重复345步骤。</p>
+<p>到此我们就找到了key在内存中的位置了</p>
+<h2 id="section-7">其他网址</h2>
+<p>字典 — Redis 设计与实现</p>
+</article></div><nav class="article-pagination" aria-label="前后篇文章"><a href="../sql-execution-order/"><span>上一篇</span><strong>sql语句各个关键字的执行顺序</strong></a><a href="../mysql-distinct-group-by/"><span>下一篇</span><strong>MySQL 中的 distinct 和 group by 哪个效率更高？</strong></a></nav><div class="related"><a class="text-link" href="../../writing/">返回全部文章<span aria-hidden="true">↗</span></a><a class="text-link" href="../../">回到首页<span aria-hidden="true">↗</span></a></div></main><footer class="site-footer"><div class="wrap"><div class="footer-main"><div><h2>继续探索。</h2><p>探索 AI，也探索工作与成长的新可能。</p></div><div><div class="footer-links"><a class="text-link" href="https://github.com/coder-xieshijie">GitHub<span aria-hidden="true">↗</span></a><button class="copy-button" type="button" data-copy="AI游民谢世杰">公众号 · AI游民谢世杰 <span aria-hidden="true">⧉</span></button></div><span id="copy-status" class="copy-status" role="status" aria-live="polite"></span></div></div><div class="footer-meta"><span>© 2026 谢世杰 · AI ROAM</span><span class="filing"><a href="https://beian.miit.gov.cn/">鲁ICP备2026052690号-1</a></span><a href="../../sync-status/">同步状态</a><a href="../../about/">个人作品与实践 · 个人观点</a></div></div></footer></body></html>
