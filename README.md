@@ -34,7 +34,7 @@ python3 -m http.server 4173 --directory dist
 
 修改源文件后运行构建，同时生成 GitHub Pages 根目录文件与 `dist/` 预览文件。根目录生成的 HTML 需要一起提交；不要直接修改这些生成文件。`dist/` 和 `node_modules/` 不提交。
 
-44 个页面：首页、作品列表、两个项目详情、文章列表、37 篇文章正文、关于我和同步状态。内部导航使用相对链接，兼容根路径和 `/ai-roam/` 子路径。`npm run check` 验证两种挂载路径下的本地资源、页面链接、锚点及生成文件一致性。
+29 个页面：首页、作品列表、两个项目详情、文章列表、22 篇文章正文、关于我和同步状态。内部导航使用相对链接，兼容根路径和 `/ai-roam/` 子路径。`npm run check` 验证两种挂载路径下的本地资源、页面链接、锚点及生成文件一致性。
 
 新增文章：在 `content/` 添加 Markdown，并在 `site.json` 的 `articles` 中按发表日期倒序的位置填写 slug、标题、摘要、发表日期、主题和阅读时间（`updated` 仅用于首页“最近记录”）。最近记录从项目介绍更新、文章修订和开源贡献合入日期生成，按日期取最近三条；项目介绍更新日期不代表上游项目发布日期。开源贡献只录入已核实的公开 PR，不将尚未成稿的选题列为文章。移除文章时，也需要移除它在根目录和 `dist/` 中的旧输出。
 
@@ -91,7 +91,7 @@ python3 -m http.server 4173 --directory dist
 
 ## 文章库
 
-本站是全部文章的唯一来源，共 37 篇：早期笔记维护于 `content/legacy/*.html`，其余文章为 `content/*.md`。每篇只标注作者谢世杰和发表日期，不显示迁入、修订或整理说明。首页精选由 `content/site.json` 的 `featuredArticles` 指定；文章列表按发表时间倒序排列，可按主题筛选。无 JavaScript 时仍显示完整列表。
+本站是全部文章的唯一来源，共 22 篇：早期笔记维护于 `content/legacy/*.html`，其余文章为 `content/*.md`。每篇只标注作者谢世杰和发表日期，不显示迁入、修订或整理说明。首页精选由 `content/site.json` 的 `featuredArticles` 指定；文章列表按发表时间倒序排列，可按主题筛选。无 JavaScript 时仍显示完整列表。
 
 - `content/legacy/*.html` 为清理后的静态正文：清除旧主题脚本、行号和内联样式，保留代码换行及正文表格；不要用旧博客 HTML 直接覆盖，以免重新引入内网链接或凭据。新文章使用 Markdown。
 - 配图直接引用腾讯云 COS 图床 `coder-xieshijie-img-1253784930.cos.ap-beijing.myqcloud.com` 上的原图，仓库不保存图片副本。图床需保持公开读，并允许本站域名的 Referer。

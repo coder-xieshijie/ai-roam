@@ -97,30 +97,12 @@
   "articles": [
     {
       "slug": "prompt-context-harness",
-      "title": "Prompt、Context、Harness：我的工作对象换了三次",
+      "title": "Prompt、Context、Harness：小红书工作记录演进总结",
       "summary": "14 个月、三个阶段：模型能不能听懂，能不能看到对的信息，能不能持续做对。",
       "published": "2026-03-30",
       "updated": "2026-03-30",
       "topic": "AI 实践",
       "reading": "15 分钟"
-    },
-    {
-      "slug": "skills-and-mcp",
-      "title": "Skills 与 MCP，究竟是什么关系？",
-      "summary": "用一次代码评审拆开看：工作方法、工具接口，以及真正需要验证的结果。",
-      "published": "2026-03-10",
-      "updated": "2026-09-10",
-      "topic": "AI 实践",
-      "reading": "6 分钟"
-    },
-    {
-      "slug": "lint-rules-for-agents",
-      "title": "Agent 每犯一类错，就多一条 lint 规则",
-      "summary": "架构约束从一份大文档，走到按需加载的说明，最后落进 ESLint 规则。",
-      "published": "2026-02-01",
-      "updated": "2026-02-01",
-      "topic": "AI 实践",
-      "reading": "7 分钟"
     },
     {
       "slug": "from-rag-to-agentic-search",
@@ -157,175 +139,6 @@
       "updated": "2024-03-25",
       "topic": "AI 实践",
       "reading": "9 分钟"
-    },
-    {
-      "slug": "elasticsearch-concepts",
-      "title": "elasticsearch 概念介绍",
-      "summary": "整理 Elasticsearch 的索引、文档与倒排索引等基础概念，配合示例理解搜索过程。",
-      "published": "2023-08-29",
-      "updated": "2023-08-29",
-      "topic": "数据库与搜索",
-      "kind": "学习笔记",
-      "reading": "14 分钟",
-      "legacy": true,
-      "toc": [
-        {
-          "id": "section-1",
-          "label": "Core"
-        },
-        {
-          "id": "section-2",
-          "label": "Concept"
-        },
-        {
-          "id": "section-7",
-          "label": "Index"
-        },
-        {
-          "id": "section-9",
-          "label": "Document"
-        }
-      ]
-    },
-    {
-      "slug": "network-notes",
-      "title": "网络概念详解",
-      "summary": "从点击一个链接开始，串起 DNS、HTTP、TCP 与网络传输的基础知识。",
-      "published": "2023-08-25",
-      "updated": "2023-08-25",
-      "topic": "工具与基础知识",
-      "kind": "学习笔记",
-      "reading": "34 分钟",
-      "legacy": true,
-      "toc": [
-        {
-          "id": "section-1",
-          "label": "一文熟知网络 – 文章巨长，但是很详细"
-        }
-      ]
-    },
-    {
-      "slug": "redis-mysql-consistency",
-      "title": "redis和mysql的双写问题",
-      "summary": "梳理数据库与缓存双写中的不一致窗口，以及更新顺序和补偿策略的取舍。",
-      "published": "2023-08-06",
-      "updated": "2023-08-06",
-      "topic": "数据库与搜索",
-      "kind": "学习笔记",
-      "reading": "4 分钟",
-      "legacy": true,
-      "toc": [
-        {
-          "id": "section-1",
-          "label": "什么是双写问题"
-        },
-        {
-          "id": "section-2",
-          "label": "解决策略"
-        },
-        {
-          "id": "section-3",
-          "label": "先写MySQL在写Redis的优缺点"
-        },
-        {
-          "id": "section-4",
-          "label": "分布式事务"
-        }
-      ]
-    },
-    {
-      "slug": "traffic-recording-replay",
-      "title": "流量录制回放介绍",
-      "summary": "从真实流量的录制、回放、Mock 到差异分析，梳理回归测试平台的工作方式。",
-      "published": "2023-08-04",
-      "updated": "2023-08-04",
-      "topic": "研发效能",
-      "kind": "实践整理",
-      "reading": "7 分钟",
-      "legacy": true,
-      "toc": [
-        {
-          "id": "section-1",
-          "label": "1.什么是流量录制回放"
-        },
-        {
-          "id": "section-2",
-          "label": "1.1 传统测试手段面临的问题"
-        },
-        {
-          "id": "section-3",
-          "label": "1.2 流量录制回放工作过程"
-        },
-        {
-          "id": "section-4",
-          "label": "1.3 什么场景适合使用流量回放"
-        },
-        {
-          "id": "section-5",
-          "label": "1.4 业内成功案例"
-        },
-        {
-          "id": "section-6",
-          "label": "2.流量录制回放架构"
-        },
-        {
-          "id": "section-7",
-          "label": "3.主要功能介绍"
-        },
-        {
-          "id": "section-8",
-          "label": "3.1 流量录制"
-        },
-        {
-          "id": "section-12",
-          "label": "3.2 流量回放"
-        },
-        {
-          "id": "section-17",
-          "label": "3.3 流量Diff"
-        }
-      ]
-    },
-    {
-      "slug": "traffic-recording-options",
-      "title": "流量录制方案梳理",
-      "summary": "比较中间件 SDK、字节码增强与网络流量复制三种录制方案，记录接入与维护成本的取舍。",
-      "published": "2023-08-03",
-      "updated": "2023-08-03",
-      "topic": "研发效能",
-      "kind": "方案笔记",
-      "reading": "4 分钟",
-      "legacy": true,
-      "toc": [
-        {
-          "id": "section-1",
-          "label": "1.研发平台流量录制回放平台建设历程"
-        },
-        {
-          "id": "section-2",
-          "label": "2.各方案架构概要"
-        },
-        {
-          "id": "section-3",
-          "label": "2.1 中间件sdk硬编码方案"
-        },
-        {
-          "id": "section-4",
-          "label": "2.2 采用sandbox repeater 方案"
-        },
-        {
-          "id": "section-5",
-          "label": "2.3 类tcp copy方案"
-        },
-        {
-          "id": "section-6",
-          "label": "3.录制方案之间优劣势对比"
-        },
-        {
-          "id": "section-7",
-          "label": "4.升级成本"
-        }
-      ]
     },
     {
       "slug": "jvm-sandbox",
@@ -365,102 +178,6 @@
         {
           "id": "section-18",
           "label": "参考文档"
-        }
-      ]
-    },
-    {
-      "slug": "mysql-explain",
-      "title": "mysql的explain关键字使用说明",
-      "summary": "结合执行计划中的 type、key、rows 和 Extra，整理 MySQL 查询分析的方法。",
-      "published": "2023-07-26",
-      "updated": "2023-07-26",
-      "topic": "数据库与搜索",
-      "kind": "学习笔记",
-      "reading": "24 分钟",
-      "legacy": true,
-      "toc": [
-        {
-          "id": "section-1",
-          "label": "简介"
-        },
-        {
-          "id": "section-2",
-          "label": "准备"
-        },
-        {
-          "id": "section-3",
-          "label": "EXPLAIN 输出格式"
-        }
-      ]
-    },
-    {
-      "slug": "sql-execution-order",
-      "title": "sql语句各个关键字的执行顺序",
-      "summary": "通过关联、过滤、分组和排序，理解 SQL 各个关键字在逻辑执行中的顺序。",
-      "published": "2023-07-24",
-      "updated": "2023-07-24",
-      "topic": "数据库与搜索",
-      "kind": "学习笔记",
-      "reading": "5 分钟",
-      "legacy": true,
-      "toc": [
-        {
-          "id": "section-1",
-          "label": "图解 SQL 的执行顺序"
-        }
-      ]
-    },
-    {
-      "slug": "redis-key-lookup",
-      "title": "redis key值如何定位到value",
-      "summary": "从一个 key 怎样找到 value 的问题出发，追踪 Redis 的字典与查找过程。",
-      "published": "2023-07-22",
-      "updated": "2023-07-22",
-      "topic": "数据库与搜索",
-      "kind": "学习笔记",
-      "reading": "4 分钟",
-      "legacy": true,
-      "toc": [
-        {
-          "id": "section-1",
-          "label": "问题："
-        },
-        {
-          "id": "section-5",
-          "label": "Redis的存储"
-        },
-        {
-          "id": "section-6",
-          "label": "根据key查找value的流程"
-        },
-        {
-          "id": "section-7",
-          "label": "其他网址"
-        }
-      ]
-    },
-    {
-      "slug": "mysql-distinct-group-by",
-      "title": "MySQL 中的 distinct 和 group by 哪个效率更高？",
-      "summary": "比较 DISTINCT 与 GROUP BY 的去重语义、执行方式和不同场景下的差异。",
-      "published": "2023-07-21",
-      "updated": "2023-07-21",
-      "topic": "数据库与搜索",
-      "kind": "学习笔记",
-      "reading": "13 分钟",
-      "legacy": true,
-      "toc": [
-        {
-          "id": "section-1",
-          "label": "distinct"
-        },
-        {
-          "id": "section-4",
-          "label": "group by"
-        },
-        {
-          "id": "section-8",
-          "label": "区别示例"
         }
       ]
     },
@@ -699,7 +416,7 @@
     },
     {
       "slug": "refactoring-notes",
-      "title": "代码重构技巧(from kstack)",
+      "title": "代码重构技巧",
       "summary": "从代码坏味道到具体重构手法，整理保持行为不变、降低维护成本的方法。",
       "published": "2023-06-12",
       "updated": "2023-06-12",
@@ -889,31 +606,6 @@
       ]
     },
     {
-      "slug": "mysql-command-notes",
-      "title": "常用sql命令整理",
-      "summary": "整理连接 MySQL、导出数据与导入 SQL 文件的常用命令。",
-      "published": "2023-06-07",
-      "updated": "2023-06-07",
-      "topic": "数据库与搜索",
-      "kind": "工具笔记",
-      "reading": "2 分钟",
-      "legacy": true,
-      "toc": [
-        {
-          "id": "section-1",
-          "label": "1、通过mysql命令远程连接服务器数据库"
-        },
-        {
-          "id": "section-2",
-          "label": "2、dump文件"
-        },
-        {
-          "id": "section-3",
-          "label": "3、把dump文件导入到指定数据库"
-        }
-      ]
-    },
-    {
       "slug": "mac-toolkit",
       "title": "MAC应用、工具网站、插件大合集",
       "summary": "记录曾经使用的 Mac 应用、开发工具网站与 IDEA 插件。",
@@ -935,120 +627,6 @@
         {
           "id": "section-3",
           "label": "idea插件"
-        }
-      ]
-    },
-    {
-      "slug": "database-locks",
-      "title": "数据库锁",
-      "summary": "整理 InnoDB 的锁类型、加锁场景、并发控制与死锁问题。",
-      "published": "2023-06-06",
-      "updated": "2023-06-06",
-      "topic": "数据库与搜索",
-      "kind": "学习笔记",
-      "reading": "17 分钟",
-      "legacy": true,
-      "toc": [
-        {
-          "id": "section-1",
-          "label": "数据库锁"
-        },
-        {
-          "id": "section-2",
-          "label": "前言"
-        },
-        {
-          "id": "section-3",
-          "label": "1. 为什么需要加锁"
-        },
-        {
-          "id": "section-4",
-          "label": "2. InnoDB有哪些锁？"
-        },
-        {
-          "id": "section-12",
-          "label": "3. 什么是死锁？如何防止死锁？"
-        },
-        {
-          "id": "section-13",
-          "label": "4.数据库的乐观锁和悲观锁"
-        },
-        {
-          "id": "section-14",
-          "label": "5. select for update加的是表锁还是行锁"
-        },
-        {
-          "id": "section-15",
-          "label": "6.如何使用数据库分布式锁"
-        },
-        {
-          "id": "section-16",
-          "label": "7.表级锁和行级锁，页面锁有什么区别"
-        },
-        {
-          "id": "section-17",
-          "label": "8. Mysql一条SQL是如何加锁的？"
-        },
-        {
-          "id": "section-18",
-          "label": "9. 并发情况下，如何做到安全的修改同一行数据"
-        },
-        {
-          "id": "section-19",
-          "label": "10. RR隔离级别下的加锁规则是怎么样的？"
-        },
-        {
-          "id": "section-20",
-          "label": "11. InnoDB 中行级锁时如何实现的？InnoDB三种行锁的算法"
-        },
-        {
-          "id": "section-21",
-          "label": "12. MySQL 遇到过死锁问题吗，你是如何解决的？"
-        }
-      ]
-    },
-    {
-      "slug": "mysql-deadlock-analysis",
-      "title": "实际分析Mysql死锁问题",
-      "summary": "从并发执行的 SQL 和死锁日志出发，分析事务持有的锁与等待关系。",
-      "published": "2023-06-06",
-      "updated": "2023-06-06",
-      "topic": "数据库与搜索",
-      "kind": "阅读笔记",
-      "reading": "17 分钟",
-      "legacy": true,
-      "toc": [
-        {
-          "id": "section-1",
-          "label": "实际分析Mysql死锁问题"
-        },
-        {
-          "id": "section-2",
-          "label": "前言"
-        },
-        {
-          "id": "section-3",
-          "label": "环境准备"
-        },
-        {
-          "id": "section-4",
-          "label": "模拟并发"
-        },
-        {
-          "id": "section-5",
-          "label": "锁介绍"
-        },
-        {
-          "id": "section-12",
-          "label": "如何读懂死锁日志？"
-        },
-        {
-          "id": "section-17",
-          "label": "死锁分析"
-        },
-        {
-          "id": "section-26",
-          "label": "总结"
         }
       ]
     },
@@ -1167,35 +745,6 @@
         {
           "id": "section-17",
           "label": "ChatGPT 辅助编程"
-        }
-      ]
-    },
-    {
-      "slug": "chatgpt-registration-2023",
-      "title": "注册ChatGPT保姆级攻略(长期有效~)",
-      "summary": "保留 2023 年注册 ChatGPT 的过程记录，作为早期使用体验的存档。",
-      "published": "2023-04-12",
-      "updated": "2023-04-12",
-      "topic": "AI 实践",
-      "kind": "历史教程",
-      "reading": "5 分钟",
-      "legacy": true,
-      "toc": [
-        {
-          "id": "section-1",
-          "label": "科学上网"
-        },
-        {
-          "id": "section-2",
-          "label": "接码平台"
-        },
-        {
-          "id": "section-3",
-          "label": "注册Google账号"
-        },
-        {
-          "id": "section-4",
-          "label": "注册ChatGPT"
         }
       ]
     },
