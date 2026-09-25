@@ -76,11 +76,11 @@ python3 -m http.server 4173 --directory dist
 
 ## 首页设计与字体
 
-首页采用已确认的人文科技风：暖纸底色、朱红探索线、Phosphor Regular 图标；线头随视野 65% 高度直接绘制，未经过的路径保持空白。手机将路线放在正文左侧，减少动态效果时展示静态路径。项目、文章和同步状态等内页继续使用原有布局。
+首页采用已确认的人文科技风：暖纸底色、朱红探索线、Phosphor Regular 图标；线头随视野 65% 高度直接绘制，未经过的路径保持空白。手机将路线放在正文左侧，减少动态效果时展示静态路径。
 
-西文标题与正文使用 Anthropic Sans，代码/命令、日期和编号使用 Anthropic Mono Web；这两款从 Anthropic 使用的公共 CDN 加载，不依赖访客本机安装，也不在仓库分发字体二进制。公共地址来自 2026-09-22 核对的 [Anthropic 站点样式](https://cdn.prod.website-files.com/67ce28cfec624e2b733f8a52/css/ant-brand.shared.3fb5bf118.min.css)。这不是可再分发字体的开源授权声明；更换为自托管前需要确认相应授权。上游文件失效时会回退到本地 IBM Plex。
+全站共用同一套页头（左侧导航、居中的机器人标识与「AI游民」、右侧 GitHub）和色板：纸色 `#f4f0e6`、正文 `#3c3e34`、次要文字 `#67695c`、分隔线 `#d8d2c3`、朱红 `#b75b42`。首页标题为霞鹜文楷，正文为 IBM Plex Sans SC；内页标题用宋体、正文用系统黑体，因为文章标题和正文是任意文字，不能依赖字形子集。日期、编号与代码使用 IBM Plex Mono。
 
-中文标题为霞鹜文楷，正文为 IBM Plex Sans SC；Mono 的离线回退为 IBM Plex Mono。`assets/fonts/` 中包含 SIL OFL 许可证与当前首页所需字形的 WOFF2 子集，保留原字形与名称；改文案时应检查子集是否含新增汉字。来源：
+`assets/fonts/` 中的 WOFF2 是自托管子集：霞鹜文楷与 Plex Sans SC 覆盖可见 ASCII 和首页全部文字，Plex Mono 覆盖可见 ASCII，均保留原字形与名称，并附 SIL OFL 许可证。修改首页文案（包括首页精选文章的标题和摘要）后，先 `npm run build`，再用 `scripts/subset-fonts.py` 从下列固定版本的完整字体重新生成子集（Plex Sans SC 用 `ttf/unhinted` 版本）：
 
 - [霞鹜文楷 Regular](https://github.com/lxgw/LxgwWenKai/tree/8bd6319350fb3ae1904c1cb1a41595ab15d21140)，`assets/fonts/WenKai-OFL.txt`。
 - [IBM Plex Sans SC / Mono Regular](https://github.com/IBM/plex/tree/78cd4223d8de9fcb78cba84eadecb269c56093c5)，`assets/fonts/Plex-*-LICENSE.txt`。
@@ -91,9 +91,9 @@ python3 -m http.server 4173 --directory dist
 
 ## 文章库
 
-本站是全部文章的唯一来源，共 22 篇：早期笔记维护于 `content/legacy/*.html`，其余文章为 `content/*.md`。每篇只标注作者谢世杰和发表日期，不显示迁入、修订或整理说明。首页精选由 `content/site.json` 的 `featuredArticles` 指定；文章列表按发表时间倒序排列，可按主题筛选。无 JavaScript 时仍显示完整列表。
+本站是全部文章的唯一来源，共 22 篇：早期笔记维护于 `content/legacy/*.html`，其余文章为 `content/*.md`。每篇只标注作者谢世杰和发表日期，不显示迁入、修订或整理说明。首页精选由 `content/site.json` 的 `featuredArticles` 指定；文章列表按年份分组、按发表时间倒序排列，可按主题筛选，没有匹配文章的年份整组隐藏。无 JavaScript 时仍显示完整列表。
 
 - `content/legacy/*.html` 为清理后的静态正文：清除旧主题脚本、行号和内联样式，保留代码换行及正文表格；不要用旧博客 HTML 直接覆盖，以免重新引入内网链接或凭据。新文章使用 Markdown。
-- 配图直接引用腾讯云 COS 图床 `coder-xieshijie-img-1253784930.cos.ap-beijing.myqcloud.com` 上的原图，仓库不保存图片副本。图床需保持公开读，并允许本站域名的 Referer。
+- 配图直接引用腾讯云 COS 图床 `coder-xieshijie-img-1253784930.cos.ap-beijing.myqcloud.com`，仓库不保存图片副本。正文里保留原图地址；构建时自动追加 `imageMogr2/thumbnail/1600x>/format/webp`，由图床按需缩放并转为 WebP。图床需保持公开读、开启数据万象图片处理，并允许本站域名的 Referer。
 - 内部平台与账号截图、凭据、内网地址、业务运行数据已从正文中省略或替换。
 - 部署命令采用 zlib 压缩传输，使图片较多时仍符合 Cloud Assistant 的 24 KiB 限制；归档与逐文件校验、安装范围和健康检查回滚不变。

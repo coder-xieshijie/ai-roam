@@ -23,10 +23,13 @@ const esc = (value) =>
 const arrow = '<span aria-hidden="true">↗</span>';
 const nav = [
   ["projects/", "作品"],
-  ["writing/", "文章与实践"],
+  ["writing/", "文章"],
   ["about/", "关于"],
 ];
 const pages = [];
+// Legacy images stay on the COS image host; COS resizes and re-encodes them on request.
+const cosImage = /(src="https:\/\/coder-xieshijie-img-1253784930\.cos\.ap-beijing\.myqcloud\.com\/[^"?]+)"/g;
+const cosResize = "imageMogr2/thumbnail/1600x%3E/format/webp";
 const link = (href, label, cls = "text-link") =>
   `<a class="${cls}" href="${esc(href)}">${label}${arrow}</a>`;
 const heading = (n, title, more = "") =>
@@ -50,8 +53,8 @@ function page(path, title, description, active, body, options = {}) {
   const depth = path === "index.html" ? 0 : path.split("/").length - 1;
   const base = depth ? "../".repeat(depth) : "./";
   const html = `<!doctype html>
-<html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light"><title>${esc(title)} · ${esc(site.name)}</title><meta name="description" content="${esc(description)}"><meta property="og:type" content="${options.article ? "article" : "website"}"><meta property="og:title" content="${esc(title)} · AI Roam"><meta property="og:description" content="${esc(description)}"><meta name="theme-color" content="#f1efea"><link rel="icon" type="image/x-icon" href="${base}assets/favicon.ico"><link rel="apple-touch-icon" sizes="180x180" href="${base}assets/apple-touch-icon.png"><link rel="stylesheet" href="${base}assets/site.css"><script src="${base}assets/site.js" defer></script></head>
-<body><a class="skip" href="#main">跳到正文</a><header class="site-header wrap"><a class="brand" href="${base}">谢世杰｜AI游民<span>AI ROAM</span></a><nav class="nav" aria-label="主导航">${nav.map(([url, label]) => `<a href="${base}${url}"${active === url ? ' aria-current="page"' : ""}>${label}</a>`).join("")}<a class="nav-github" href="${site.github}">GitHub ↗</a></nav></header><main id="main" class="wrap">${body(base)}</main>${footer(base)}</body></html>\n`;
+<html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light"><title>${esc(title)} · ${esc(site.name)}</title><meta name="description" content="${esc(description)}"><meta property="og:type" content="${options.article ? "article" : "website"}"><meta property="og:title" content="${esc(title)} · AI Roam"><meta property="og:description" content="${esc(description)}"><meta name="theme-color" content="#f4f0e6"><link rel="icon" type="image/x-icon" href="${base}assets/favicon.ico"><link rel="apple-touch-icon" sizes="180x180" href="${base}assets/apple-touch-icon.png"><link rel="stylesheet" href="${base}assets/site.css"><script src="${base}assets/site.js" defer></script></head>
+<body><a class="skip" href="#main">跳到正文</a><header class="site-header wrap"><nav class="nav" aria-label="主导航">${nav.map(([url, label]) => `<a href="${base}${url}"${active === url ? ' aria-current="page"' : ""}>${label}</a>`).join("")}</nav><a class="brand" href="${base}" aria-label="AI游民首页"><img src="${base}assets/brand-robot.png" width="36" height="36" alt=""><span>AI游民<small>SHIJIE / KEEP ROAMING</small></span></a><a class="nav-github" href="${site.github}">GitHub ↗</a></header><main id="main" class="wrap">${body(base)}</main>${footer(base)}</body></html>\n`;
   pages.push({ path, html });
 }
 
@@ -61,7 +64,8 @@ function projects(base) {
 }
 
 function articleRows(base) {
-  return site.articles.map(a => `<a class="article-row" data-article-topic="${esc(a.topic)}" href="${base}writing/${a.slug}/"><div class="article-date"><time datetime="${a.published}">${a.published.replaceAll("-", ".")}</time><span class="tag">${esc(a.topic)}</span></div><div><h3>${esc(a.title)}</h3><p>${esc(a.summary)}</p><span class="article-kind">${esc(a.kind || "实践文章")}</span></div><span class="article-arrow" aria-hidden="true">↗</span></a>`).join("");
+  const years = [...new Set(site.articles.map(a => a.published.slice(0, 4)))];
+  return years.map(year => `<section class="year-group" data-year-group aria-labelledby="year-${year}"><h2 class="year-label" id="year-${year}">${year}</h2>${site.articles.filter(a => a.published.startsWith(year)).map(a => `<a class="article-row" data-article-topic="${esc(a.topic)}" href="${base}writing/${a.slug}/"><time class="article-date" datetime="${a.published}">${a.published.slice(5).replace("-", ".")}</time><div><h3>${esc(a.title)}</h3><p>${esc(a.summary)}</p><p class="article-info">${esc(a.topic)} · ${esc(a.reading)}</p></div><span class="article-arrow" aria-hidden="true">↗</span></a>`).join("")}</section>`).join("");
 }
 
 function articleFilters() {
@@ -116,7 +120,7 @@ for (const [index, a] of site.articles.entries()) {
   const headings = a.legacy ? a.toc : [];
   let article;
   if (a.legacy) {
-    article = await readFile(resolve(root, `content/legacy/${a.slug}.html`), "utf8");
+    article = (await readFile(resolve(root, `content/legacy/${a.slug}.html`), "utf8")).replace(cosImage, `$1?${cosResize}"`);
   } else {
     const md = await readFile(resolve(root, `content/${a.slug}.md`), "utf8");
     let headingCount = 0;
@@ -132,7 +136,7 @@ for (const [index, a] of site.articles.entries()) {
   const previous = site.articles[index - 1], next = site.articles[index + 1];
   page(
     `writing/${a.slug}/index.html`, a.title, a.summary, "writing/",
-    b => `<header class="page-intro article-header"><div class="breadcrumb"><a href="${b}writing/">文章与实践</a><span>/</span><span>${esc(a.topic)}</span></div><p class="eyebrow">${esc(a.topic)} / ${esc(a.kind || "NOTES")}</p><h1>${esc(a.title)}</h1><p class="lead">${esc(a.summary)}</p><div class="article-meta"><span>谢世杰</span><span>发表于 <time datetime="${a.published}">${a.published}</time></span><span>约 ${esc(a.reading)}</span></div></header><div class="reading-layout"><nav class="toc" aria-label="文章目录"><h2>本文目录</h2>${headings.length ? headings.map(h => `<a href="#${h.id}">${a.legacy ? esc(h.label) : h.label}</a>`).join("") : '<a href="#article-body">阅读全文</a>'}</nav><article class="prose" id="article-body">${article}</article></div><nav class="article-pagination" aria-label="前后篇文章">${previous ? `<a href="../${previous.slug}/"><span>上一篇</span><strong>${esc(previous.title)}</strong></a>` : ""}${next ? `<a href="../${next.slug}/"><span>下一篇</span><strong>${esc(next.title)}</strong></a>` : ""}</nav><div class="related">${link(b + "writing/", "返回全部文章")}${link(b + "", "回到首页")}</div>`,
+    b => `<header class="page-intro article-header"><div class="breadcrumb"><a href="${b}writing/">文章</a><span>/</span><span>${esc(a.topic)}</span></div><h1>${esc(a.title)}</h1><p class="lead">${esc(a.summary)}</p><div class="article-meta"><span>谢世杰</span><span>发表于 <time datetime="${a.published}">${a.published}</time></span><span>约 ${esc(a.reading)}</span></div></header><div class="reading-layout"><nav class="toc" aria-label="文章目录"><h2>本文目录</h2>${headings.length ? headings.map(h => `<a href="#${h.id}">${a.legacy ? esc(h.label) : h.label}</a>`).join("") : '<a href="#article-body">阅读全文</a>'}</nav><article class="prose" id="article-body">${article}</article></div><nav class="article-pagination" aria-label="前后篇文章">${previous ? `<a href="../${previous.slug}/"><span>上一篇</span><strong>${esc(previous.title)}</strong></a>` : ""}${next ? `<a href="../${next.slug}/"><span>下一篇</span><strong>${esc(next.title)}</strong></a>` : ""}</nav><div class="related">${link(b + "writing/", "返回全部文章")}${link(b + "", "回到首页")}</div>`,
     { article: true },
   );
 }

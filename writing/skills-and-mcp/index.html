@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light"><title>Skills 与 MCP，究竟是什么关系？ · 谢世杰｜AI游民</title><meta name="description" content="用一次代码评审拆开看：工作方法、工具接口，以及真正需要验证的结果。"><meta property="og:type" content="article"><meta property="og:title" content="Skills 与 MCP，究竟是什么关系？ · AI Roam"><meta property="og:description" content="用一次代码评审拆开看：工作方法、工具接口，以及真正需要验证的结果。"><meta name="theme-color" content="#f4f0e6"><link rel="icon" type="image/x-icon" href="../../assets/favicon.ico"><link rel="apple-touch-icon" sizes="180x180" href="../../assets/apple-touch-icon.png"><link rel="stylesheet" href="../../assets/site.css"><script src="../../assets/site.js" defer></script></head>
+<body><a class="skip" href="#main">跳到正文</a><header class="site-header wrap"><nav class="nav" aria-label="主导航"><a href="../../projects/">作品</a><a href="../../writing/" aria-current="page">文章</a><a href="../../about/">关于</a></nav><a class="brand" href="../../" aria-label="AI游民首页"><img src="../../assets/brand-robot.png" width="36" height="36" alt=""><span>AI游民<small>SHIJIE / KEEP ROAMING</small></span></a><a class="nav-github" href="https://github.com/coder-xieshijie">GitHub ↗</a></header><main id="main" class="wrap"><header class="page-intro article-header"><div class="breadcrumb"><a href="../../writing/">文章</a><span>/</span><span>AI 实践</span></div><h1>Skills 与 MCP，究竟是什么关系？</h1><p class="lead">用一次代码评审拆开看：工作方法、工具接口，以及真正需要验证的结果。</p><div class="article-meta"><span>谢世杰</span><span>发表于 <time datetime="2026-03-10">2026-03-10</time></span><span>约 6 分钟</span></div></header><div class="reading-layout"><nav class="toc" aria-label="文章目录"><h2>本文目录</h2><a href="#section-1">先拆开一次代码评审</a><a href="#section-2">Skill：把工作方法交给 Agent</a><a href="#section-3">MCP：约定能力怎样被发现和调用</a><a href="#section-4">放在一起，会发生什么</a><a href="#section-5">我的选择顺序</a></nav><article class="prose" id="article-body"><p>“有了 Skills，是不是就不需要 MCP 了？”</p>
+<p>这个问题容易把两件事混在一起：Agent 知不知道该怎么做，以及它能不能拿到需要的信息、调用需要的能力。</p>
+<p>我的判断是：两者经常一起使用。要选什么，先看任务卡在哪一步。</p>
+<h2 id="section-1">先拆开一次代码评审</h2>
+<p>假设你让 Agent 评审一个改动。它至少要完成这些事：读需求，找到对应代码，判断有没有实际问题，给出能复核的依据。</p>
+<p>如果它只能泛泛地说“注意异常处理”，缺的可能是评审方法。你可以把准则整理成 Skill：每条问题必须交代触发条件、代码位置、影响和最小改法；没有成立的问题，就明确说没有。</p>
+<p>如果它连改动内容都拿不到，继续增加评审准则也没用。此时要解决的是访问问题：通过已有 CLI、API，或者 MCP 服务读到代码和讨论。</p>
+<p><strong>先分清缺的是方法、访问能力，还是验证，工具选择才有依据。</strong></p>
+<h2 id="section-2">Skill：把工作方法交给 Agent</h2>
+<p>Agent Skills 的基本单位是一个目录。核心的 <code>SKILL.md</code> 放名称、描述和指引，也可以带脚本、参考资料与素材。官方设计采用渐进加载：先发现名称与描述，在相关任务中再读取完整指引，其他资源按需使用。<a href="https://agentskills.io/home">Agent Skills 概览</a></p>
+<p>这很适合保存反复使用的方法。比如我公开的 <code>review-rules</code>，关注需求是否完整、改造是否必要、复杂度是否值得，以及责任边界是否清楚。</p>
+<pre><code class="language-text">$review-rules 复核这条评审意见：
+“这里应该增加一个通用重试层。”
+请结合当前需求、已有实现和失败场景给出判断。
+</code></pre>
+<p>上面是一个调用示例。它的价值在于把“认真 Review”变成具体的检查问题。至于模型会不会正确应用这些准则，仍然要看输出。</p>
+<p>不同宿主怎样发现、触发和执行 Skill，要看各自实现。不能把某个 Agent 的加载方式，当成所有 Agent 都遵守的运行机制。规范中的 <code>allowed-tools</code> 也是实验性字段，支持情况因实现而异。<a href="https://agentskills.io/specification">Agent Skills 规范</a></p>
+<h2 id="section-3">MCP：约定能力怎样被发现和调用</h2>
+<p>MCP 定义客户端与服务端交换上下文的协议。服务端可以提供工具、资源和提示模板；它不只是“工具列表”。当前官方架构文档列出 stdio 与 Streamable HTTP 两种传输方式。<a href="https://modelcontextprotocol.io/docs/2026-07-28/learn/architecture">MCP 架构，2026-07-28 版</a></p>
+<p>回到代码评审：一个服务可以提供读取变更、查询讨论的能力，宿主通过约定的接口使用它。这解决了如何接入的问题。拿到信息以后，按什么标准形成评审结论，还需要任务要求、模型判断与验证。</p>
+<p>协议也在变化。查资料时，我会先确认文章描述的版本，再对照实际客户端和服务端。不能拿旧版本的连接流程，直接推断今天所有实现的行为。</p>
+<h2 id="section-4">放在一起，会发生什么</h2>
+<p>下面是一个示意流程，不代表某次真实执行记录：</p>
+<ol>
+<li>用户明确评审范围：这个分支，相对哪个基线，是否允许修改。</li>
+<li>Agent 读取评审 Skill，知道哪些问题值得报、结论要附什么依据。</li>
+<li>通过已授权的 CLI 或 MCP 能力，读取改动和上下文。</li>
+<li>结合代码形成判断，必要时运行针对性的验证。</li>
+<li>给出结论，同时说明没有验证到的部分。</li>
+</ol>
+<p>Skill 可以指引 Agent 使用 MCP，也可以使用它已经具备的本地工具。MCP 提供的提示模板也可能承载工作指引，所以“Skill 只负责怎么做、MCP 只负责能做什么”是方便入门的概括，不能当成没有交集的硬边界。</p>
+<p>我更愿意用这三个问题来检查一个方案：</p>
+<table>
+<thead>
+<tr>
+<th>检查什么</th>
+<th>一个具体问题</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>工作方法</td>
+<td>它知道一条有效的评审结论需要哪些证据吗？</td>
+</tr>
+<tr>
+<td>可用能力</td>
+<td>它能读取这次任务实际需要的代码和讨论吗？</td>
+</tr>
+<tr>
+<td>验证结果</td>
+<td>它说“有问题”或“已修复”时，有什么能复核的依据？</td>
+</tr>
+</tbody></table>
+<h2 id="section-5">我的选择顺序</h2>
+<p>已有工具能完成任务时，先把反复出现的方法写清楚。需要跨应用复用一组接口、接入外部系统时，再评估 MCP 的接入收益和维护成本。</p>
+<p>还有一种情况：方法和工具都有，结果依旧不可靠。此时应该检查上下文有没有缺失、权限是否合适、验收标准是否具体。继续堆 Skill 或服务，不一定能解决问题。</p>
+<p>文档里的“不要写入”和执行环境里的“无法写入”也要分开看。判断一次任务的权限边界，要检查宿主、工具和实际授权。仅凭它叫 Skill 还是 MCP，无法判断整套流程的风险。</p>
+<p>我在做 Agent 工具时越来越关心的是：<strong>一次任务究竟在哪里失败，下一次能不能更早发现。</strong> Skills 和 MCP 都可以帮忙，但最后仍要回到具体任务和结果。</p>
+</article></div><nav class="article-pagination" aria-label="前后篇文章"><a href="../prompt-context-harness/"><span>上一篇</span><strong>Prompt、Context、Harness：我的工作对象换了三次</strong></a><a href="../lint-rules-for-agents/"><span>下一篇</span><strong>Agent 每犯一类错，就多一条 lint 规则</strong></a></nav><div class="related"><a class="text-link" href="../../writing/">返回全部文章<span aria-hidden="true">↗</span></a><a class="text-link" href="../../">回到首页<span aria-hidden="true">↗</span></a></div></main><footer class="site-footer"><div class="wrap"><div class="footer-main"><div><h2>继续探索。</h2><p>探索 AI，也探索工作与成长的新可能。</p></div><div><div class="footer-links"><a class="text-link" href="https://github.com/coder-xieshijie">GitHub<span aria-hidden="true">↗</span></a><button class="copy-button" type="button" data-copy="AI游民谢世杰">公众号 · AI游民谢世杰 <span aria-hidden="true">⧉</span></button></div><span id="copy-status" class="copy-status" role="status" aria-live="polite"></span></div></div><div class="footer-meta"><span>© 2026 谢世杰 · AI ROAM</span><span class="filing"><a href="https://beian.miit.gov.cn/">鲁ICP备2026052690号-1</a></span><a href="../../sync-status/">同步状态</a><a href="../../about/">个人作品与实践 · 个人观点</a></div></div></footer></body></html>
