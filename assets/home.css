@@ -94,7 +94,10 @@
 .h-author>img{width:66px;height:66px;border-radius:50%;flex-shrink:0}
 .h-author strong{font:500 19px var(--d-title)}
 .h-author p{font-size:11px;color:var(--d-muted);margin-top:8px}
-.h-author-mark{font:11px/1.7 var(--d-mono);letter-spacing:1px;margin-left:auto;color:var(--d-accent);text-align:right}
+.h-author-mark{display:flex;align-items:center;gap:6px;font:11px/1.7 var(--d-mono);letter-spacing:1px;margin-left:auto;color:var(--d-accent);white-space:nowrap}
+.h-author-mark .d-icon{width:14px;height:14px}
+.h-author:hover strong{color:var(--d-accent)}
+.h-author>img{object-fit:cover;background:var(--d-line)}
 .h-hero-bottom{display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--d-line);margin-top:58px;padding:0 0 22px;font:12px/1.8 var(--d-title);color:var(--d-muted)}
 .h-hero-bottom .d-icon{color:var(--d-accent)}
 .home .d-journey{padding-top:93px}
