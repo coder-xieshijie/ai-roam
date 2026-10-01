@@ -1,5 +1,5 @@
 {
-  "name": "谢世杰｜AI游民",
+  "name": "自用网站",
   "tagline": "帮技术人把 AI 变成工作能力、判断力和职业杠杆。",
   "description": "这里记录我做的 Agent 工具、开发实践，以及对工作与成长的思考。",
   "github": "https://github.com/coder-xieshijie",
@@ -8,8 +8,8 @@
   "filing": {
     "domain": "xieshijie.cn",
     "icp": "鲁ICP备2026052690号-1",
-    "police": "",
-    "policeUrl": ""
+    "police": "京公网安备11010502063318号",
+    "policeUrl": "https://beian.mps.gov.cn/#/query/webSearch?code=11010502063318"
   },
   "projects": [
     {

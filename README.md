@@ -67,4 +67,4 @@ Agent Lord 的计划到实现流程图取自该版本的 `assets/diagrams/plan-t
 
 ## 备案与联系
 
-`filing` 填写 `xieshijie.cn` 与 `鲁ICP备2026052690号-1`，页脚链接到工信部查询入口；取得公安备案号后，同时填写 `police` 与平台提供的 `policeUrl`。公众号名称「AI游民谢世杰」在 `site.json` 中维护，全站同步。
+正式备案名称「自用网站」在 `site.json` 的 `name` 中维护，同步到全站导航、首页标题和分享标题；个人简介与作者署名仍使用谢世杰。`filing` 填写 `xieshijie.cn`、`鲁ICP备2026052690号-1` 与 `京公网安备11010502063318号`，页脚分别链接工信部和公安备案查询入口。公安备案图标 `assets/police-filing.png` 取自[全国互联网安全管理服务平台页脚使用的官方资源](https://beian.mps.gov.cn/img/logo01.dd7ff50e.png)。公众号名称「AI游民谢世杰」仍在 `site.json` 中维护，全站同步。

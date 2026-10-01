@@ -6,15 +6,15 @@ const date = value => esc(value.replaceAll('-', '.'));
 // COS resizes and re-encodes the portrait on request.
 const avatar = (site, width) => esc(`${site.avatar}?imageMogr2/thumbnail/${width}x/format/webp`);
 function start(site) {
-  const title = `作品、实践与思考 · ${site.name}`;
+  const title = site.name;
   return `<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light"><title>${esc(title)}</title><meta name="description" content="${esc(site.description)}"><meta property="og:type" content="website"><meta property="og:title" content="${esc(title)}"><meta property="og:description" content="${esc(site.description)}"><meta name="theme-color" content="#f4f0e6"><link rel="icon" href="./assets/favicon.ico"><link rel="apple-touch-icon" sizes="180x180" href="./assets/apple-touch-icon.png"><link rel="preload" href="./assets/fonts/wenkai.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="./assets/fonts/plex-sans-sc.woff2" as="font" type="font/woff2" crossorigin><link rel="stylesheet" href="./assets/home.css"><script src="./assets/home-trail.js" defer></script><script src="./assets/site.js" defer></script></head><body class="home"><a class="d-skip" href="#main">跳到正文</a>`;
 }
 function header(site) {
-  return `<header class="d-header d-wrap"><a class="d-brand" href="./" aria-label="AI游民首页"><img src="./assets/brand-robot.png" width="40" height="40" alt=""><span>AI游民<small>SHIJIE / KEEP ROAMING</small></span></a><nav aria-label="主导航"><a href="./projects/">作品</a><a href="./writing/">文章</a><a href="./about/">关于</a></nav>${link(site.github,'GitHub','d-github')}</header>`;
+  return `<header class="d-header d-wrap"><a class="d-brand" href="./" aria-label="${esc(site.name)}首页"><img src="./assets/brand-robot.png" width="40" height="40" alt=""><span>${esc(site.name)}<small>SHIJIE / KEEP ROAMING</small></span></a><nav aria-label="主导航"><a href="./projects/">作品</a><a href="./writing/">文章</a><a href="./about/">关于</a></nav>${link(site.github,'GitHub','d-github')}</header>`;
 }
 function footer(site) {
   const f = site.filing;
-  const filings = (f.icp ? `<a href="https://beian.miit.gov.cn/">${esc(f.icp)}</a>` : '') + (f.police && f.policeUrl ? `<a href="${esc(f.policeUrl)}">${esc(f.police)}</a>` : '');
+  const filings = (f.icp ? `<a href="https://beian.miit.gov.cn/">${esc(f.icp)}</a>` : '') + (f.police && f.policeUrl ? `<a class="police-filing" href="${esc(f.policeUrl)}"><img src="./assets/police-filing.png" width="18" height="20" alt="">${esc(f.police)}</a>` : '');
   return `<footer class="d-footer d-wrap"><span>© 2026 谢世杰 · AI ROAM</span>${filings}<a href="./about/">关于我</a></footer><button class="d-replay" id="replay-trail" type="button" aria-label="回到起点">${icon('arrow-up')}<span>回到起点</span></button></body></html>`;
 }
 function contact(site) {
