@@ -477,6 +477,18 @@ p + p {
   gap: 16px;
   flex-wrap: wrap;
 }
+.police-filing {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  white-space: nowrap;
+}
+.police-filing img {
+  width: 18px;
+  height: 20px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
 .page-intro {
   padding: 58px 0 46px;
   max-width: 870px;

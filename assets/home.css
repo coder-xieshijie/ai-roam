@@ -70,6 +70,8 @@
 .d-updates time{font:11px var(--d-mono);color:var(--d-muted);white-space:nowrap}
 .d-updates .d-link{flex:1;font-size:13px}
 .d-footer{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px 24px;border-top:1px solid var(--d-line);padding:25px 0 105px;font-size:10px;color:var(--d-muted)}
+.police-filing{display:inline-flex;align-items:center;gap:5px;white-space:nowrap}
+.police-filing img{width:18px;height:20px;object-fit:contain;flex-shrink:0}
 .d-footer>span:nth-child(2){font:9px/2 var(--d-mono);letter-spacing:.5px}
 .d-replay{display:flex;align-items:center;gap:7px;position:fixed;right:22px;bottom:28px;z-index:25;padding:9px 12px;border:1px solid var(--d-line);border-radius:4px;background:var(--d-paper);font-size:11px!important;cursor:pointer}
 .d-replay .d-icon{width:16px;height:16px}
