@@ -5,9 +5,9 @@ const link = (href, label, cls = 'd-link', glyph = 'arrow-up-right') => `<a clas
 const date = value => esc(value.replaceAll('-', '.'));
 // COS resizes and re-encodes the portrait on request.
 const avatar = (site, width) => esc(`${site.avatar}?imageMogr2/thumbnail/${width}x/format/webp`);
-function start(site) {
+function start(site, cssVersion) {
   const title = site.name;
-  return `<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light"><title>${esc(title)}</title><meta name="description" content="${esc(site.description)}"><meta property="og:type" content="website"><meta property="og:title" content="${esc(title)}"><meta property="og:description" content="${esc(site.description)}"><meta name="theme-color" content="#f4f0e6"><link rel="icon" href="./assets/favicon.ico"><link rel="apple-touch-icon" sizes="180x180" href="./assets/apple-touch-icon.png"><link rel="preload" href="./assets/fonts/wenkai.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="./assets/fonts/plex-sans-sc.woff2" as="font" type="font/woff2" crossorigin><link rel="stylesheet" href="./assets/home.css"><script src="./assets/home-trail.js" defer></script><script src="./assets/site.js" defer></script></head><body class="home"><a class="d-skip" href="#main">跳到正文</a>`;
+  return `<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light"><title>${esc(title)}</title><meta name="description" content="${esc(site.description)}"><meta property="og:type" content="website"><meta property="og:title" content="${esc(title)}"><meta property="og:description" content="${esc(site.description)}"><meta name="theme-color" content="#f4f0e6"><link rel="icon" href="./assets/favicon.ico"><link rel="apple-touch-icon" sizes="180x180" href="./assets/apple-touch-icon.png"><link rel="preload" href="./assets/fonts/wenkai.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="./assets/fonts/plex-sans-sc.woff2" as="font" type="font/woff2" crossorigin><link rel="stylesheet" href="./assets/home.css?v=${cssVersion}"><script src="./assets/home-trail.js" defer></script><script src="./assets/site.js" defer></script></head><body class="home"><a class="d-skip" href="#main">跳到正文</a>`;
 }
 function header(site) {
   return `<header class="d-header d-wrap"><a class="d-brand" href="./" aria-label="${esc(site.name)}首页"><img src="./assets/brand-robot.png" width="40" height="40" alt=""><span>${esc(site.name)}<small>SHIJIE / KEEP ROAMING</small></span></a><nav aria-label="主导航"><a href="./projects/">作品</a><a href="./writing/">文章</a><a href="./about/">关于</a></nav>${link(site.github,'GitHub','d-github')}</header>`;
@@ -30,11 +30,11 @@ function contributions(site) {
 function observer() {
   return `<figure class="d-observer"><div class="d-window"><span class="d-window-dots" aria-hidden="true"><i></i><i></i><i></i></span><span>AGENT LORD / OBSERVER</span>${icon('arrow-up-right')}</div><a href="./projects/agent-lord/" aria-label="查看 Agent Lord 项目"><img src="./assets/observer-example.jpg" width="1280" height="720" alt="Agent Lord Observer 的任务、工具执行记录与评审结果" loading="lazy"></a><figcaption><span>一个窗口，看见每一步。</span><small>界面演示 · 合成示例数据</small></figcaption></figure>`;
 }
-export function renderHome(site) {
+export function renderHome(site, cssVersion) {
   const l=link,[lord,skills]=site.projects,a=site.articles.find(article=>article.slug===site.featuredArticles[0]);
   const moreArticles=site.featuredArticles.slice(1).map(slug=>site.articles.find(article=>article.slug===slug));
   const articleTitle = esc(a.title).replace(/[，：]/, '$&<wbr>');
-  return start(site)+header(site)+`
+  return start(site,cssVersion)+header(site)+`
 <main id="main">
 <section class="h-hero d-wrap"><p class="d-eyebrow">A PERSONAL JOURNAL OF MAKING & LEARNING</p><h1>带着好奇心，<br>把想法<span>做出来。</span></h1><p class="h-hero-description">帮技术人把 AI 变成工作能力、判断力和职业杠杆。<br>这里是我的作品、实践，以及一路探索的记录。</p><div class="d-actions">${l('#journey','开始探索','d-button','arrow-down')}${l('./writing/','先读一篇文章')}</div><a class="h-author" href="./about/"><img src="${avatar(site,160)}" width="76" height="76" alt="谢世杰"><div><strong>你好，我是谢世杰。</strong><p>MiniMax Agent 研发，也是一名持续记录的 AI 探索者。</p></div><span class="h-author-mark">关于我${icon('arrow-up-right')}</span></a><div class="h-hero-bottom"><span>一些作品，一些笔记，还有尚未写完的想法。</span><a href="#journey" aria-label="向下探索">${icon('arrow-down')}</a></div></section>
 <section class="d-journey d-wrap" id="journey" data-breakpoint="800" aria-label="沿朱红探索线阅读作品与手记"><header class="t-intro h-intro"><p class="d-eyebrow">NOTES ALONG THE WAY</p><h2>一个想法，<br><em>牵出新的可能。</em></h2><p>从做工具，到分享方法，再到一路写下的思考。</p></header><svg id="drawing-trail" class="t-trail" aria-hidden="true"></svg>

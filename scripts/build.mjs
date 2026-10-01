@@ -1,4 +1,5 @@
 import { readFile, writeFile, mkdir, cp } from "node:fs/promises";
+import { createHash } from "node:crypto";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { marked } from "marked";
@@ -8,6 +9,12 @@ const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const site = JSON.parse(
   await readFile(resolve(root, "content/site.json"), "utf8"),
 );
+const styles = {};
+for (const name of ["home", "site"])
+  styles[name] = createHash("sha256")
+    .update(await readFile(resolve(root, `assets/${name}.css`)))
+    .digest("hex")
+    .slice(0, 12);
 if ((site.filing.icp || site.filing.police) && !site.filing.domain)
   throw new Error("备案编号需要同时填写实际备案域名");
 if (Boolean(site.filing.police) !== Boolean(site.filing.policeUrl))
@@ -53,7 +60,7 @@ function page(path, title, description, active, body, options = {}) {
   const depth = path === "index.html" ? 0 : path.split("/").length - 1;
   const base = depth ? "../".repeat(depth) : "./";
   const html = `<!doctype html>
-<html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light"><title>${esc(title)} · ${esc(site.name)}</title><meta name="description" content="${esc(description)}"><meta property="og:type" content="${options.article ? "article" : "website"}"><meta property="og:title" content="${esc(title)} · ${esc(site.name)}"><meta property="og:description" content="${esc(description)}"><meta name="theme-color" content="#f4f0e6"><link rel="icon" type="image/x-icon" href="${base}assets/favicon.ico"><link rel="apple-touch-icon" sizes="180x180" href="${base}assets/apple-touch-icon.png"><link rel="stylesheet" href="${base}assets/site.css"><script src="${base}assets/site.js" defer></script></head>
+<html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light"><title>${esc(title)} · ${esc(site.name)}</title><meta name="description" content="${esc(description)}"><meta property="og:type" content="${options.article ? "article" : "website"}"><meta property="og:title" content="${esc(title)} · ${esc(site.name)}"><meta property="og:description" content="${esc(description)}"><meta name="theme-color" content="#f4f0e6"><link rel="icon" type="image/x-icon" href="${base}assets/favicon.ico"><link rel="apple-touch-icon" sizes="180x180" href="${base}assets/apple-touch-icon.png"><link rel="stylesheet" href="${base}assets/site.css?v=${styles.site}"><script src="${base}assets/site.js" defer></script></head>
 <body><a class="skip" href="#main">跳到正文</a><header class="site-header wrap"><nav class="nav" aria-label="主导航">${nav.map(([url, label]) => `<a href="${base}${url}"${active === url ? ' aria-current="page"' : ""}>${label}</a>`).join("")}</nav><a class="brand" href="${base}" aria-label="${esc(site.name)}首页"><img src="${base}assets/brand-robot.png" width="36" height="36" alt=""><span>${esc(site.name)}<small>SHIJIE / KEEP ROAMING</small></span></a><a class="nav-github" href="${site.github}">GitHub ↗</a></header><main id="main" class="wrap">${body(base)}</main>${footer(base)}</body></html>\n`;
   pages.push({ path, html });
 }
@@ -73,7 +80,7 @@ function articleFilters() {
   return `<div class="article-filters" data-article-filters role="group" aria-label="按主题筛选文章" hidden><button type="button" data-topic="" aria-pressed="true">全部 <span>${site.articles.length}</span></button>${topics.map(topic => `<button type="button" data-topic="${esc(topic)}" aria-pressed="false">${esc(topic)} <span>${site.articles.filter(a => a.topic === topic).length}</span></button>`).join("")}</div><p class="article-count" data-article-count role="status" aria-live="polite">共 ${site.articles.length} 篇 · 按发表时间排列</p>`;
 }
 
-pages.push({ path: "index.html", html: renderHome(site) });
+pages.push({ path: "index.html", html: renderHome(site, styles.home) });
 
 page(
   "projects/index.html",
