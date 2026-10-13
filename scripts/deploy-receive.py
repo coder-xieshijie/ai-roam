@@ -93,7 +93,10 @@ def main(payload):
             unpack(archive, payload['manifest'], stage)
             (stage / 'deploy-version.txt').write_text(sha + '\n')
             def verify():
-                for name in ('index.html', 'assets/favicon.ico', 'deploy-version.txt'):
+                names = ['index.html', 'assets/favicon.ico', 'deploy-version.txt']
+                if 'en/index.html' in payload['manifest']:
+                    names.append('en/index.html')
+                for name in names:
                     body = subprocess.check_output([
                         'curl', '-fsS', '--max-time', '20', '--resolve',
                         'xieshijie.cn:443:127.0.0.1', 'https://xieshijie.cn/' + name])

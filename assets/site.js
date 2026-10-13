@@ -1,11 +1,12 @@
+// Messages come from data-* attributes so each language page carries its own text.
 document.querySelectorAll("[data-copy]").forEach((button) => {
   button.addEventListener("click", async () => {
     const status = document.getElementById("copy-status");
     try {
       await navigator.clipboard.writeText(button.dataset.copy);
-      status.textContent = "已复制公众号名称，可在微信中搜索。";
+      status.textContent = button.dataset.copied;
     } catch {
-      status.textContent = `请在微信中搜索：${button.dataset.copy}`;
+      status.textContent = button.dataset.copyFallback.replace("{name}", button.dataset.copy);
     }
   });
 });
@@ -22,7 +23,9 @@ if (articleFilters) {
     for (const button of buttons) button.setAttribute('aria-pressed', String(button.dataset.topic === selected));
     for (const article of articles) article.hidden = Boolean(selected && article.dataset.articleTopic !== selected);
     for (const group of groups) group.hidden = !group.querySelector('[data-article-topic]:not([hidden])');
-    counter.textContent = `${selected || '全部文章'} · ${articles.filter(article => !article.hidden).length} 篇`;
+    counter.textContent = articleFilters.dataset.counter
+      .replace('{topic}', selected || articleFilters.dataset.allLabel)
+      .replace('{count}', articles.filter(article => !article.hidden).length);
   };
   articleFilters.hidden = false;
   applyTopic(new URL(location.href).searchParams.get('topic') || '');

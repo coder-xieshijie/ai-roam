@@ -1,0 +1,459 @@
+{
+  "name": "Shijie Xie",
+  "description": "Shijie Xie builds coding agents at MiniMax and writes about shipping real work with them: the tools, the workflow and what changed along the way.",
+  "x": {
+    "handle": "@world_0618",
+    "url": "https://x.com/world_0618"
+  },
+  "ui": {
+    "skip": "Skip to content",
+    "navLabel": "Main navigation",
+    "nav": [
+      [
+        "projects/",
+        "Work"
+      ],
+      [
+        "writing/",
+        "Writing"
+      ],
+      [
+        "about/",
+        "About"
+      ]
+    ],
+    "homeLabel": "Shijie Xie, home",
+    "brandSub": "SHIJIE / KEEP ROAMING",
+    "languageLabel": "Language",
+    "github": "GitHub",
+    "x": "X",
+    "footerTitle": "Keep exploring.",
+    "footerText": "New English writing goes on X. Code lives on GitHub.",
+    "copyright": "© 2026 Shijie Xie · AI ROAM",
+    "aboutMe": "About me",
+    "reviewedOn": "Description checked on",
+    "viewRevision": "View the source revision"
+  },
+  "home": {
+    "hero": {
+      "eyebrow": "NOTES FROM SHIPPING WITH CODING AGENTS",
+      "titleHtml": "Hand the work to agents.<br><span>Make the decisions.</span>",
+      "descriptionHtml": "Been through every shift in AI coding: prompts, context, harness. <br>This is where I keep the tools I built and the notes from each.",
+      "primary": "Start exploring",
+      "secondary": "Read the article",
+      "secondaryPath": "writing/stop-babysitting-coding-agents/",
+      "avatarAlt": "Shijie Xie",
+      "greeting": "Hi, I'm Shijie Xie.",
+      "role": "I work on agents at MiniMax, currently on MiniMax Code Agent, and I write down what I learn along the way.",
+      "aboutLink": "About me",
+      "bottom": "Some tools, some notes, and a few ideas still in progress.",
+      "scrollLabel": "Scroll down"
+    },
+    "journey": {
+      "label": "Follow the scarlet line through the work and the writing",
+      "eyebrow": "HOW THE WORKFLOW CHANGED",
+      "titleHtml": "From more agents<br><em>to one agent that proves its work.</em>",
+      "text": "I started by running more agents at once. What helped was giving one agent the whole job and a way to check it."
+    },
+    "skills": {
+      "eyebrow": "Chapter 1 / Keeping the method",
+      "leadHtml": "Decide what you want,<br>then let the agent run with it.",
+      "link": "Open the field kit",
+      "spine": "FIELD KIT · VOL. 01",
+      "manualEyebrow": "Field notes · {count} Skills",
+      "manualTitleHtml": "Turn experience<br>into method.",
+      "youPrefix": "You: ",
+      "manualBottom": "from practice, with care."
+    },
+    "origin": {
+      "eyebrow": "Chapter 2 / The first tool",
+      "leadHtml": "Before more agents,<br>get one agent right.",
+      "link": "See what it did",
+      "marginNote": "The first stretch of the road",
+      "workCaption": "A record of every step it ran.",
+      "observerLabel": "Read about Agent Lord",
+      "observerAlt": "Agent Lord Observer showing tasks, tool activity and review results",
+      "observerCaption": "One window, every step.",
+      "observerNote": "Interface demo · synthetic data"
+    },
+    "writing": {
+      "eyebrow": "Chapter 3 / Writing it down",
+      "title": "Writing",
+      "leadHtml": "Go back over what I built,<br>and think it through.",
+      "description": "Specific problems from building with AI, what I did about them, and the calls I made. English versions are listed here as they're written.",
+      "link": "All English writing ({count})",
+      "kicker": "SELECTED WRITING",
+      "reading": "{reading} read",
+      "titleBreak": ""
+    },
+    "about": {
+      "eyebrow": "Chapter 4 / About",
+      "title": "One question throughout",
+      "leadHtml": "The tools keep changing.<br>The question hasn't.",
+      "description": "From developer productivity to code intelligence to AI coding, I've kept asking the same thing: how do developers get more done?",
+      "link": "More about me",
+      "noteEyebrow": "A FEW STOPS ALONG THE WAY",
+      "noteTitleHtml": "Build something,<br>then keep going.",
+      "stops": [
+        {
+          "title": "Developer productivity",
+          "org": "Kuaishou",
+          "time": "2021 — 2023"
+        },
+        {
+          "title": "Code intelligence",
+          "org": "Li Auto",
+          "time": "2023 — 2025"
+        },
+        {
+          "title": "AI coding",
+          "org": "Xiaohongshu",
+          "time": "2025 — 2026"
+        },
+        {
+          "title": "Agents",
+          "org": "MiniMax",
+          "time": "2026 — now"
+        }
+      ],
+      "signature": "Shijie Xie / AI Roam"
+    },
+    "contributions": {
+      "eyebrow": "CONTRIBUTING IN THE OPEN",
+      "title": "Open-source contributions",
+      "text": "Problems I hit in real work, fixed in the tools we share.",
+      "merged": "Merged",
+      "link": "See the pull request"
+    },
+    "updates": {
+      "eyebrow": "RECENT NOTES",
+      "title": "Recent updates",
+      "project": "Project page updated · {name}",
+      "articleNew": "New article · {title}",
+      "articleRevised": "Article revised · {title}"
+    },
+    "closing": {
+      "eyebrow": "THERE IS ALWAYS ANOTHER PAGE",
+      "titleHtml": "Stay curious.<br><em>See you on the next one.</em>",
+      "text": "New English writing goes on X. Code lives on GitHub.",
+      "github": "Find me on GitHub",
+      "x": "Follow on X"
+    },
+    "replay": "Back to the start"
+  },
+  "pages": {
+    "projects": {
+      "title": "Work",
+      "description": "dev-skills and Agent Lord: an agent workflow from requirement to mergeable PR, and where it started.",
+      "eyebrow": "WORK / OPEN SOURCE",
+      "h1": "Putting ideas to work.",
+      "leadHtml": "A set of Skills that takes a requirement to a mergeable PR, and the tool that came before it.<br>These are my public projects.",
+      "skillsLink": "Read about the project",
+      "touchpoints": "You step in at three points: confirm the decisions, confirm the acceptance criteria, and read the decision list before you merge.",
+      "flowCaption": "{count} Skills in all; four of them carry a requirement through to merge",
+      "lordBadge": "WHERE IT STARTED",
+      "lordLink": "See what it did",
+      "lordCodeLabel": "Agent Lord pipelines"
+    },
+    "agentLord": {
+      "repoLink": "View source",
+      "nowLink": "What I use now · dev-skills",
+      "figureLabel": "Open the full-size Observer demo",
+      "figureAlt": "Two independent review tasks in the Observer, with their session list and execution timeline",
+      "figureCaption": "Observer interface demo · synthetic data, showing how tasks and their execution records are organized. Click for the full-size image.",
+      "whatTitle": "What it is",
+      "whatParagraphs": [
+        "From one main session in Codex, Claude Code or MCode, you hand work to Claude Code, Codex CLI, MCode CLI or Codex App tasks. Agent Lord keeps each task's execution settings, session, progress and output, so the main session can supervise the work and continue it in later turns.",
+        "It has three parts: a Skill that guides the main session, a CLI runtime that runs and records the work, and an Observer that shows progress. The main session splits the work, dispatches it and accepts the results. Executors can use their own tools and subagents, but can't call Agent Lord themselves."
+      ],
+      "pipelinesTitle": "Its pipelines",
+      "pipelinesIntro": "Multi-session workflows I ran often became pipelines. Each one sets who does the work, what can run in parallel, which evidence unlocks the next step, and when to stop.",
+      "pipelineLink": "Read the pipeline policy ↗",
+      "pipelinesNote": "A successful run, delivered files, passing tests and correct code are judged separately. Cross-review reports whether the workflow completed apart from whether the code has problems. Plan to implement opens a PR or MR; merging stays a human decision.",
+      "diagramLabel": "Open the cross-review diagram",
+      "diagramAlt": "Cross-review: pin the review scope, independent first reviews by MCode and Codex, swap findings and cross-examine, an optional convergence round, then a fresh MCode session checks everything independently",
+      "diagramCaption": "Diagram from the Agent Lord repository · cross-review, labeled in Chinese. Click for the full-size image.",
+      "whyTitle": "Why I stopped using it for new work",
+      "whyParagraphs": [
+        "Agent Lord was built to run several agents at once. In practice, two other things held up delivery. The agents couldn't start and operate the product they were building, so problems often surfaced only when I used it myself. And decisions I'd already made got lost from one handoff to the next. More agents meant more for me to check and more to repeat.",
+        "Since late September, new work goes through dev-skills. First, the repository gets a verification environment the agent can start, operate and observe on its own. Then one agent owns the work end to end and hands parallel work to its own subagents when it needs to. Finally, a model from another family verifies the result independently. Having different models check each other carried over into the new workflow."
+      ],
+      "whyLink": "See the current workflow",
+      "whyArticle": "Read the full story",
+      "tryTitle": "If you want to try it",
+      "tryParagraphs": [
+        "The repository is still public. The pinned revision needs Node.js 24+, pnpm 9.12.0, Git, and an installed, logged-in CLI for each provider. MCode needs version 0.4.9 or later, and Codex App tasks also need the host tools in Codex Desktop. The pipelines depend on review-rules, plan-for-agents and explain-as-fool from dev-skills, installed separately."
+      ],
+      "tryLink": "Read the install steps",
+      "limitsTitle": "Before you run it",
+      "limitsParagraphs": [
+        "The Observer doesn't start tasks or move pipelines forward. When you explicitly ask, it can open the terminal for an existing CLI session. Codex App endpoints show task state only; CLI endpoints also show the conversation and tool activity.",
+        "At the pinned revision, the Skill starts new CLI tasks with permission bypass enabled. \"Review only, don't change anything\" is an instruction in the task; it doesn't turn the process into a read-only sandbox. Read the execution contract before your first run, and choose the working directory and permissions with care."
+      ],
+      "contractLink": "Read the execution contract",
+      "platformNote": "Validated locally on macOS; CI covers macOS and Linux. The project doesn't claim end-to-end validation on Windows.",
+      "backLink": "Back to work",
+      "nextLink": "Next · dev-skills"
+    },
+    "devSkills": {
+      "repoLink": "View source",
+      "installLink": "Install and use",
+      "flowTitle": "How a requirement gets done",
+      "flowIntro": "Each repository is prepared once. After that, every requirement goes through definition and delivery. Gaps a run exposes in the repository are listed in the PR, and you decide whether to address them in the repository or in the Skills.",
+      "flowItem": "{title}. You: {you}.",
+      "flowNote": "A few rules hold throughout. Every decision a person has to make, and every acceptance requirement, is settled at the start. At the end, a model from another family verifies against the acceptance criteria. In between, one owner does the work. Irreversible operations stay with you: merging, force-pushing a shared branch, deleting shared data, sending external messages, changing a shared environment.",
+      "skillYou": "What you do: {you}.",
+      "skillSourceLink": "Read the SKILL.md",
+      "supportTitle": "Also used in the workflow",
+      "supportIntro": "Reviews, PR reading and reports in the workflow use these three Skills. Each also works on its own.",
+      "standaloneTitle": "Use them on their own",
+      "standaloneIntro": "Not part of the delivery workflow. Call them for the task at hand.",
+      "installTitle": "Install and call",
+      "installParagraphsHtml": [
+        "Installed as a plugin, the Skills are namespaced: <code>/dev-skills:core-grill</code> in MCode and Claude Code, <code>$dev-skills:core-grill</code> in Codex. Linked from a clone, they have no namespace: <code>/core-grill</code> or <code>$core-grill</code>. Use one or the other, not both.",
+        "In Claude Code and Codex, the agent can also call core-spec on its own once a discussion is finished; the other Skills are manual-only. MCode doesn't read that setting yet, so calling Skills by name is the safer choice."
+      ],
+      "installButton": "See the install steps",
+      "prereqTitle": "Before you start",
+      "prereqParagraphsHtml": [
+        "You need CLIs for models from two different families, installed and logged in; by default, Claude Code and Codex. The gap check and the final verification must come from the other family. With only one family available, the workflow stops at that step instead of checking with the same family.",
+        "You also need Node.js 24, git, and <code>gh</code> or <code>glab</code> for PRs, plus an app the agent can start, operate and observe from a worktree, which is what repo-readiness sets up. Plugin installs cover MCode, Claude Code and Codex; end-to-end tests have only been run in Claude Code and Codex."
+      ],
+      "backLink": "Back to work",
+      "nextLink": "Where it started · Agent Lord"
+    },
+    "writing": {
+      "title": "Writing",
+      "description": "Long-form notes on building and shipping with coding agents.",
+      "eyebrow": "WRITING",
+      "h1": "Notes from the work.",
+      "leadHtml": "Long-form notes on building and shipping with coding agents.<br>Most of my earlier writing is in Chinese; this list has only the pieces with an English version.",
+      "filterLabel": "Filter articles by topic",
+      "all": "All",
+      "allArticles": "All articles",
+      "count": "{count} articles in English · newest first",
+      "countOne": "{count} article in English · newest first",
+      "counter": "{topic} · {count}",
+      "listLabel": "Articles",
+      "otherTitle": "Reading Chinese?",
+      "otherText": "{count} earlier articles, from code completion and AI code review to Java and developer tools, are on the Chinese site. They haven't been translated.",
+      "otherLink": "中文文章",
+      "relatedTitle": "From writing to tools",
+      "relatedText": "The workflow in the article is published as dev-skills. Agent Lord is the dispatcher it grew out of."
+    },
+    "article": {
+      "breadcrumb": "Writing",
+      "author": "Shijie Xie",
+      "published": "Published",
+      "reading": "{reading} read",
+      "tocLabel": "Table of contents",
+      "tocTitle": "On this page",
+      "tocFallback": "Read the article",
+      "paginationLabel": "More articles",
+      "previous": "Previous",
+      "next": "Next",
+      "backLink": "All writing",
+      "homeLink": "Home",
+      "translation": "中文版"
+    },
+    "about": {
+      "title": "About",
+      "description": "I'm Shijie Xie. I build coding agents at MiniMax and write about using them for real work.",
+      "eyebrow": "ABOUT / SHIJIE XIE",
+      "h1Html": "I build coding agents,<br>and ship my own work with them.",
+      "lead": "I'm Shijie Xie. I build coding agents at MiniMax, then use them to ship my own work. Been through every shift in AI coding: prompts, context, harness. This site keeps my public work and the notes from each.",
+      "avatarAlt": "Shijie Xie",
+      "careTitle": "What I keep coming back to",
+      "careParagraphs": [
+        "Across several jobs, I've kept coming back to one question: how can developers get more done? From developer productivity to code intelligence to AI coding, the tools changed, and so did the calls I had to make.",
+        "These days I care most about how an agent gets the right context, how its results get verified, and how mistakes surface while it's still running."
+      ],
+      "pathTitle": "Where I've been",
+      "timeline": [
+        {
+          "time": "2026 — now",
+          "org": "MiniMax",
+          "text": "Agent engineering. Currently working on MiniMax Code Agent."
+        },
+        {
+          "time": "2025 — 2026",
+          "org": "Xiaohongshu",
+          "text": "AI coding, focused on context and execution in multi-step tasks."
+        },
+        {
+          "time": "2023 — 2025",
+          "org": "Li Auto",
+          "text": "Code intelligence, from code completion to AI code review."
+        },
+        {
+          "time": "2021 — 2023",
+          "org": "Kuaishou",
+          "text": "Java backend engineer, working on developer productivity and developer tools."
+        },
+        {
+          "time": "2018 — 2021",
+          "org": "Shandong University",
+          "text": "Master's in Software Engineering."
+        },
+        {
+          "time": "2014 — 2018",
+          "org": "Shandong University",
+          "text": "Bachelor's in Software Engineering."
+        }
+      ],
+      "topicsTitle": "What I write about",
+      "topics": [
+        {
+          "title": "Putting AI to work",
+          "text": "The agent tools I build, how I use them, and the working methods worth keeping."
+        },
+        {
+          "title": "Forming my own view",
+          "text": "Starting from real tasks: what the tools can do, where they stop, and what the results show."
+        },
+        {
+          "title": "Changing how I work",
+          "text": "As the tools change, how engineers should adjust the way they work, me included."
+        }
+      ],
+      "contactTitle": "Find me",
+      "contactHtml": "Code and open-source projects are on GitHub. New English writing goes on X, where I'm <a href=\"https://x.com/world_0618\">@world_0618</a>. I also write in Chinese on the WeChat official account {wechat}.",
+      "githubLink": "GitHub profile",
+      "xLink": "Follow on X",
+      "writingLink": "Read my writing"
+    }
+  },
+  "projects": [
+    {
+      "slug": "dev-skills",
+      "type": "REQUIREMENT TO PR",
+      "summary": "From requirement to a verified, mergeable PR: a set of Skills for coding agents.",
+      "detail": "First, give the repository a verification environment the agent can start, operate and observe on its own. After that, one agent takes each requirement from start to finish and proves the result in the running app, and a model from another family verifies it independently. You step in at three points: confirm the decisions, confirm the acceptance criteria, and read the decision list before you merge.",
+      "updateNote": "dev-skills · rewritten around the requirement-to-PR workflow",
+      "catalog": [
+        {
+          "name": "repo-readiness",
+          "step": "A Readiness",
+          "title": "Let agents verify on their own",
+          "description": "Done once per repository. Sets up the project's own verification Skill: agents can start, operate and observe the app from its own worktree, with feature maps of numbered criteria, scenario scripts, smoke tests, and a structure check in CI. Whatever the repository can't answer, it asks you in one batch.",
+          "you": "once per repository, answer what the repository can't tell it",
+          "example": "/dev-skills:repo-readiness The next requirement is <link or text>"
+        },
+        {
+          "name": "core-grill",
+          "step": "B Define",
+          "title": "Ask what only you can decide",
+          "description": "At the start of a requirement, asks in rounds about the decisions that change what users see: interactions, copy, defaults, entry points, whether data can be lost. Each question comes with options, consequences and a recommendation. The agent settles implementation details itself and records them as defaults. It ends with a decision summary.",
+          "you": "answer the questions and confirm the decision summary once",
+          "example": "/dev-skills:core-grill The requirement is <link or text>; put the requirement documents in <requirement directory>/"
+        },
+        {
+          "name": "core-spec",
+          "step": "B Define",
+          "title": "Write down decisions and acceptance criteria",
+          "description": "Turns the decision summary into spec.md (decisions and constraints) and verify.md (acceptance requirements), and has a model from another family check them clause by clause. Once you confirm, both files are frozen and committed to the feature branch, and a draft PR is opened. It can also produce just spec.md.",
+          "you": "confirm spec.md and verify.md once",
+          "example": "/dev-skills:core-spec Write spec.md and verify.md from the decision summary"
+        },
+        {
+          "name": "deliver",
+          "step": "C Deliver",
+          "title": "One agent, all the way to a mergeable PR",
+          "description": "From the frozen spec and verify, one owner implements milestone by milestone and runs the scenarios in the running app. Before a decision, it consults a model from another family, then makes the call and lists it at the top of the PR. Finally, a model from another family verifies the final code independently, and the owner works through CI and review until the PR can be merged.",
+          "you": "read the decision list before merging, then merge",
+          "example": "/dev-skills:deliver Take over <draft PR link>"
+        },
+        {
+          "name": "review-rules",
+          "title": "Review against clear criteria",
+          "description": "Five criteria for reviewing code and designs, re-checking review comments and judging fixes: correct and complete, the minimal necessary change, complexity that matches the benefit, enough extensibility, and a clear division of responsibilities.",
+          "example": "/dev-skills:review-rules Re-check this review comment: what's the basis, and what's the smallest fix?"
+        },
+        {
+          "name": "mr-for-human",
+          "title": "Read the code an agent wrote",
+          "description": "Turns a PR into a reading guide for people: first the core conclusions and what needs your judgment, then the design, the execution logic in pseudocode and the runtime constraints, and finally where to find the code.",
+          "example": "/dev-skills:mr-for-human Walk me through this PR: <link>"
+        },
+        {
+          "name": "explain-as-fool",
+          "title": "Explain it plainly",
+          "description": "Explains a topic to someone who knows nothing about it, directly and without rhetoric. Reports that other Skills write for people follow its writing rules.",
+          "example": "/dev-skills:explain-as-fool What is a thread pool?"
+        },
+        {
+          "name": "design-for-review",
+          "title": "A design people can review",
+          "description": "Turns requirements and design material into a self-contained technical review document: the problem, the overall design, the scope of the change and the trade-offs that need a decision.",
+          "example": "/dev-skills:design-for-review Turn the confirmed design into a review document"
+        },
+        {
+          "name": "plan-for-agents",
+          "title": "Turn decisions into a plan",
+          "description": "Creates, revises or checks a complete plan for agents to execute, from requirements and confirmed decisions down to steps, outputs and acceptance evidence.",
+          "example": "/dev-skills:plan-for-agents Write a self-contained plan from the confirmed spec"
+        },
+        {
+          "name": "agent-prompt-rules",
+          "title": "Rules for writing to agents",
+          "description": "Rules for writing and reviewing prompts for agents, multi-agent pipelines and SKILL.md files, each linked to the Anthropic or OpenAI source it rests on.",
+          "example": "/dev-skills:agent-prompt-rules Review this SKILL.md against the rules"
+        },
+        {
+          "name": "recon-to-contract",
+          "title": "Turn research into a contract",
+          "description": "Turns a comparison of two or more external references into one executable contract with evidence, decisions and acceptance criteria.",
+          "example": "/dev-skills:recon-to-contract Compare these three open-source implementations and produce a migration contract"
+        }
+      ]
+    },
+    {
+      "slug": "agent-lord",
+      "type": "AGENT ORCHESTRATION",
+      "summary": "Where this workflow started: a tool for dispatching coding agents from one main session.",
+      "detail": "Written in August, it hands tasks to Claude Code, Codex and MCode, lets them work in parallel and review each other, and records every step. Using it showed me the bottleneck wasn't the number of agents: they couldn't run the product to prove their work, and decisions I'd already made got lost across handoffs. Since late September, new work goes through dev-skills instead.",
+      "updateNote": "Agent Lord · now described as where the workflow started",
+      "workflows": [
+        {
+          "slug": "cross-review",
+          "name": "Cross-review",
+          "description": "MCode and Codex review independently, then swap findings and challenge each other. A fresh MCode session then rules on every item on its own. Whether the workflow completed and whether the code has problems are reported separately."
+        },
+        {
+          "slug": "plan-cross-review",
+          "name": "Plan cross-review",
+          "description": "After two reviewers cross-examine each other, a fresh checker verifies their findings and proposed fixes and rewrites the complete plan. Another fresh session then checks the plan against the spec and the source. The author never checks its own final document."
+        },
+        {
+          "slug": "plan-to-implement",
+          "name": "Plan to implement",
+          "description": "Acceptance scenarios are fixed before any code. The plan's stages run in order on one branch, one session per stage, and the final review and acceptance run on the same head. With your authorization, it opens or updates one PR/MR per repository; it never merges."
+        }
+      ]
+    }
+  ],
+  "articles": [
+    {
+      "slug": "stop-babysitting-coding-agents",
+      "title": "I stopped babysitting my coding agents. Here's the workflow.",
+      "summary": "One eight-module job took 14 hours, and for about 76% of it only one CLI was working. What I learned from OpenAI, Anthropic and Lauren Tan, and the workflow and three skills I use now.",
+      "published": "2026-10-07",
+      "updated": "2026-10-07",
+      "topic": "Agent workflow",
+      "reading": "15 min",
+      "zh": null
+    }
+  ],
+  "featuredArticles": [
+    "stop-babysitting-coding-agents"
+  ],
+  "contributions": [
+    {
+      "number": 280,
+      "title": "A slowdown, or a noisy machine?",
+      "summary": "Paired re-runs in performance CI, to tell a real regression apart from runner noise and from too little evidence.",
+      "detail": "The performance budgets stay the same. Routine checks warn on persistent noise; the full performance check still needs a clear result.",
+      "updateNote": "MiniMax Code · performance CI fix merged (PR #280)"
+    }
+  ]
+}
