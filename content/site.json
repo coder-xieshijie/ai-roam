@@ -13,84 +13,128 @@
   },
   "projects": [
     {
-      "slug": "agent-lord",
-      "name": "Agent Lord",
-      "type": "AGENT ORCHESTRATION",
-      "summary": "把多个编程 Agent 组织成可继续、可核验的开发流程。",
-      "detail": "从交叉评审、计划重写，到并行实现和任务交接，让每一步都有记录、有验收。",
-      "repo": "https://github.com/coder-xieshijie/agent-lord",
-      "revision": "158ef899f5fa7b68702ef28b5a3e754ad0cdfbca",
-      "updated": "2026-09-22",
-      "updateNote": "Agent Lord · 补齐计划评审与并行实现工作流",
-      "workflows": [
+      "slug": "dev-skills",
+      "name": "dev-skills",
+      "type": "REQUIREMENT TO PR",
+      "summary": "从需求到验证过、可合入的 PR：一套给编程 Agent 用的 Skills。",
+      "detail": "先给仓库搭一个 Agent 能自己启动、操作、观察的验证环境；之后每个需求由一个 Agent 从头做到尾，在运行的应用里证明结果，再由另一家模型独立验证。人只在三处介入：确认决定，确认验收标准，合入前读一遍决定清单。",
+      "repo": "https://github.com/coder-xieshijie/dev-skills",
+      "revision": "2254db66bfd8f1baa50eb76fe5ca7875905ada56",
+      "updated": "2026-10-13",
+      "updateNote": "dev-skills · 更新为从需求到可合入 PR 的流程",
+      "catalog": [
         {
-          "slug": "cross-review",
-          "name": "交叉评审",
-          "description": "两个独立评审者先给结论，再相互质询；分歧解决后，由新的独立会话复核。"
+          "name": "repo-readiness",
+          "group": "flow",
+          "step": "A 仓库准备",
+          "title": "让 Agent 能自己验证",
+          "description": "每个仓库做一次。搭好项目自己的验证 Skill：Agent 能在 worktree 里隔离地启动、操作、观察应用；配上带判据编号的功能地图、场景脚本、冒烟集，以及 CI 里的结构检查。仓库里查不到的事，一次问清。",
+          "you": "每个仓库一次，回答仓库里查不到的事",
+          "example": "/dev-skills:repo-readiness 下一个需求是 <链接或原文>"
         },
         {
-          "slug": "plan-cross-review",
-          "name": "计划交叉评审",
-          "description": "对照需求与源码评审计划，交叉质询并独立检查方案；新的作者会话重写完整计划，再自查覆盖情况。"
+          "name": "core-grill",
+          "group": "flow",
+          "step": "B 定义",
+          "title": "把要你定的事问清楚",
+          "description": "需求开始时逐轮追问会改变用户可见结果的决定，比如交互、文案、默认值、入口、数据会不会丢。每个问题给出选项、后果和推荐答案；实现细节由 Agent 自己定，记成默认决定。最后整理成一份决定汇总。",
+          "you": "回答问题，确认一次决定汇总",
+          "example": "/dev-skills:core-grill 需求是 <链接或原文>，需求文档放 <需求目录>/"
         },
         {
-          "slug": "plan-to-implement",
-          "name": "计划到实现",
-          "description": "按模块和依赖并行实现，各自提交后，由一个整合者合并、验证并创建 PR/MR。流程不会自动合入。"
+          "name": "core-spec",
+          "group": "flow",
+          "step": "B 定义",
+          "title": "写下决定和验收标准",
+          "description": "把决定汇总收敛成 spec.md（决定与约束）和 verify.md（验收要求），请另一家模型逐条查漏。确认后两份文件冻结，提交到需求分支，开 Draft PR。也可以只产出 spec。",
+          "you": "确认一次 spec 和 verify",
+          "example": "/dev-skills:core-spec 依据决定汇总写 spec.md 和 verify.md"
         },
         {
-          "slug": "handoff",
-          "name": "任务交接",
-          "description": "把目标、进度与证据交给新的 CLI 会话，在原工作区继续，并记录交接关系。"
+          "name": "deliver",
+          "group": "flow",
+          "step": "C 交付",
+          "title": "一个 Agent 做到可合入",
+          "description": "依据冻结的 spec 和 verify，由一个 owner 逐个里程碑实现，并在运行的应用里跑场景。要定的事先问另一家模型，再自己决定，列进 PR 最前面的决定清单。最后由另一家模型对最终代码独立验证，处理完 CI 和评审，做到可合入。",
+          "you": "合入前读决定清单，然后合入",
+          "example": "/dev-skills:deliver 接手 <Draft PR 链接>"
+        },
+        {
+          "name": "review-rules",
+          "group": "support",
+          "title": "让评审有依据",
+          "description": "评审代码与设计、复核评审意见、判断修复方案时用的五条准则：正确完整、最小必要改动、复杂度与收益相称、足够的扩展性、责任边界清楚。",
+          "example": "/dev-skills:review-rules 复核这条评审意见，说明依据和最小修复"
+        },
+        {
+          "name": "mr-for-human",
+          "group": "support",
+          "title": "读懂 AI 写的代码",
+          "description": "把 PR 整理成给人看的阅读指南：先给核心结论和需要判断的事，再讲设计、用伪代码写出的执行逻辑和运行约束，最后给出代码定位。",
+          "example": "/dev-skills:mr-for-human 带我读懂这个 PR：<链接>"
+        },
+        {
+          "name": "explain-as-fool",
+          "group": "support",
+          "title": "把概念讲清楚",
+          "description": "面向对话题一无所知的人做解释，直接说，不绕修辞。其他 Skill 写给人的报告也沿用它的写作要求。",
+          "example": "/dev-skills:explain-as-fool 解释一下什么是线程池"
+        },
+        {
+          "name": "design-for-review",
+          "group": "standalone",
+          "title": "让方案可独立阅读",
+          "description": "把需求和设计材料整理成可独立阅读的技术评审文档，讲清问题、整体设计、改动范围和需要拍板的取舍。",
+          "example": "/dev-skills:design-for-review 根据已确认的设计，整理一份评审文档"
+        },
+        {
+          "name": "plan-for-agents",
+          "group": "standalone",
+          "title": "把决定变成计划",
+          "description": "创建、修订或检查供 Agent 执行的完整计划，从需求和已确认的决定落到步骤、产物和验收证据。",
+          "example": "/dev-skills:plan-for-agents 根据已确认的 spec，写一份可独立执行的 plan"
+        },
+        {
+          "name": "agent-prompt-rules",
+          "group": "standalone",
+          "title": "写给 Agent 的规则",
+          "description": "写和审查给 Agent 的 prompt、多 Agent pipeline 与 SKILL.md 时用的规则，每条都链接到 Anthropic、OpenAI 的原文。",
+          "example": "/dev-skills:agent-prompt-rules 按规则审查这份 SKILL.md"
+        },
+        {
+          "name": "recon-to-contract",
+          "group": "standalone",
+          "title": "把调研收敛成契约",
+          "description": "把两个以上外部参照物的对标调研，收敛成一份有证据、有决定、有验收标准的可执行契约。",
+          "example": "/dev-skills:recon-to-contract 对比这三个开源实现，产出迁移契约"
         }
       ]
     },
     {
-      "slug": "dev-skills",
-      "name": "dev-skills",
-      "type": "REUSABLE SKILLS",
-      "summary": "把开发中反复用到的判断与方法，整理成六个可手动调用的 Skills。",
-      "detail": "从解释概念、评审方案，到收敛决策、编写计划，再到读懂代码变化。",
-      "repo": "https://github.com/coder-xieshijie/dev-skills",
-      "revision": "be19ce4fdfc64d948698f3b2d7cc064985b52d2b",
-      "updated": "2026-09-22",
-      "updateNote": "dev-skills · 更新六个开发 Skills 的用途与示例",
-      "catalog": [
+      "slug": "agent-lord",
+      "name": "Agent Lord",
+      "type": "AGENT ORCHESTRATION",
+      "summary": "这条工作流的起点：一个在主会话里调度多个编程 Agent 的工具。",
+      "detail": "8 月写成，把任务派给 Claude Code、Codex 和 MCode，让它们并行干活、互相评审，每一步都有记录。用下来发现，卡住交付的不是 Agent 不够多：它们没法自己运行产品来证明做对了，已经定下的事也会在一次次交接中丢失。9 月底起，新需求改走 dev-skills 的流程。",
+      "repo": "https://github.com/coder-xieshijie/agent-lord",
+      "revision": "775bc882b82fe13c5863440c05fbf08272c830c7",
+      "updated": "2026-10-13",
+      "updateNote": "Agent Lord · 介绍改为这条工作流的起点",
+      "workflows": [
         {
-          "name": "explain-as-fool",
-          "title": "把概念讲清楚",
-          "description": "面向没有相关知识的读者，从基础解释技术概念，直接、准确地表达。",
-          "example": "$explain-as-fool 解释一下什么是线程池"
+          "slug": "cross-review",
+          "name": "交叉评审",
+          "description": "MCode 与 Codex 先各自独立评审，再交换结论互相质证；最后由一个新的 MCode 会话逐项独立裁决。流程是否走完、代码有没有问题，分开报告。"
         },
         {
-          "name": "review-rules",
-          "title": "让评审有依据",
-          "description": "检查代码、设计与已有评审建议，结合需求、现有实现和失败场景判断问题与修复方案。",
-          "example": "$review-rules 复核这条评审意见，说明依据与最小必要改动"
+          "slug": "plan-cross-review",
+          "name": "计划交叉评审",
+          "description": "两个评审者交叉质证后，由一个新的复核者核对问题与方案，并重写完整计划；再由另一个新会话对照需求与源码验证。作者不自查最终文档。"
         },
         {
-          "name": "design-for-review",
-          "title": "让方案可独立阅读",
-          "description": "将需求和设计材料整理成技术评审文档，讲清问题、完整流程、改动范围与关键取舍。",
-          "example": "$design-for-review 根据已确认的设计，整理一份可独立阅读的评审文档"
-        },
-        {
-          "name": "core-spec",
-          "title": "留下明确的约定",
-          "description": "讨论结束后，把已确认的决定与约束收敛到一份 spec；突出核心决定，完整保留影响实现的边界。",
-          "example": "$core-spec 将当前讨论收敛为核心决策与约束，保存到 docs/feature-spec.md"
-        },
-        {
-          "name": "plan-for-agents",
-          "title": "把决定变成计划",
-          "description": "把需求和已确认决策展开成 Agent 可独立执行的完整计划，覆盖步骤、边界、产物与验收证据。",
-          "example": "$plan-for-agents 根据已确认的 spec，编写可独立执行的完整 plan"
-        },
-        {
-          "name": "mr-for-human",
-          "title": "读懂 AI 写的代码",
-          "description": "先看 PR/MR 的核心设计和关键决定，再沿主流程下钻到执行逻辑、失败边界与具体源码。",
-          "example": "$mr-for-human 带我读懂这个 PR，给出从核心设计到源码的阅读路线"
+          "slug": "plan-to-implement",
+          "name": "计划到实现",
+          "description": "写代码前先定下验收场景；按计划阶段在一条分支上顺序实现，每个阶段一个会话；最后的评审和验收跑在同一个 head 上。获得授权后，每个仓库开或更新一个 PR/MR；流程不会合入。"
         }
       ]
     }

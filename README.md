@@ -35,11 +35,14 @@ python3 -m http.server 4173 --directory dist
 
 页面结构：首页、作品列表、两个项目详情、文章列表与文章正文、关于我。页头导航在所有页面一致：作品 → `projects/`，文章 → `writing/`，关于 → `about/`。
 
+首页依次是：开场与作者介绍；第一章 dev-skills（现在从需求到可合入 PR 的流程）；第二章 Agent Lord（这条工作流的起点，配 Observer 示意图）；第三章文章精选；第四章关于我；之后是开源贡献、最近的记录和结尾。作品列表同样先 dev-skills、后 Agent Lord。
+
 ## 内容维护
 
 - **新增文章**：在 `content/` 添加 Markdown，并在 `site.json` 的 `articles` 中按发表日期倒序的位置填写 slug、标题、摘要、发表日期、主题和阅读时间；`updated` 只用于首页“最近的记录”。每篇只显示作者谢世杰和发表日期。
 - **删除文章**：删掉正文和 `site.json` 条目后重新构建，并删除根目录下对应的 `writing/<slug>/`；`npm run check` 会提示遗留目录。
 - **首页精选**：`featuredArticles` 指定三篇。改了首页文案或精选后要重新生成字体子集（见下文）。
+- **项目介绍**：`projects` 按 slug 取用，不依赖顺序。`revision` 固定为核对过的上游提交，项目页的依据版本、Skill 原文和 pipeline 规则链接都指向它：dev-skills 依据 `2254db6` 的 README、README.zh-CN 与 `skills/*/SKILL.md`，Agent Lord 依据 `775bc88` 的 README。dev-skills 的 `catalog` 用 `group` 分为 `flow`（首页手记卡片与作品页展示的四个流程 Skill，带 `step` 与 `you`）、`support`（流程中复用）和 `standalone`（单独使用）。改介绍时先读上游新版本，再更新 `revision`、`updated` 与 `updateNote`（后两者进入首页“最近的记录”）。
 - **配图与头像**：图片放在腾讯云 COS 图床 `coder-xieshijie-img-1253784930.cos.ap-beijing.myqcloud.com`，仓库不存副本。正文保留原图地址，构建时追加 `imageMogr2/thumbnail/…/format/webp`，由图床按需缩放并转为 WebP。头像为 `site/xieshijie-avatar.jpg`。图床需保持公开读、开启数据万象图片处理，并允许本站 Referer。
 - **公开边界**：关于页和文章只写本人确认可公开的经历；内部平台、截图、内网地址、业务数据不进入正文。
 
@@ -53,7 +56,7 @@ python3 -m http.server 4173 --directory dist
 - [IBM Plex Sans SC / Mono Regular](https://github.com/IBM/plex/tree/78cd4223d8de9fcb78cba84eadecb269c56093c5)，`assets/fonts/Plex-*-LICENSE.txt`。
 - [Phosphor Core](https://github.com/phosphor-icons/core/tree/2b75f3ad12b420c9504ef05df8d2564a28f8500e)，`assets/fonts/Phosphor-LICENSE.txt`；SVG 图形保持上游路径，合并为本地 sprite。
 
-Agent Lord 的计划到实现流程图取自该版本的 `assets/diagrams/plan-to-implement.svg`，本地文件为 `assets/agent-lord-plan-to-implement.svg`，未改写图中内容。开源贡献依据 [MiniMax Code PR #280](https://github.com/MiniMax-AI/minimax-code/pull/280)，合入日期为 2026-09-21。
+Agent Lord 项目页的交叉评审流程图取自 [775bc88](https://github.com/coder-xieshijie/agent-lord/tree/775bc882b82fe13c5863440c05fbf08272c830c7) 的 `assets/diagrams/cross-review.svg`，本地文件为 `assets/agent-lord-cross-review.svg`，未改写图中内容。开源贡献依据 [MiniMax Code PR #280](https://github.com/MiniMax-AI/minimax-code/pull/280)，合入日期为 2026-09-21。
 
 ## 自动部署
 
