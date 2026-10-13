@@ -1,7 +1,7 @@
 /* Self-hosted open-source subsets; regenerate with scripts/subset-fonts.py when homepage copy changes. */
-@font-face{font-family:'Roam WenKai';font-weight:400;font-style:normal;font-display:swap;src:url('./fonts/wenkai.woff2') format('woff2')}
-@font-face{font-family:'Roam Plex';font-weight:400;font-style:normal;font-display:swap;src:url('./fonts/plex-sans-sc.woff2') format('woff2')}
-@font-face{font-family:'Roam Mono';font-weight:400;font-style:normal;font-display:swap;src:url('./fonts/plex-mono.woff2') format('woff2')}
+@font-face{font-family:'Roam WenKai';font-weight:400;font-style:normal;font-display:swap;src:url('./fonts/wenkai.woff2?v=f839b1399907') format('woff2')}
+@font-face{font-family:'Roam Plex';font-weight:400;font-style:normal;font-display:swap;src:url('./fonts/plex-sans-sc.woff2?v=559040acdf36') format('woff2')}
+@font-face{font-family:'Roam Mono';font-weight:400;font-style:normal;font-display:swap;src:url('./fonts/plex-mono.woff2?v=d56313534c31') format('woff2')}
 .home{--d-paper:#f4f0e6;--d-ink:#3c3e34;--d-muted:#67695c;--d-line:#d8d2c3;--d-accent:#b75b42;--d-sans:'Roam Plex','PingFang SC','Microsoft YaHei',sans-serif;--d-title:'Roam WenKai','Songti SC',serif;--d-mono:'Roam Mono',ui-monospace,SFMono-Regular,Consolas,monospace;margin:0;background:var(--d-paper);color:var(--d-ink);font:15px/1.85 var(--d-sans);-webkit-font-smoothing:antialiased;overflow-x:clip}
 .home *{box-sizing:border-box}
 .home :is(h1,h2,h3,p,figure){margin:0}
@@ -326,3 +326,10 @@
 .h-reading-picks time{grid-column:1/-1;font:10px var(--d-mono);color:var(--d-muted)}
 .h-reading-picks .d-icon{width:14px;height:14px;margin-top:4px;color:var(--d-accent)}
 .h-reading-picks a:hover{color:var(--d-accent)}
+/* Language switch: 中文 / EN beside GitHub; on phones only the other language stays visible. */
+.d-header-end{display:flex;align-items:center;gap:28px}
+.home .d-header-end{grid-column:3;grid-row:1;justify-self:end}
+.d-header .lang-switch{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--d-muted)}
+.d-header .lang-switch [aria-current]{color:var(--d-ink)}
+.d-header .lang-switch a:hover{color:var(--d-accent)}
+@media(max-width:800px){.d-header>nav{margin-left:auto}.d-header .lang-switch{font-size:12px}.d-header .lang-switch [aria-current],.d-header .lang-sep{display:none}}

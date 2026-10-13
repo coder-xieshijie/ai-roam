@@ -4,13 +4,13 @@
   font-family: "Roam WenKai";
   font-weight: 400;
   font-display: swap;
-  src: url("./fonts/wenkai.woff2") format("woff2");
+  src: url("./fonts/wenkai.woff2?v=f839b1399907") format("woff2");
 }
 @font-face {
   font-family: "Roam Mono";
   font-weight: 400;
   font-display: swap;
-  src: url("./fonts/plex-mono.woff2") format("woff2");
+  src: url("./fonts/plex-mono.woff2?v=d56313534c31") format("woff2");
 }
 :root {
   --paper: #f4f0e6;
@@ -1132,3 +1132,42 @@ code {
 .flow-figure{background:#292d28;display:flex;flex-direction:column;justify-content:center;margin:0;padding:30px 36px}.flow-figure ol{list-style:none;margin:0;padding:0}.flow-figure li{display:grid;grid-template-columns:88px minmax(0,1fr);gap:16px;padding:12px 0;border-top:1px solid #4b4e47}.flow-figure li:first-child{border-top:0}.flow-figure li>span{font:11px/2 var(--mono);color:#bbbbb1}.flow-figure code{font:13px/1.9 var(--mono);color:#fbb394;overflow-wrap:anywhere}.flow-figure p{font-size:14px;color:#cfcec5}.flow-figure figcaption{font-size:11px;color:#c5c7bc;margin-top:14px}
 @media(max-width:700px){.flow-figure{padding:4px 28px 26px;background:var(--ink)}.flow-figure li{grid-template-columns:1fr;gap:2px}.flow-figure code{font-size:12px}}
 .detail-body>p+.step-list{margin-top:24px}
+/* Language switch: 中文 / EN beside GitHub; on phones only the other language stays visible. */
+html[lang="en"] {
+  --serif: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, "Times New Roman", serif;
+}
+.header-end {
+  justify-self: end;
+  display: flex;
+  align-items: center;
+  gap: 26px;
+  font-size: 13px;
+}
+.lang-switch {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--muted);
+}
+.lang-switch [aria-current] {
+  color: var(--ink);
+}
+.lang-switch a {
+  padding: 10px 0;
+}
+.lang-switch a:hover {
+  color: var(--orange);
+}
+@media (max-width: 700px) {
+  .header-end {
+    order: -1;
+    font-size: 12px;
+  }
+  .brand {
+    margin-right: auto;
+  }
+  .lang-switch [aria-current],
+  .lang-sep {
+    display: none;
+  }
+}

@@ -11,6 +11,320 @@
     "police": "京公网安备11010502063318号",
     "policeUrl": "https://beian.mps.gov.cn/#/query/webSearch?code=11010502063318"
   },
+  "ui": {
+    "skip": "跳到正文",
+    "navLabel": "主导航",
+    "nav": [
+      [
+        "projects/",
+        "作品"
+      ],
+      [
+        "writing/",
+        "文章"
+      ],
+      [
+        "about/",
+        "关于"
+      ]
+    ],
+    "homeLabel": "自用网站首页",
+    "brandSub": "SHIJIE / KEEP ROAMING",
+    "languageLabel": "语言",
+    "github": "GitHub",
+    "footerTitle": "继续探索。",
+    "footerText": "探索 AI，也探索工作与成长的新可能。",
+    "wechatLabel": "公众号",
+    "copied": "已复制公众号名称，可在微信中搜索。",
+    "copyFallback": "请在微信中搜索：{name}",
+    "copyright": "© 2026 谢世杰 · AI ROAM",
+    "aboutMe": "关于我",
+    "reviewedOn": "介绍复核于",
+    "viewRevision": "查看依据版本"
+  },
+  "home": {
+    "hero": {
+      "eyebrow": "A PERSONAL JOURNAL OF MAKING & LEARNING",
+      "titleHtml": "带着好奇心，<br>把想法<span>做出来。</span>",
+      "descriptionHtml": "帮技术人把 AI 变成工作能力、判断力和职业杠杆。<br>这里是我的作品、实践，以及一路探索的记录。",
+      "primary": "开始探索",
+      "secondary": "先读一篇文章",
+      "secondaryPath": "writing/",
+      "avatarAlt": "谢世杰",
+      "greeting": "你好，我是谢世杰。",
+      "role": "Agent 研发，目前参与 MiniMax Code Agent 的研发，也是一名持续记录的 AI 探索者。",
+      "aboutLink": "关于我",
+      "bottom": "一些作品，一些笔记，还有尚未写完的想法。",
+      "scrollLabel": "向下探索"
+    },
+    "journey": {
+      "label": "沿朱红探索线阅读作品与手记",
+      "eyebrow": "NOTES ALONG THE WAY",
+      "titleHtml": "一个想法，<br><em>牵出新的可能。</em>",
+      "text": "从做工具，到分享方法，再到一路写下的思考。"
+    },
+    "skills": {
+      "eyebrow": "第一章 / 把方法留下",
+      "leadHtml": "定好要什么，<br>再放手交给 Agent。",
+      "link": "翻开这本工具手册",
+      "spine": "FIELD KIT · VOL. 01",
+      "manualEyebrow": "开发者手记 · {count} 个 Skills",
+      "manualTitleHtml": "把经验，<br>写成方法。",
+      "youPrefix": "你：",
+      "manualBottom": "from practice, with care."
+    },
+    "origin": {
+      "eyebrow": "第二章 / 最初的工具",
+      "leadHtml": "从调度更多 Agent，<br>到先让一个 Agent 做对。",
+      "link": "看看它做过什么",
+      "marginNote": "走过的第一段路",
+      "workCaption": "让每一步执行，都有迹可循。",
+      "observerLabel": "查看 Agent Lord 项目",
+      "observerAlt": "Agent Lord Observer 的任务、工具执行记录与评审结果",
+      "observerCaption": "一个窗口，看见每一步。",
+      "observerNote": "界面演示 · 合成示例数据"
+    },
+    "writing": {
+      "eyebrow": "第三章 / 留下思考",
+      "title": "写下来的思考",
+      "leadHtml": "把做过的事，<br>再想清楚一点。",
+      "description": "记录 AI 开发中的具体问题、实践方法和判断。从真实的问题出发，在写作中理清思路。",
+      "link": "浏览全部 {count} 篇文章",
+      "kicker": "SELECTED WRITING",
+      "reading": "{reading} · 阅读",
+      "titleBreak": "[，：]"
+    },
+    "about": {
+      "eyebrow": "第四章 / 关于我",
+      "title": "一条持续的主线",
+      "leadHtml": "工具在变，<br>好奇心一直在。",
+      "description": "从研发效能、代码智能到 AI Coding，我一直关心：怎样让开发者工作得更高效。",
+      "link": "更多关于我",
+      "noteEyebrow": "A FEW THINGS ALONG THE WAY",
+      "noteTitleHtml": "做一点东西，<br>再向前走一点。",
+      "stops": [
+        {
+          "title": "研发效能",
+          "org": "快手",
+          "time": "2021 — 2023"
+        },
+        {
+          "title": "代码智能",
+          "org": "理想汽车",
+          "time": "2023 — 2025"
+        },
+        {
+          "title": "AI Coding",
+          "org": "小红书",
+          "time": "2025 — 2026"
+        },
+        {
+          "title": "Agent",
+          "org": "MiniMax",
+          "time": "2026 — 现在"
+        }
+      ],
+      "signature": "谢世杰 / AI游民"
+    },
+    "contributions": {
+      "eyebrow": "CONTRIBUTING IN THE OPEN",
+      "title": "开源贡献",
+      "text": "把真实问题，带回共同维护的工具。",
+      "merged": "已合入",
+      "link": "查看这次贡献"
+    },
+    "updates": {
+      "eyebrow": "RECENT NOTES",
+      "title": "最近的记录",
+      "project": "更新项目介绍 · {name}",
+      "articleNew": "修订文章 · {title}",
+      "articleRevised": "修订文章 · {title}"
+    },
+    "closing": {
+      "eyebrow": "THERE IS ALWAYS ANOTHER PAGE",
+      "titleHtml": "保持好奇，<br><em>下一段旅程再见。</em>",
+      "text": "探索 AI，也探索工作与成长的新可能。",
+      "github": "在 GitHub 相遇"
+    },
+    "replay": "回到起点"
+  },
+  "pages": {
+    "projects": {
+      "title": "作品",
+      "description": "dev-skills 与 Agent Lord：从需求到可合入 PR 的 Agent 工作流，以及它的起点。",
+      "eyebrow": "WORK / OPEN SOURCE",
+      "h1": "让想法，进入实际工作。",
+      "leadHtml": "一套从需求走到可合入 PR 的 Skills，和它的前身。<br>这里是我公开的作品。",
+      "skillsLink": "了解项目",
+      "touchpoints": "人只在三处介入：确认决定，确认验收标准，合入前读一遍决定清单。",
+      "flowCaption": "共 {count} 个 Skills，其中四个串起从需求到合入的流程",
+      "lordBadge": "起点",
+      "lordLink": "看看它做过什么",
+      "lordCodeLabel": "Agent Lord 的 pipeline"
+    },
+    "agentLord": {
+      "repoLink": "查看源码",
+      "nowLink": "现在的做法 · dev-skills",
+      "figureLabel": "打开 Observer 演示原图",
+      "figureAlt": "Observer 中两个独立评审任务的会话列表和执行时间线",
+      "figureCaption": "Observer 界面演示 · 使用合成示例数据，展示任务与执行记录的组织方式。点击查看原图。",
+      "whatTitle": "它是什么",
+      "whatParagraphs": [
+        "在 Codex、Claude Code 或 MCode 的一个主会话里，把工作派给 Claude Code、Codex CLI、MCode CLI 或 Codex App 任务。Agent Lord 保存执行设置、会话、进度和产物，主会话可以监督这些任务，并在后续轮次接着推进。",
+        "它由三部分组成：指导主会话的 Skill、负责执行与记录的 CLI runtime，以及展示进度的 Observer。拆分任务、派发和验收都由主会话负责；执行端可以用自己的工具和子 Agent，但不能再调用 Agent Lord。"
+      ],
+      "pipelinesTitle": "做过的几条 pipeline",
+      "pipelinesIntro": "常用的多会话流程被固定成 pipeline：谁来做、哪些能并行、什么证据能放行下一步、什么时候结束。",
+      "pipelineLink": "阅读 pipeline 规则 ↗",
+      "pipelinesNote": "执行成功、交付物存在、测试通过和代码正确，是分开判断的结果。交叉评审把“流程是否走完”和“代码有没有问题”分开报告；计划到实现会开 PR/MR，合入仍由人决定。",
+      "diagramLabel": "打开交叉评审流程图",
+      "diagramAlt": "交叉评审：固定审查范围，MCode 与 Codex 独立初审，交换产物互相质证，可选一轮收敛，再由新的 MCode 会话独立复核",
+      "diagramCaption": "Agent Lord 公开仓库流程图 · 交叉评审。点击查看原图。",
+      "whyTitle": "为什么不再用于新需求",
+      "whyParagraphs": [
+        "Agent Lord 解决的是同时调度多个 Agent。用下来，卡住交付的是另外两件事：Agent 没法自己运行和操作正在开发的产品，问题常常要等我自己用的时候才发现；已经定下的决定，也会在一次次交接中丢失。Agent 越多，要我检查和重复说明的事越多。",
+        "9 月底起，新需求改走 dev-skills 的流程：先给仓库搭一个 Agent 能自己启动、操作、观察的验证环境；再由一个 Agent 负责到底，需要并行时由它自己分给子 Agent；最后由另一家模型独立验证。让不同模型互相检查的做法，在新流程里留了下来。"
+      ],
+      "whyLink": "看现在的流程",
+      "tryTitle": "如果想试试",
+      "tryParagraphs": [
+        "仓库仍然公开。引用版本需要 Node.js 24+、pnpm 9.12.0、Git，以及已安装并登录的目标 CLI；MCode 需要 0.4.9 或更高版本，Codex App 任务还需要 Codex Desktop 的宿主工具。pipeline 依赖另行安装的 dev-skills 中的 review-rules、plan-for-agents 和 explain-as-fool。"
+      ],
+      "tryLink": "阅读安装步骤",
+      "limitsTitle": "使用前了解的边界",
+      "limitsParagraphs": [
+        "Observer 不发起任务，也不推进 pipeline；在用户明确要求时，可以打开已有 CLI 会话的终端入口。Codex App 端点只展示任务状态，CLI 端点可展示会话与工具活动。",
+        "引用版本的 Skill 会以权限跳过模式启动新 CLI 任务。“只评审、不修改”属于任务指令，不能把执行进程变成只读沙箱。首次运行前应读清执行约定，选择合适的工作目录与授权范围。"
+      ],
+      "contractLink": "阅读执行约定",
+      "platformNote": "本地验证平台为 macOS，CI 覆盖 macOS 与 Linux；项目未声明完成 Windows 端到端验证。",
+      "backLink": "返回作品",
+      "nextLink": "下一个 · dev-skills"
+    },
+    "devSkills": {
+      "repoLink": "查看源码",
+      "installLink": "安装与使用",
+      "flowTitle": "一个需求怎样走完",
+      "flowIntro": "每个仓库先做一次准备，之后每个需求依次经过定义和交付；这次暴露出的仓库缺口，列在 PR 里，由你决定补回仓库还是 Skill。",
+      "flowItem": "{title}。你：{you}。",
+      "flowNote": "几条约定贯穿全程：要人决定的事和验收要求在开头定全，结尾由另一家模型按验收标准验证，中间交给一个 owner 做完；合入、强推共享分支、删除共享数据、对外发消息、改共享环境，这些不可逆操作留给你。",
+      "skillYou": "你要做的：{you}。",
+      "skillSourceLink": "阅读 Skill 原文",
+      "supportTitle": "流程里也会用到",
+      "supportIntro": "评审、读 PR 和写报告时，流程会沿用下面三个 Skill；它们也可以单独调用。",
+      "standaloneTitle": "可以单独使用",
+      "standaloneIntro": "不在交付流程里，按手头的任务单独调用。",
+      "installTitle": "安装与调用",
+      "installParagraphsHtml": [
+        "以插件安装时，Skill 带命名空间：MCode 和 Claude Code 写 <code>/dev-skills:core-grill</code>，Codex 写 <code>$dev-skills:core-grill</code>。从克隆把 Skill 目录链接到本机时没有命名空间，写 <code>/core-grill</code> 或 <code>$core-grill</code>。两种方式二选一。",
+        "在 Claude Code 和 Codex 里，core-spec 也可以在讨论结束后由 Agent 主动调用，其余 Skill 只支持手动调用。MCode 目前不读这个设置，按名字调用更稳妥。"
+      ],
+      "installButton": "查看安装步骤",
+      "prereqTitle": "使用前的前提",
+      "prereqParagraphsHtml": [
+        "需要两个不同家族模型的 CLI，都装好并登录，默认是 Claude Code 和 Codex。查漏和最终验证必须由另一家模型来做；只有一家可用时，流程会停在那一步，不会降级成同家族检查。",
+        "还需要 Node.js 24、git，以及开 PR 用的 <code>gh</code> 或 <code>glab</code>；再加一个 Agent 能在 worktree 里启动、操作、观察的应用，这正是 repo-readiness 要搭的。插件安装支持 MCode、Claude Code 和 Codex；端到端测试目前只在 Claude Code 和 Codex 上做过。"
+      ],
+      "backLink": "返回作品",
+      "nextLink": "它的起点 · Agent Lord"
+    },
+    "writing": {
+      "title": "文章与实践",
+      "description": "关于 Agent 开发、工作方法与技术判断的文章和实践记录。",
+      "eyebrow": "WRITING & PRACTICE",
+      "h1": "把做过的事，想清楚。",
+      "leadHtml": "从 AI 实践、研发效能，到工作中的方法与思考。<br>收录早期笔记与近期文章，按发表时间排列。",
+      "filterLabel": "按主题筛选文章",
+      "all": "全部",
+      "allArticles": "全部文章",
+      "count": "共 {count} 篇 · 按发表时间排列",
+      "countOne": "共 {count} 篇 · 按发表时间排列",
+      "counter": "{topic} · {count} 篇",
+      "listLabel": "文章列表",
+      "relatedTitle": "从实践继续读",
+      "relatedText": "方法也会写进工具。从需求到可合入 PR 的流程，可以看 dev-skills；它的起点、一个多 Agent 调度器，可以看 Agent Lord。"
+    },
+    "article": {
+      "breadcrumb": "文章",
+      "author": "谢世杰",
+      "published": "发表于",
+      "reading": "约 {reading}",
+      "tocLabel": "文章目录",
+      "tocTitle": "本文目录",
+      "tocFallback": "阅读全文",
+      "paginationLabel": "前后篇文章",
+      "previous": "上一篇",
+      "next": "下一篇",
+      "backLink": "返回全部文章",
+      "homeLink": "回到首页",
+      "translation": "Read in English"
+    },
+    "about": {
+      "title": "关于我",
+      "description": "我叫谢世杰，关注 AI Agent、开发者工具，以及技术人的工作与成长。",
+      "eyebrow": "ABOUT / 谢世杰",
+      "h1Html": "探索 AI，也探索<br>工作与成长的新可能。",
+      "lead": "我叫谢世杰。做开发者工具，也写下实践中的方法与判断。这里是我的个人主页，记录公开作品与个人观点。",
+      "avatarAlt": "谢世杰",
+      "careTitle": "始终关心的事",
+      "careParagraphs": [
+        "怎样让开发者工作得更高效，是贯穿我几段经历的问题。从研发效能到代码智能，再到 AI Coding，工具在变化，需要做出的判断也在变化。",
+        "现在我尤其关心 Agent 如何获得合适的上下文、怎样验证结果，以及怎样让执行过程中的错误及时暴露。"
+      ],
+      "pathTitle": "走过的路径",
+      "timeline": [
+        {
+          "time": "2026 — 现在",
+          "org": "MiniMax",
+          "text": "MiniMax Agent 研发。"
+        },
+        {
+          "time": "2025 — 2026",
+          "org": "小红书",
+          "text": "AI Coding，关注多步任务中的上下文与执行过程。"
+        },
+        {
+          "time": "2023 — 2025",
+          "org": "理想汽车",
+          "text": "代码智能，从代码补全到智能 Code Review。"
+        },
+        {
+          "time": "2021 — 2023",
+          "org": "快手",
+          "text": "Java 后端工程师，做研发效能与开发者工具。"
+        },
+        {
+          "time": "2018 — 2021",
+          "org": "山东大学",
+          "text": "软件工程，硕士。"
+        },
+        {
+          "time": "2014 — 2018",
+          "org": "山东大学",
+          "text": "软件工程，本科。"
+        }
+      ],
+      "topicsTitle": "这里会写什么",
+      "topics": [
+        {
+          "title": "把 AI 用进工作",
+          "text": "记录 Agent 工具、开发实践，以及可复用的工作方法。"
+        },
+        {
+          "title": "形成自己的判断",
+          "text": "从具体任务出发，看清能力、边界和验证结果。"
+        },
+        {
+          "title": "继续成长",
+          "text": "思考工具变化以后，技术人如何调整自己的工作方式。"
+        }
+      ],
+      "contactTitle": "找到我",
+      "contactHtml": "开源项目与代码放在 GitHub。文章和实践也会在公众号「{wechat}」分享；你可以通过页脚复制名称，在微信中搜索。",
+      "githubLink": "GitHub 主页",
+      "writingLink": "读我的文章"
+    }
+  },
   "projects": [
     {
       "slug": "dev-skills",

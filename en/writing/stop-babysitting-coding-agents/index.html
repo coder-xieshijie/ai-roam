@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light"><title>I stopped babysitting my coding agents. Here&#39;s the workflow. · Shijie Xie</title><meta name="description" content="One eight-module job took 14 hours, and for about 76% of it only one CLI was working. What I learned from OpenAI, Anthropic and Lauren Tan, and the workflow and three skills I use now."><meta property="og:type" content="article"><meta property="og:title" content="I stopped babysitting my coding agents. Here&#39;s the workflow. · Shijie Xie"><meta property="og:description" content="One eight-module job took 14 hours, and for about 76% of it only one CLI was working. What I learned from OpenAI, Anthropic and Lauren Tan, and the workflow and three skills I use now."><link rel="canonical" href="https://xieshijie.cn/en/writing/stop-babysitting-coding-agents/"><link rel="alternate" hreflang="en" href="https://xieshijie.cn/en/writing/stop-babysitting-coding-agents/"><link rel="alternate" hreflang="x-default" href="https://xieshijie.cn/en/writing/stop-babysitting-coding-agents/"><meta name="theme-color" content="#f4f0e6"><link rel="icon" type="image/x-icon" href="../../../assets/favicon.ico"><link rel="apple-touch-icon" sizes="180x180" href="../../../assets/apple-touch-icon.png"><link rel="stylesheet" href="../../../assets/site.css?v=cd25e1e74644"><script src="../../../assets/site.js" defer></script></head>
+<body><a class="skip" href="#main">Skip to content</a><header class="site-header wrap"><nav class="nav" aria-label="Main navigation"><a href="../../projects/">Work</a><a href="../../writing/" aria-current="page">Writing</a><a href="../../about/">About</a></nav><a class="brand" href="../../" aria-label="Shijie Xie, home"><img src="../../../assets/brand-robot.png" width="36" height="36" alt=""><span>Shijie Xie<small>SHIJIE / KEEP ROAMING</small></span></a><div class="header-end"><nav class="lang-switch" aria-label="Language"><a href="../../../writing/" lang="zh-CN" hreflang="zh-CN">中文</a><span class="lang-sep" aria-hidden="true">/</span><span aria-current="true" lang="en">EN</span></nav><a class="nav-github" href="https://github.com/coder-xieshijie">GitHub ↗</a></div></header><main id="main" class="wrap"><header class="page-intro article-header"><div class="breadcrumb"><a href="../../writing/">Writing</a><span>/</span><span>Agent workflow</span></div><h1>I stopped babysitting my coding agents. Here&#39;s the workflow.</h1><p class="lead">One eight-module job took 14 hours, and for about 76% of it only one CLI was working. What I learned from OpenAI, Anthropic and Lauren Tan, and the workflow and three skills I use now.</p><div class="article-meta"><span>Shijie Xie</span><span>Published <time datetime="2026-10-07">2026-10-07</time></span><span>15 min read</span></div></header><div class="reading-layout"><nav class="toc" aria-label="Table of contents"><h2>On this page</h2><a href="#section-1">Where I started</a><a href="#section-2">More agents weren&#39;t the answer</a><a href="#section-3">What was actually wrong</a><a href="#section-4">How I picked the three sources</a><a href="#section-5">The workflow at a glance</a><a href="#section-6">The three skills</a><a href="#section-10">Who checks what</a><a href="#section-11">The seven principles</a><a href="#section-19">How to use it</a><a href="#section-20">Sources</a></nav><article class="prose" id="article-body"><p><img src="https://coder-xieshijie-img-1253784930.cos.ap-beijing.myqcloud.com/site/en/2026/10/1dff30ab1faf1078d887.png?imageMogr2/thumbnail/1600x%3E/format/webp" alt="Cover: you set the goal and the check, the spec is frozen, one agent builds and proves it, another model verifies, you read the decisions and merge"></p>
+<p>I built an orchestrator to run coding agents in parallel. Then one eight-module job took 14 hours—and for about 76% of that time, only one CLI was working. I thought I needed more agents. The audit changed my mind.</p>
+<p>Here&#39;s what went wrong, what I learned from OpenAI, Anthropic and Lauren Tan, and the workflow and three skills I use now.</p>
+<h2 id="section-1">Where I started</h2>
+<p>I&#39;m a backend engineer on MCode, MiniMax&#39;s coding agent, which has a desktop app and a terminal UI. Nearly all my coding goes through agents, and MCode comes first: I work on it, so it&#39;s what I use for my own work every day. I also keep Codex and Claude Code around, to cross-check work and see how they handle the same task.</p>
+<p>To get more done, I wrote Agent Lord, an orchestrator that lets one agent session hand work to others. From a Codex session, it split a feature into modules and sent each module to its own CLI, usually MCode, in its own git worktree. Modules that didn&#39;t depend on each other ran at the same time. For reviews, two model families checked each other&#39;s findings. At the end, an integrator merged everything. In the month I later measured, it dispatched 490 operations across 214 tasks.</p>
+<p>The bet was simple: more agents working at once, more work done.</p>
+<p>By mid-September it didn&#39;t feel that way. Here&#39;s what I typed to my agents in a single day:</p>
+<blockquote>
+<p>&quot;This is so tedious. Everything takes forever to build.&quot;</p>
+</blockquote>
+<blockquote>
+<p>&quot;Do we really need this many tickets? Can&#39;t we merge some?&quot;</p>
+</blockquote>
+<blockquote>
+<p>&quot;It&#39;s been reading for an hour.&quot;</p>
+</blockquote>
+<blockquote>
+<p>&quot;Why not send out more agents? If they don&#39;t depend on each other, why can&#39;t they all go at once?&quot;</p>
+</blockquote>
+<h2 id="section-2">More agents weren&#39;t the answer</h2>
+<p>That last message was what I believed at the time: the fix was more parallelism. So after Agent Lord spent a night building a new version of MCode&#39;s Goal feature in eight modules, I had an agent audit the run and tell me why so little of it ran in parallel.</p>
+<ul>
+<li>At most four CLIs ran at once; the average was 1.27.</li>
+<li>Agent Lord didn&#39;t cap parallelism. The plan did: the modules formed a chain, and each one waited for the one before it to be delivered.</li>
+<li>Waiting didn&#39;t even help. A downstream module still started from the original code, so it couldn&#39;t see what its upstream had just written. It coded against stubs, and the real pieces met for the first time at the final merge.</li>
+<li>Inside each CLI, most of the time went to waiting on the model, usually with one tool call per turn. One module made 91 round trips, about 56 minutes, before it wrote its first file.</li>
+</ul>
+<p>Adding agents wouldn&#39;t have fixed that dependency chain or made upstream code available downstream. It would have left me with more output to check and more handoffs where things could get lost.</p>
+<h2 id="section-3">What was actually wrong</h2>
+<p>The next day I had agents go through every session from the previous 30 days, about 1,700 across MCode, Codex and Claude Code, to see whether that run was a one-off. They read 40 task chains closely and checked the quotes against the raw logs. It wasn&#39;t a one-off. Two problems ran through the whole month.</p>
+<p><strong>Bugs showed up late, and I was the one who found them.</strong> The agent said it was done and the tests passed. The problem appeared when I used the feature myself, or when the pieces were wired together.</p>
+<ul>
+<li>The agent marked two PRs for the Goal feature done, tests green. I ran the dev build. If I updated the goal while the agent was waiting on background work, it never picked the work back up.</li>
+<li>The status bar said reasoning effort was xhigh. The session actually ran at medium, because new sessions never passed the setting through.</li>
+<li>Every module of the Goal rework was delivered, and the feature still wasn&#39;t turned on in the default production setup.</li>
+</ul>
+<p>Each piece passed its own tests. What broke was the wiring between pieces and the path a user actually takes.</p>
+<p><strong>A lot of my time went into relaying decisions to agents.</strong> I re-explained decisions I&#39;d already made, checked whether an agent had stalled, and told it to keep going. Decisions didn&#39;t survive the handoffs.</p>
+<ul>
+<li>I settled MCode&#39;s four sandbox permission levels in August. In September I was still telling agents: four levels, no extra protections.</li>
+<li>My main session handed a plan to another CLI for cross-review and added &quot;keep it concise&quot; on its own. The 875-line plan was replaced by a 279-line one that had lost the file-by-file migration table, the interfaces, the wiring steps and the acceptance checks.</li>
+<li>I asked for a PR based on the latest integration branch. It was opened against a feature branch, and fixing it meant a rebase and three merge conflicts.</li>
+</ul>
+<p>Put the two together and you get the real problem. Writing code isn&#39;t the scarce part anymore; agents can do most of it. What&#39;s scarce now is decision-making, and the decisions still fell to me. I had become the bottleneck in getting a feature delivered: switching from one feature&#39;s context to another&#39;s, making a call, switching again, until my attention ran out. The work was waiting on me, not on the agents.</p>
+<p>In the sessions I audited, two gaps in my setup kept showing up: the agents couldn&#39;t operate the product they were building, and decisions I&#39;d already made didn&#39;t reliably survive handoffs. Checking the product and repeating those decisions both landed on me. More parallel work put more of both on my plate.</p>
+<h2 id="section-4">How I picked the three sources</h2>
+<p><img src="https://coder-xieshijie-img-1253784930.cos.ap-beijing.myqcloud.com/site/en/2026/10/abfbdf6d815e3be4d922.png?imageMogr2/thumbnail/1600x%3E/format/webp" alt="How I picked the sources: my own sessions, then Lauren Tan, then 75 sources sorted into five schools, then three picked, then the originals re-read"></p>
+<p>I started with <strong>Lauren Tan</strong>. Her 2,000 PRs in a month made me want to understand her setup. In her talk, she wanted an agent that could &quot;run the application itself and take the traces for me.&quot; Her warning about scaling to a hundred agents matched my audit: it fails &quot;because you don&#39;t have trust in your agent&#39;s work yet.&quot; (<a href="https://x.com/poteto/status/2102050467505430555">talk</a>, at 4:00 and 6:24)</p>
+<p>I widened the search to engineering teams, agent builders and research studies. Some approaches used fixed pipelines; others emphasized specs, task trackers or larger agent teams. The approach that most directly addressed my two problems was to give one agent ownership, let it run the real product, and preserve its progress in files.</p>
+<p><strong>OpenAI, Anthropic and Lauren</strong> gave me concrete mechanisms for that. OpenAI and Anthropic build the models I use every day and the coding agents around them; Lauren brought experience applying these ideas to a production codebase. All three publish enough to inspect: pstack&#39;s source, OpenAI&#39;s ExecPlan format, and Anthropic&#39;s prompts and accounts of what failed.</p>
+<p>I took their mechanisms, not their throughput claims. Lauren&#39;s PR count, like the other throughput figures, is self-reported. The quotes below link to the live sources and were checked against saved copies.</p>
+<p>Out of all this came one idea: <strong>the agent proves its own work on the real product, and someone other than the author checks the proof.</strong> I define the work at the start and review the decisions at the end. In between, I automate as much as I can, so I step in and decide as little as possible. I turned it into three skills, published in <a href="https://github.com/coder-xieshijie/dev-skills">dev-skills</a>. They run in MCode, Claude Code and Codex.</p>
+<h2 id="section-5">The workflow at a glance</h2>
+<p><img src="https://coder-xieshijie-img-1253784930.cos.ap-beijing.myqcloud.com/site/en/2026/10/eee2ebc5286df7ea1efe.png?imageMogr2/thumbnail/1600x%3E/format/webp" alt="The workflow: you, the owner agent and another model family across phases A to D, with your three touchpoints"></p>
+<p><strong>A. Make the app drivable (once per repo).</strong> Give the agent commands to start and operate the app, a feature map, smoke tests, and quality checks. This is Lauren&#39;s verification-skill idea. Each app needs its own setup; dev-skills doesn&#39;t ship it.</p>
+<p><strong>B. Define (you and the agent).</strong> <code>core-grill</code> clarifies the request; <code>core-spec</code> records the decisions and how to verify them. Another model family checks for gaps. I confirm the files, which are frozen on a feature branch with a draft PR.</p>
+<p><strong>C. Deliver (the agent alone).</strong> In a new session I run <code>/deliver &lt;draft PR link&gt;</code>. One owner builds and tests the feature, coordinates independent checks, and handles CI and review until the PR is mergeable. It pauses before irreversible actions and records its decisions for me to review.</p>
+<p><strong>D. Feed back.</strong> The PR lists gaps this run exposed in the repo. I decide which fixes belong in the repo&#39;s tools and which belong in the skills.</p>
+<p>My part comes down to three touchpoints: answer the questions, confirm spec.md and verify.md, then read the decision list and merge.</p>
+<h2 id="section-6">The three skills</h2>
+<p><img src="https://coder-xieshijie-img-1253784930.cos.ap-beijing.myqcloud.com/site/en/2026/10/ba21f945a28d49e20729.png?imageMogr2/thumbnail/1600x%3E/format/webp" alt="What each skill takes in and hands on: requirement, core-grill, decision summary, core-spec, frozen spec and verify, draft PR, deliver, plan.md and evidence, mergeable PR"></p>
+<h3 id="section-7">core-grill: ask only about what users will see</h3>
+<p>It starts with the request, the goal, what &quot;done&quot; means, and what it&#39;s allowed to do. If the repo can answer a question, it looks there first.</p>
+<p>It asks me about choices that change what users see: behavior, copy, defaults, entry points and whether data can be lost. Each question includes options, consequences and a recommendation. It handles implementation choices itself and records the defaults. I confirm the resulting decision summary.</p>
+<h3 id="section-8">core-spec: two files, checked by another model, then frozen</h3>
+<p>It turns that summary into <code>spec.md</code> (what we decided) and <code>verify.md</code> (how to prove it).</p>
+<p>The useful part is writing the checks before the code. Each scenario follows a complete user action from a real entry point and says what should happen on the old code. If that baseline wouldn&#39;t expose the risk, it also describes a wrong implementation the check must reject. This forces gaps in the spec to surface early.</p>
+<p>Another model family reviews both files in a fresh, read-only session, without the author&#39;s reasoning. If that reviewer is unavailable, the files don&#39;t get frozen. Once the gaps are resolved and I confirm, both files are frozen and committed, and a draft PR is opened. That link is all <code>deliver</code> needs.</p>
+<h3 id="section-9">deliver: one owner until the PR is mergeable</h3>
+<p><img src="https://coder-xieshijie-img-1253784930.cos.ap-beijing.myqcloud.com/site/en/2026/10/143969eaaeb2c75ed468.png?imageMogr2/thumbnail/1600x%3E/format/webp" alt="Inside deliver: check out the branch, then per milestone implement, run scenarios, fresh subagent check; decisions go to another model family; final verification, check-delivery.mjs, mergeable PR"></p>
+<p>The owner keeps a living <code>plan.md</code> in OpenAI&#39;s ExecPlan format, committed with the code so a new session can pick up the work.</p>
+<ul>
+<li><strong>Build and prove each milestone.</strong> Implement it, run its scenarios on the real app, fix failures, then have a fresh subagent check it against the spec.</li>
+<li><strong>Get another model&#39;s view on decisions.</strong> For choices affecting users or how a check is judged, consult another model family without sharing the owner&#39;s preference. Then decide and continue.</li>
+<li><strong>Make those decisions reviewable.</strong> Put them at the top of the PR, including gaps, deviations in verification and anything unfinished. Each entry says what must be redone if I overturn it. The frozen spec and verify files stay unchanged.</li>
+<li><strong>Get independent final verification.</strong> Another model family checks the final code in its own session and app instance. The owner addresses its code-quality notes or explains why it didn&#39;t.</li>
+</ul>
+<p>The owner continues until the PR is mergeable, pausing before irreversible actions such as merging, force-pushing a shared branch or changing a shared environment.</p>
+<h2 id="section-10">Who checks what</h2>
+<p><img src="https://coder-xieshijie-img-1253784930.cos.ap-beijing.myqcloud.com/site/en/2026/10/6bf5bc4e43289789a98b.png?imageMogr2/thumbnail/1600x%3E/format/webp" alt="Who checks what: gap check before freeze, fresh subagent per milestone, another model family for decisions and final verification, check-delivery.mjs as the final gate, you before merge"></p>
+<p>The owner tests its own work throughout; final acceptance requires an independent verifier. <code>check-delivery.mjs</code> enforces four conditions:</p>
+<ul>
+<li>spec.md and verify.md are still the versions I confirmed;</li>
+<li>the verification report covers the code being merged;</li>
+<li>the verdict is PASS;</li>
+<li>the verifier comes from a different model family than the owner.</li>
+</ul>
+<h2 id="section-11">The seven principles</h2>
+<p><img src="https://coder-xieshijie-img-1253784930.cos.ap-beijing.myqcloud.com/site/en/2026/10/120f4b9576578c4c0b76.png?imageMogr2/thumbnail/1600x%3E/format/webp" alt="Seven principles, with what OpenAI, Anthropic and Lauren Tan say about each, and where each lives in dev-skills"></p>
+<p>For each one: what the three sources say, and where it lives in dev-skills.</p>
+<h3 id="section-12">1. You set the goal and the check, then step away</h3>
+<ul>
+<li><strong>OpenAI:</strong> &quot;Humans steer. Agents execute.&quot; (<a href="https://openai.com/index/harness-engineering/">Harness engineering</a>)</li>
+<li><strong>Anthropic:</strong> &quot;Give Claude a check it can run... It&#39;s the difference between a session you watch and one you walk away from.&quot; (<a href="https://code.claude.com/docs/en/best-practices">Claude Code best practices</a>)</li>
+<li><strong>Lauren Tan:</strong> &quot;Give the agent a goal and a way to check it, in your own words.&quot; (<a href="https://github.com/cursor/plugins/blob/main/pstack/docs/guide/README.md">pstack guide</a>)</li>
+</ul>
+<p>Without a check it can run, the agent&#39;s only signal is that the work looks done, and you become the test loop. In dev-skills this is phase B, taken one step further: verify.md is a full set of scenarios, written before any code, reviewed by another model, and frozen.</p>
+<h3 id="section-13">2. One agent owns the work end to end</h3>
+<ul>
+<li><strong>OpenAI:</strong> in their own repo, given a single prompt, &quot;the agent can now&quot; go from reproducing a bug to merging the fix, and &quot;escalate to a human only when judgment is required.&quot; (<a href="https://openai.com/index/harness-engineering/">Harness engineering</a>)</li>
+<li><strong>Anthropic:</strong> &quot;A well-designed single agent with appropriate tools can accomplish far more than many developers expect.&quot; (<a href="https://claude.com/blog/building-multi-agent-systems-when-and-how-to-use-them">Building multi-agent systems</a>)</li>
+<li><strong>Lauren Tan:</strong> &quot;Code-coupled work (one feature, one migration) goes to a single owner.&quot; (<a href="https://github.com/cursor/plugins/tree/main/pstack/skills/poteto-mode">pstack playbooks</a>)</li>
+</ul>
+<p>Every handoff loses context; one stripped nearly 600 lines from my plan. In dev-skills this is <code>deliver</code>: the owner can hand coding, checks or scenario runs to subagents, but it integrates the work and makes the calls. That&#39;s why I set Agent Lord aside. Work still happens in parallel, but one owner coordinates it.</p>
+<h3 id="section-14">3. The agent can run, operate and observe the real product</h3>
+<ul>
+<li><strong>OpenAI:</strong> &quot;we made the app bootable per git worktree, so Codex could launch and drive one instance per change.&quot; (<a href="https://openai.com/index/harness-engineering/">Harness engineering</a>)</li>
+<li><strong>Anthropic:</strong> left to itself, their agent passed unit tests without noticing the feature didn&#39;t work end to end. It did much better once told to &quot;do all testing as a human user would.&quot; (<a href="https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents">Effective harnesses for long-running agents</a>)</li>
+<li><strong>Lauren Tan:</strong> a verification skill is &quot;critical infrastructure rather than &#39;just&#39; a skill.&quot; (<a href="https://x.com/poteto/status/2094457600259842065">The Complete Guide to pstack, Pt. 1</a>)</li>
+</ul>
+<p>Unit tests check the code you thought to test. Driving the real app also checks the wiring, the defaults and the entry points, which is where my late bugs came from. In dev-skills this is phase A, plus the scenarios in verify.md: each runs from the entry point the user actually uses and records what the old code does, which catches a check that could never fail.</p>
+<h3 id="section-15">4. Plans and progress live in files in the repo</h3>
+<ul>
+<li><strong>OpenAI:</strong> &quot;It should always be possible to restart from only the ExecPlan.&quot; (<a href="https://developers.openai.com/cookbook/articles/codex_exec_plans">Using PLANS.md for multi-hour problem solving</a>)</li>
+<li><strong>Anthropic:</strong> &quot;compaction isn&#39;t sufficient.&quot; Each session starts by reading a progress file and the git log. (<a href="https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents">Effective harnesses</a>)</li>
+<li><strong>Lauren Tan:</strong> &quot;Read the prior trail, don&#39;t redo it.&quot; (<a href="https://github.com/cursor/plugins/tree/main/pstack/skills/poteto-mode">pstack playbooks</a>)</li>
+</ul>
+<p>If the state only lives in the chat, the next session has to guess. In dev-skills, <code>deliver</code> keeps plan.md in ExecPlan format, committed with the code. When an upstream API error killed one of my long-running deliveries in Claude Code, I picked it up in MCode: a fresh session read plan.md and the git history and found where it had stopped in under half an hour.</p>
+<h3 id="section-16">5. Someone else decides whether it&#39;s right</h3>
+<ul>
+<li><strong>Anthropic:</strong> &quot;Out of the box, Claude is a poor QA agent.&quot; Their fix: &quot;Separating the agent doing the work from the agent judging it proves to be a strong lever.&quot; (<a href="https://www.anthropic.com/engineering/harness-design-long-running-apps">Harness design for long-running application development</a>)</li>
+<li><strong>OpenAI:</strong> &quot;we&#39;ve pushed almost all review effort towards being handled agent-to-agent.&quot; (<a href="https://openai.com/index/harness-engineering/">Harness engineering</a>)</li>
+<li><strong>Lauren Tan:</strong> &quot;Run a unit&#39;s verifier on a different model family from its worker.&quot; (<a href="https://github.com/cursor/plugins/tree/main/pstack/skills">pstack skills</a>)</li>
+</ul>
+<p>The author&#39;s blind spots live in its context, and models from the same family tend to share them. dev-skills has three layers: a fresh subagent after each milestone, another model family for the gap check and the final verification, and me, reading the decision list before I merge. On my first real run, the first cross-family verification caught an issue that two rounds of same-model checks had missed.</p>
+<h3 id="section-17">6. When the agent gets stuck, fix the repo, not the prompt</h3>
+<ul>
+<li><strong>OpenAI:</strong> &quot;When the agent struggles, we treat it as a signal: identify what is missing—tools, guardrails, documentation—and feed it back into the repository.&quot; (<a href="https://openai.com/index/harness-engineering/">Harness engineering</a>)</li>
+<li><strong>Anthropic:</strong> CLAUDE.md instructions &quot;are advisory,&quot; while hooks &quot;are deterministic and guarantee the action happens.&quot; (<a href="https://code.claude.com/docs/en/best-practices">Claude Code best practices</a>)</li>
+<li><strong>Lauren Tan:</strong> &quot;The instruction is the symptom.&quot; (<a href="https://github.com/cursor/plugins/tree/main/pstack/skills/principle-encode-lessons-in-structure">Encode Lessons in Structure</a>)</li>
+</ul>
+<p>A rule in a prompt is a request the next agent may skip; a rule in code runs every time. In dev-skills, two scripts enforce what must always hold: <code>freeze.mjs</code> pins spec.md and verify.md, and <code>check-delivery.mjs</code> gates the result. Phase D turns each run&#39;s friction into repo tooling.</p>
+<h3 id="section-18">7. Add complexity only when it pays, one piece at a time</h3>
+<ul>
+<li><strong>Anthropic:</strong> they recommend &quot;finding the simplest solution possible, and only increasing complexity when needed.&quot; (<a href="https://www.anthropic.com/engineering/building-effective-agents">Building effective agents</a>)</li>
+<li><strong>OpenAI:</strong> &quot;Prefer a narrow correction to accumulating universal rules for every observed example.&quot; (<a href="https://github.com/openai/codex/blob/main/codex-rs/skills/src/assets/samples/skill-creator/SKILL.md">Codex skill-creator</a>)</li>
+<li><strong>Lauren Tan:</strong> pstack PR #419 cut 19 instructions. &quot;Each cut held up in A/B runs on tasks that exercise it, with and without the text.&quot; (<a href="https://github.com/cursor/plugins/pull/419">PR #419</a>)</li>
+</ul>
+<p>I learned this one the hard way. After each trial run I added a rule and a script to check it. <code>deliver</code> went from 3 scripts to 11, and its instructions grew by about 70%. Then I cut back to 1 script and less than half the instructions. The whole arc took 32 versions of the workflow in four days.</p>
+<h2 id="section-19">How to use it</h2>
+<p><strong>What you need</strong></p>
+<ul>
+<li>Models from two families. I develop in MCode and hand the checks to Codex, a different model family from the one I run in MCode; Claude Code plus Codex works too. The gap check and the final verification must come from the family that didn&#39;t do the work, through a CLI that&#39;s installed and logged in.</li>
+<li>Node.js 24, git, and <code>gh</code> or <code>glab</code>.</li>
+<li>An app the agent can start, operate and observe from a worktree (phase A). The <a href="https://github.com/coder-xieshijie/dev-skills/blob/main/docs/repository-readiness.md">repository readiness guide</a> in dev-skills covers what that takes, and Lauren&#39;s <a href="https://github.com/cursor/plugins/tree/main/pstack/skills/create-verification-skill">create-verification-skill</a> is a good place to start.</li>
+</ul>
+<p><strong>Install</strong> by asking your agent. Paste this into MCode, Claude Code or Codex:</p>
+<pre><code class="language-text">Install dev-skills for me: https://github.com/coder-xieshijie/dev-skills
+Follow the &quot;From a clone&quot; steps in its README for the agent you&#39;re running in.
+If the dev-skills plugin is already installed, stop and tell me instead.
+Then list the skills you linked.
+</code></pre>
+<p>It clones the repo and links each skill into the folder your agent reads. To update later, ask it to pull the latest dev-skills. MCode is what I use every day, and the experience has been great. If you haven&#39;t tried it yet, I&#39;d really recommend it.</p>
+<p><strong>Run</strong> it in the target repo:</p>
+<pre><code class="language-text">/core-grill The request is &lt;link or text&gt;. Put the docs in &lt;dir&gt;/.
+/core-spec Write spec.md and verify.md from the decision summary.
+
+# in a new session
+/deliver Take over &lt;draft PR link&gt;.
+</code></pre>
+<ol>
+<li>core-grill asks its questions. Answer them and confirm the decision summary.</li>
+<li>core-spec writes spec and verify and has the other family check them for gaps. Read the result and confirm. It freezes both files and opens a draft PR.</li>
+<li>deliver works until the PR is mergeable. Read the decision list at the top, then merge.</li>
+</ol>
+<p>In Codex, write <code>$</code> instead of <code>/</code>.</p>
+<h2 id="section-20">Sources</h2>
+<p><strong>OpenAI</strong></p>
+<ul>
+<li><a href="https://openai.com/index/harness-engineering/">Harness engineering: leveraging Codex in an agent-first world</a>, Ryan Lopopolo (@_lopopolo)</li>
+<li><a href="https://developers.openai.com/cookbook/articles/codex_exec_plans">Using PLANS.md for multi-hour problem solving</a> (ExecPlans)</li>
+<li><a href="https://github.com/openai/codex/blob/main/codex-rs/skills/src/assets/samples/skill-creator/SKILL.md">Codex skill-creator</a></li>
+</ul>
+<p><strong>Anthropic</strong></p>
+<ul>
+<li><a href="https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents">Effective harnesses for long-running agents</a></li>
+<li><a href="https://www.anthropic.com/engineering/harness-design-long-running-apps">Harness design for long-running application development</a></li>
+<li><a href="https://www.anthropic.com/engineering/building-effective-agents">Building effective agents</a></li>
+<li><a href="https://claude.com/blog/building-multi-agent-systems-when-and-how-to-use-them">Building multi-agent systems: when and how to use them</a></li>
+<li><a href="https://code.claude.com/docs/en/best-practices">Claude Code best practices</a></li>
+</ul>
+<p><strong>Lauren Tan (@poteto)</strong></p>
+<ul>
+<li><a href="https://x.com/poteto/status/2094457600259842065">The Complete Guide to pstack, Pt. 1</a></li>
+<li><a href="https://github.com/cursor/plugins/blob/main/pstack/docs/guide/README.md">pstack guide</a></li>
+<li><a href="https://github.com/cursor/plugins/tree/main/pstack/skills">pstack skills and playbooks</a>: poteto-mode (feature, orchestrate, session-pickup), principle-encode-lessons-in-structure, create-verification-skill</li>
+<li><a href="https://github.com/cursor/plugins/pull/419">pstack PR #419</a></li>
+<li><a href="https://x.com/poteto/status/2102050467505430555">Her talk on X</a> (September 2026)</li>
+</ul>
+<hr>
+<p><em>First published on <a href="https://x.com/world_0618/status/2107848503305113972">X</a> on October 7, 2026.</em></p>
+</article></div><nav class="article-pagination" aria-label="More articles"></nav><div class="related"><a class="text-link" href="../../writing/">All writing<span aria-hidden="true">↗</span></a><a class="text-link" href="../../">Home<span aria-hidden="true">↗</span></a></div></main><footer class="site-footer"><div class="wrap"><div class="footer-main"><div><h2>Keep exploring.</h2><p>New English writing goes on X. Code lives on GitHub.</p></div><div><div class="footer-links"><a class="text-link" href="https://github.com/coder-xieshijie">GitHub<span aria-hidden="true">↗</span></a><a class="text-link" href="https://x.com/world_0618">X<span aria-hidden="true">↗</span></a></div></div></div><div class="footer-meta"><span>© 2026 Shijie Xie · AI ROAM</span><span class="filing"><a href="https://beian.miit.gov.cn/">鲁ICP备2026052690号-1</a><a class="police-filing" href="https://beian.mps.gov.cn/#/query/webSearch?code=11010502063318"><img src="../../../assets/police-filing.png" width="18" height="20" alt="">京公网安备11010502063318号</a></span><a href="../../about/">About me</a></div></div></footer></body></html>
