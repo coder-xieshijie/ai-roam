@@ -65,19 +65,8 @@
       "youPrefix": "You: ",
       "manualBottom": "from practice, with care."
     },
-    "origin": {
-      "eyebrow": "Chapter 2 / The first tool",
-      "leadHtml": "Before more agents,<br>get one agent right.",
-      "link": "See what it did",
-      "marginNote": "The first stretch of the road",
-      "workCaption": "A record of every step it ran.",
-      "observerLabel": "Read about Agent Lord",
-      "observerAlt": "Agent Lord Observer showing tasks, tool activity and review results",
-      "observerCaption": "One window, every step.",
-      "observerNote": "Interface demo · synthetic data"
-    },
     "writing": {
-      "eyebrow": "Chapter 3 / Writing it down",
+      "eyebrow": "Chapter 2 / Writing it down",
       "title": "Writing",
       "leadHtml": "Go back over what I built,<br>and think it through.",
       "description": "Specific problems from building with AI, what I did about them, and the calls I made. English versions are listed here as they're written.",
@@ -87,7 +76,7 @@
       "titleBreak": ""
     },
     "about": {
-      "eyebrow": "Chapter 4 / About",
+      "eyebrow": "Chapter 3 / About",
       "title": "One question throughout",
       "leadHtml": "The tools keep changing.<br>The question hasn't.",
       "description": "From developer productivity to code intelligence to AI coding, I've kept asking the same thing: how do developers get more done?",
@@ -144,56 +133,13 @@
   "pages": {
     "projects": {
       "title": "Work",
-      "description": "dev-skills and Agent Lord: an agent workflow from requirement to mergeable PR, and where it started.",
+      "description": "dev-skills: an agent workflow from requirement to mergeable PR.",
       "eyebrow": "WORK / OPEN SOURCE",
       "h1": "Putting ideas to work.",
-      "leadHtml": "A set of Skills that takes a requirement to a mergeable PR, and the tool that came before it.<br>These are my public projects.",
+      "leadHtml": "A set of Skills that takes a requirement to a mergeable PR.<br>These are my public projects.",
       "skillsLink": "Read about the project",
       "touchpoints": "You step in at three points: confirm the decisions, confirm the acceptance criteria, and read the decision list before you merge.",
-      "flowCaption": "{count} Skills in all; four of them carry a requirement through to merge",
-      "lordBadge": "WHERE IT STARTED",
-      "lordLink": "See what it did",
-      "lordCodeLabel": "Agent Lord pipelines"
-    },
-    "agentLord": {
-      "repoLink": "View source",
-      "nowLink": "What I use now · dev-skills",
-      "figureLabel": "Open the full-size Observer demo",
-      "figureAlt": "Two independent review tasks in the Observer, with their session list and execution timeline",
-      "figureCaption": "Observer interface demo · synthetic data, showing how tasks and their execution records are organized. Click for the full-size image.",
-      "whatTitle": "What it is",
-      "whatParagraphs": [
-        "From one main session in Codex, Claude Code or MCode, you hand work to Claude Code, Codex CLI, MCode CLI or Codex App tasks. Agent Lord keeps each task's execution settings, session, progress and output, so the main session can supervise the work and continue it in later turns.",
-        "It has three parts: a Skill that guides the main session, a CLI runtime that runs and records the work, and an Observer that shows progress. The main session splits the work, dispatches it and accepts the results. Executors can use their own tools and subagents, but can't call Agent Lord themselves."
-      ],
-      "pipelinesTitle": "Its pipelines",
-      "pipelinesIntro": "Multi-session workflows I ran often became pipelines. Each one sets who does the work, what can run in parallel, which evidence unlocks the next step, and when to stop.",
-      "pipelineLink": "Read the pipeline policy ↗",
-      "pipelinesNote": "A successful run, delivered files, passing tests and correct code are judged separately. Cross-review reports whether the workflow completed apart from whether the code has problems. Plan to implement opens a PR or MR; merging stays a human decision.",
-      "diagramLabel": "Open the cross-review diagram",
-      "diagramAlt": "Cross-review: pin the review scope, independent first reviews by MCode and Codex, swap findings and cross-examine, an optional convergence round, then a fresh MCode session checks everything independently",
-      "diagramCaption": "Diagram from the Agent Lord repository · cross-review, labeled in Chinese. Click for the full-size image.",
-      "whyTitle": "Why I stopped using it for new work",
-      "whyParagraphs": [
-        "Agent Lord was built to run several agents at once. In practice, two other things held up delivery. The agents couldn't start and operate the product they were building, so problems often surfaced only when I used it myself. And decisions I'd already made got lost from one handoff to the next. More agents meant more for me to check and more to repeat.",
-        "Since late September, new work goes through dev-skills. First, the repository gets a verification environment the agent can start, operate and observe on its own. Then one agent owns the work end to end and hands parallel work to its own subagents when it needs to. Finally, a model from another family verifies the result independently. Having different models check each other carried over into the new workflow."
-      ],
-      "whyLink": "See the current workflow",
-      "whyArticle": "Read the full story",
-      "tryTitle": "If you want to try it",
-      "tryParagraphs": [
-        "The repository is still public. The pinned revision needs Node.js 24+, pnpm 9.12.0, Git, and an installed, logged-in CLI for each provider. MCode needs version 0.4.9 or later, and Codex App tasks also need the host tools in Codex Desktop. The pipelines depend on review-rules, plan-for-agents and explain-as-fool from dev-skills, installed separately."
-      ],
-      "tryLink": "Read the install steps",
-      "limitsTitle": "Before you run it",
-      "limitsParagraphs": [
-        "The Observer doesn't start tasks or move pipelines forward. When you explicitly ask, it can open the terminal for an existing CLI session. Codex App endpoints show task state only; CLI endpoints also show the conversation and tool activity.",
-        "At the pinned revision, the Skill starts new CLI tasks with permission bypass enabled. \"Review only, don't change anything\" is an instruction in the task; it doesn't turn the process into a read-only sandbox. Read the execution contract before your first run, and choose the working directory and permissions with care."
-      ],
-      "contractLink": "Read the execution contract",
-      "platformNote": "Validated locally on macOS; CI covers macOS and Linux. The project doesn't claim end-to-end validation on Windows.",
-      "backLink": "Back to work",
-      "nextLink": "Next · dev-skills"
+      "flowCaption": "{count} Skills in all; four of them carry a requirement through to merge"
     },
     "devSkills": {
       "repoLink": "View source",
@@ -219,8 +165,7 @@
         "You need CLIs for models from two different families, installed and logged in; by default, Claude Code and Codex. The gap check and the final verification must come from the other family. With only one family available, the workflow stops at that step instead of checking with the same family.",
         "You also need Node.js 24, git, and <code>gh</code> or <code>glab</code> for PRs, plus an app the agent can start, operate and observe from a worktree, which is what repo-readiness sets up. Plugin installs cover MCode, Claude Code and Codex; end-to-end tests have only been run in Claude Code and Codex."
       ],
-      "backLink": "Back to work",
-      "nextLink": "Where it started · Agent Lord"
+      "backLink": "Back to work"
     },
     "writing": {
       "title": "Writing",
@@ -239,7 +184,7 @@
       "otherText": "{count} earlier articles, from code completion and AI code review to Java and developer tools, are on the Chinese site. They haven't been translated.",
       "otherLink": "中文文章",
       "relatedTitle": "From writing to tools",
-      "relatedText": "The workflow in the article is published as dev-skills. Agent Lord is the dispatcher it grew out of."
+      "relatedText": "The workflow in the article is published as dev-skills."
     },
     "article": {
       "breadcrumb": "Writing",
@@ -404,30 +349,6 @@
           "title": "Turn research into a contract",
           "description": "Turns a comparison of two or more external references into one executable contract with evidence, decisions and acceptance criteria.",
           "example": "/dev-skills:recon-to-contract Compare these three open-source implementations and produce a migration contract"
-        }
-      ]
-    },
-    {
-      "slug": "agent-lord",
-      "type": "AGENT ORCHESTRATION",
-      "summary": "Where this workflow started: a tool for dispatching coding agents from one main session.",
-      "detail": "Written in August, it hands tasks to Claude Code, Codex and MCode, lets them work in parallel and review each other, and records every step. Using it showed me the bottleneck wasn't the number of agents: they couldn't run the product to prove their work, and decisions I'd already made got lost across handoffs. Since late September, new work goes through dev-skills instead.",
-      "updateNote": "Agent Lord · now described as where the workflow started",
-      "workflows": [
-        {
-          "slug": "cross-review",
-          "name": "Cross-review",
-          "description": "MCode and Codex review independently, then swap findings and challenge each other. A fresh MCode session then rules on every item on its own. Whether the workflow completed and whether the code has problems are reported separately."
-        },
-        {
-          "slug": "plan-cross-review",
-          "name": "Plan cross-review",
-          "description": "After two reviewers cross-examine each other, a fresh checker verifies their findings and proposed fixes and rewrites the complete plan. Another fresh session then checks the plan against the spec and the source. The author never checks its own final document."
-        },
-        {
-          "slug": "plan-to-implement",
-          "name": "Plan to implement",
-          "description": "Acceptance scenarios are fixed before any code. The plan's stages run in order on one branch, one session per stage, and the final review and acceptance run on the same head. With your authorization, it opens or updates one PR/MR per repository; it never merges."
         }
       ]
     }

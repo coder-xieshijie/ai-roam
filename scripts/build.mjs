@@ -54,8 +54,6 @@ function englishLocale() {
         throw new Error("site.en.json: dev-skills catalog must list the same Skills in the same order as site.json");
       merged.catalog = p.catalog.map((s, i) => ({ ...base.catalog[i], ...s }));
     }
-    if (base.workflows && base.workflows.map((w) => w.slug).join() !== p.workflows.map((w) => w.slug).join())
-      throw new Error("site.en.json: Agent Lord workflows must match site.json");
     return merged;
   });
   const contributions = english.contributions.map((c) => {
@@ -152,11 +150,9 @@ async function build(L) {
   const t = L.pages;
   const project = (slug) => L.projects.find((p) => p.slug === slug);
   const skills = project("dev-skills");
-  const lord = project("agent-lord");
   const flowSkills = skills.catalog.filter((skill) => skill.group === "flow");
   const skillSource = (name) =>
     `${skills.repo}/blob/${skills.revision}/skills/${name}/SKILL.md`;
-  const featured = L.articles.find((a) => a.slug === L.featuredArticles[0]);
 
   const { base: rootBase, home: rootHome } = relative(L, pathFor(L, "home"));
   pages.push({
@@ -177,7 +173,7 @@ async function build(L) {
 
   function projects(home) {
     const p = t.projects;
-    return `<article class="featured"><div class="featured-copy"><span class="eyebrow">01 / ${esc(skills.type)}</span><h3>${esc(skills.name)}</h3><p>${esc(skills.summary)}</p><p>${esc(p.touchpoints)}</p>${link(home + "projects/dev-skills/", esc(p.skillsLink))}</div><figure class="flow-figure"><ol>${flowSkills.map((skill) => `<li><span>${esc(skill.step)}</span><div><code>/dev-skills:${esc(skill.name)}</code><p>${esc(skill.title)}</p></div></li>`).join("")}</ol><figcaption>${esc(fill(p.flowCaption, { count: skills.catalog.length }))}</figcaption></figure></article><article class="skill-card"><div><span class="eyebrow">02 / ${esc(lord.type)} · ${esc(p.lordBadge)}</span><h3>${esc(lord.name)}</h3><p>${esc(lord.summary)}</p>${link(home + "projects/agent-lord/", esc(p.lordLink))}</div><div class="skill-code" aria-label="${esc(p.lordCodeLabel)}">${lord.workflows.map((w) => `<code><span>${esc(w.slug)}</span> ${esc(w.name)}</code>`).join("")}</div></article>`;
+    return `<article class="featured"><div class="featured-copy"><span class="eyebrow">01 / ${esc(skills.type)}</span><h3>${esc(skills.name)}</h3><p>${esc(skills.summary)}</p><p>${esc(p.touchpoints)}</p>${link(home + "projects/dev-skills/", esc(p.skillsLink))}</div><figure class="flow-figure"><ol>${flowSkills.map((skill) => `<li><span>${esc(skill.step)}</span><div><code>/dev-skills:${esc(skill.name)}</code><p>${esc(skill.title)}</p></div></li>`).join("")}</ol><figcaption>${esc(fill(p.flowCaption, { count: skills.catalog.length }))}</figcaption></figure></article>`;
   }
 
   function articleRows(home) {
@@ -204,17 +200,6 @@ async function build(L) {
       `<section class="page-intro"><p class="eyebrow">${esc(t.projects.eyebrow)}</p><h1>${esc(t.projects.h1)}</h1><p class="lead">${t.projects.leadHtml}</p></section><section class="section project-list">${projects(h)}</section>`,
   );
 
-  const al = t.agentLord;
-  page(
-    L,
-    "project:agent-lord",
-    lord.name,
-    lord.summary,
-    "projects/",
-    (h, b) =>
-      `<section class="page-intro project-intro"><div class="breadcrumb"><a href="${h}projects/">${esc(t.projects.title)}</a><span>/</span><span>${esc(lord.name)}</span></div><p class="eyebrow">${esc(lord.type)} · ${esc(t.projects.lordBadge)}</p><h1>${esc(lord.name)}</h1><p class="lead">${esc(lord.summary)}<br>${esc(lord.detail)}</p><div class="actions">${link(lord.repo, esc(al.repoLink), "button")}${link(h + "projects/dev-skills/", esc(al.nowLink))}</div>${source(L, lord)}</section><figure class="detail-figure"><a href="${b}assets/observer-example.jpg" aria-label="${esc(al.figureLabel)}"><img src="${b}assets/observer-example.jpg" width="1280" height="720" alt="${esc(al.figureAlt)}"></a><figcaption>${esc(al.figureCaption)}</figcaption></figure><section class="detail-grid"><h2>${esc(al.whatTitle)}</h2><div class="detail-body">${paragraphs(al.whatParagraphs)}</div></section><section class="detail-grid"><h2>${esc(al.pipelinesTitle)}</h2><div class="detail-body"><p>${esc(al.pipelinesIntro)}</p><ol class="step-list">${lord.workflows.map((w) => `<li id="${esc(w.slug)}"><h3>${esc(w.name)}</h3><p>${esc(w.description)}</p><a href="${lord.repo}/blob/${lord.revision}/references/pipelines/${w.slug}.md">${esc(al.pipelineLink)}</a></li>`).join("")}</ol><p class="note">${esc(al.pipelinesNote)}</p></div></section><figure class="detail-figure"><a href="${b}assets/agent-lord-cross-review.svg" aria-label="${esc(al.diagramLabel)}"><img src="${b}assets/agent-lord-cross-review.svg" alt="${esc(al.diagramAlt)}" loading="lazy"></a><figcaption>${esc(al.diagramCaption)}</figcaption></figure><section class="detail-grid"><h2>${esc(al.whyTitle)}</h2><div class="detail-body">${paragraphs(al.whyParagraphs)}<div class="actions">${link(h + "projects/dev-skills/", esc(al.whyLink), "button")}${al.whyArticle ? link(`${h}writing/${featured.slug}/`, esc(al.whyArticle)) : ""}</div></div></section><section class="detail-grid"><h2>${esc(al.tryTitle)}</h2><div class="detail-body">${paragraphs(al.tryParagraphs)}<div class="actions">${link(projectDocs(lord) + "#quick-start", esc(al.tryLink))}</div></div></section><section class="detail-grid"><h2>${esc(al.limitsTitle)}</h2><div class="detail-body">${paragraphs(al.limitsParagraphs)}<p class="source-line"><a href="${lord.repo}/blob/${lord.revision}/references/protocol.md#execution-contract">${esc(al.contractLink)}</a> · ${esc(al.platformNote)}</p></div></section><div class="related">${link(h + "projects/", esc(al.backLink))}${link(h + "projects/dev-skills/", esc(al.nextLink))}</div>`,
-  );
-
   const ds = t.devSkills;
   const skillEntry = (skill) =>
     `<li id="${esc(skill.name)}"><h3>${esc(skill.name)} · ${esc(skill.title)}</h3><p>${esc(skill.description)}</p><pre><code>${esc(skill.example)}</code></pre><a href="${skillSource(skill.name)}">${esc(ds.skillSourceLink)} ↗</a></li>`;
@@ -225,7 +210,7 @@ async function build(L) {
     skills.summary,
     "projects/",
     (h) =>
-      `<section class="page-intro project-intro"><div class="breadcrumb"><a href="${h}projects/">${esc(t.projects.title)}</a><span>/</span><span>${esc(skills.name)}</span></div><p class="eyebrow">${esc(skills.type)}</p><h1>${esc(skills.name)}</h1><p class="lead">${esc(skills.summary)}<br>${esc(skills.detail)}</p><div class="actions">${link(skills.repo, esc(ds.repoLink), "button")}${link(projectDocs(skills) + "#install", esc(ds.installLink))}</div>${source(L, skills)}</section><section class="detail-grid"><h2>${esc(ds.flowTitle)}</h2><div class="detail-body"><p>${esc(ds.flowIntro)}</p><ol class="step-list">${flowSkills.map((skill) => `<li><h3>${esc(skill.step)} · <a href="#${esc(skill.name)}">${esc(skill.name)}</a></h3><p>${esc(fill(ds.flowItem, { title: skill.title, you: skill.you }))}</p></li>`).join("")}</ol><p class="note">${esc(ds.flowNote)}</p></div></section>${flowSkills.map((skill) => `<section class="detail-grid" id="${esc(skill.name)}"><h2>${esc(skill.step)} / ${esc(skill.title)}</h2><div class="detail-body"><h3>${esc(skill.name)}</h3><p>${esc(skill.description)}</p><p>${esc(fill(ds.skillYou, { you: skill.you }))}</p><pre><code>${esc(skill.example)}</code></pre><div class="actions">${link(skillSource(skill.name), esc(ds.skillSourceLink))}</div></div></section>`).join("")}<section class="detail-grid"><h2>${esc(ds.supportTitle)}</h2><div class="detail-body"><p>${esc(ds.supportIntro)}</p><ol class="step-list">${skills.catalog.filter((skill) => skill.group === "support").map(skillEntry).join("")}</ol></div></section><section class="detail-grid"><h2>${esc(ds.standaloneTitle)}</h2><div class="detail-body"><p>${esc(ds.standaloneIntro)}</p><ol class="step-list">${skills.catalog.filter((skill) => skill.group === "standalone").map(skillEntry).join("")}</ol></div></section><section class="detail-grid"><h2>${esc(ds.installTitle)}</h2><div class="detail-body">${paragraphs(ds.installParagraphsHtml, true)}<div class="actions">${link(projectDocs(skills) + "#install", esc(ds.installButton), "button")}</div></div></section><section class="detail-grid"><h2>${esc(ds.prereqTitle)}</h2><div class="detail-body">${paragraphs(ds.prereqParagraphsHtml, true)}</div></section><div class="related">${link(h + "projects/", esc(ds.backLink))}${link(h + "projects/agent-lord/", esc(ds.nextLink))}</div>`,
+      `<section class="page-intro project-intro"><div class="breadcrumb"><a href="${h}projects/">${esc(t.projects.title)}</a><span>/</span><span>${esc(skills.name)}</span></div><p class="eyebrow">${esc(skills.type)}</p><h1>${esc(skills.name)}</h1><p class="lead">${esc(skills.summary)}<br>${esc(skills.detail)}</p><div class="actions">${link(skills.repo, esc(ds.repoLink), "button")}${link(projectDocs(skills) + "#install", esc(ds.installLink))}</div>${source(L, skills)}</section><section class="detail-grid"><h2>${esc(ds.flowTitle)}</h2><div class="detail-body"><p>${esc(ds.flowIntro)}</p><ol class="step-list">${flowSkills.map((skill) => `<li><h3>${esc(skill.step)} · <a href="#${esc(skill.name)}">${esc(skill.name)}</a></h3><p>${esc(fill(ds.flowItem, { title: skill.title, you: skill.you }))}</p></li>`).join("")}</ol><p class="note">${esc(ds.flowNote)}</p></div></section>${flowSkills.map((skill) => `<section class="detail-grid" id="${esc(skill.name)}"><h2>${esc(skill.step)} / ${esc(skill.title)}</h2><div class="detail-body"><h3>${esc(skill.name)}</h3><p>${esc(skill.description)}</p><p>${esc(fill(ds.skillYou, { you: skill.you }))}</p><pre><code>${esc(skill.example)}</code></pre><div class="actions">${link(skillSource(skill.name), esc(ds.skillSourceLink))}</div></div></section>`).join("")}<section class="detail-grid"><h2>${esc(ds.supportTitle)}</h2><div class="detail-body"><p>${esc(ds.supportIntro)}</p><ol class="step-list">${skills.catalog.filter((skill) => skill.group === "support").map(skillEntry).join("")}</ol></div></section><section class="detail-grid"><h2>${esc(ds.standaloneTitle)}</h2><div class="detail-body"><p>${esc(ds.standaloneIntro)}</p><ol class="step-list">${skills.catalog.filter((skill) => skill.group === "standalone").map(skillEntry).join("")}</ol></div></section><section class="detail-grid"><h2>${esc(ds.installTitle)}</h2><div class="detail-body">${paragraphs(ds.installParagraphsHtml, true)}<div class="actions">${link(projectDocs(skills) + "#install", esc(ds.installButton), "button")}</div></div></section><section class="detail-grid"><h2>${esc(ds.prereqTitle)}</h2><div class="detail-body">${paragraphs(ds.prereqParagraphsHtml, true)}</div></section><div class="related">${link(h + "projects/", esc(ds.backLink))}</div>`,
   );
 
   const w = t.writing;
@@ -239,7 +224,7 @@ async function build(L) {
     w.description,
     "writing/",
     (h, b) =>
-      `<section class="page-intro"><p class="eyebrow">${esc(w.eyebrow)}</p><h1>${esc(w.h1)}</h1><p class="lead">${w.leadHtml}</p></section>${articleFilters()}<section class="section project-list article-library" aria-label="${esc(w.listLabel)}">${articleRows(h)}</section>${otherLanguage(b)}<section class="detail-grid"><h2>${esc(w.relatedTitle)}</h2><div class="detail-body"><p>${esc(w.relatedText)}</p><div class="actions">${link(h + "projects/dev-skills/", "dev-skills")}${link(h + "projects/agent-lord/", "Agent Lord")}</div></div></section>`,
+      `<section class="page-intro"><p class="eyebrow">${esc(w.eyebrow)}</p><h1>${esc(w.h1)}</h1><p class="lead">${w.leadHtml}</p></section>${articleFilters()}<section class="section project-list article-library" aria-label="${esc(w.listLabel)}">${articleRows(h)}</section>${otherLanguage(b)}<section class="detail-grid"><h2>${esc(w.relatedTitle)}</h2><div class="detail-body"><p>${esc(w.relatedText)}</p><div class="actions">${link(h + "projects/dev-skills/", "dev-skills")}</div></div></section>`,
   );
 
   const ar = t.article;

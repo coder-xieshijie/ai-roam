@@ -34,16 +34,16 @@ python3 -m http.server 4173 --directory dist
 | `scripts/deploy-*.py` / `.github/workflows/deploy.yml` | 阿里云部署 |
 | `.openai/hosting.json` | Codex Sites 私有预览配置，静态目录为 `dist` |
 
-页面结构：首页、作品列表、两个项目详情、文章列表与文章正文、关于我，中英文各一套（见“多语言”）。页头导航在所有页面一致：作品 → `projects/`，文章 → `writing/`，关于 → `about/`，路径相对当前语言的根目录。
+页面结构：首页、作品列表、dev-skills 项目详情、文章列表与文章正文、关于我，中英文各一套（见“多语言”）。页头导航在所有页面一致：作品 → `projects/`，文章 → `writing/`，关于 → `about/`，路径相对当前语言的根目录。
 
-首页依次是：开场与作者介绍；第一章 dev-skills（现在从需求到可合入 PR 的流程）；第二章 Agent Lord（这条工作流的起点，配 Observer 示意图）；第三章文章精选；第四章关于我；之后是开源贡献、最近的记录和结尾。作品列表同样先 dev-skills、后 Agent Lord。
+首页依次是：开场与作者介绍；第一章 dev-skills（从需求到可合入 PR 的流程）；第二章文章精选；第三章关于我；之后是开源贡献、最近的记录和结尾。桌面宽度下各章图文左右交替：偶数章加 `t-reverse`，探索线按章节顺序左右摆动，增删章节时保持交替。
 
 ## 多语言
 
 中文是主站，放在根路径 `/`；英文版放在 `/en/`，结构相同：`en/`、`en/projects/`、`en/projects/<slug>/`、`en/writing/`、`en/writing/<slug>/`、`en/about/`。不按浏览器语言自动跳转。GitHub Pages 的 `/ai-roam/` 挂载路径下同样成立，因为页面之间只用相对链接。
 
 - **文案**：模板不写死任何一种语言的文字。中文文案在 `site.json` 的 `ui`（页头页脚与通用提示）、`home`（首页）、`pages`（各内页）中，英文在 `site.en.json` 的同名键下。以 `Html` 结尾的键是可信 HTML，其余都会转义；`{count}`、`{title}` 这类占位符在构建时填入。
-- **共用数据**：仓库地址、`revision`、`updated`、备案、头像只在 `site.json` 写一次。`site.en.json` 的 `projects` 按 slug、Skill 按 name、`contributions` 按 number 覆盖文字字段，其余继承中文条目；dev-skills 的 Skill 清单和 Agent Lord 的 pipeline 必须与中文一一对应，不一致时构建报错。改项目介绍时两种语言一起更新。
+- **共用数据**：仓库地址、`revision`、`updated`、备案、头像只在 `site.json` 写一次。`site.en.json` 的 `projects` 按 slug、Skill 按 name、`contributions` 按 number 覆盖文字字段，其余继承中文条目；dev-skills 的 Skill 清单必须与中文一一对应，不一致时构建报错。改项目介绍时两种语言一起更新。
 - **新增英文文章**：正文放 `content/en/<slug>.md`（写法同中文 Markdown 文章，不写一级标题，图片用 COS 原图地址），在 `site.en.json` 的 `articles` 中按发表日期倒序填写 slug、标题、摘要、发表日期、`updated`、主题、阅读时间和 `zh`。`zh` 填对应中文文章的 slug，没有中文版就填 `null`。英文列表只显示 `site.en.json` 里的文章；中文旧文不进入英文站。首页“精选”由 `featuredArticles` 指定。
 - **语言切换**：页头右侧的 `中文 / EN` 指向另一种语言的同一页；文章没有对应版本时，指向另一种语言的文章列表。手机宽度下只显示另一种语言。文章互有译本时，文章信息栏也会链接到另一版。
 - **hreflang 与 canonical**：每页写 `canonical`，地址用 `https://xieshijie.cn/` 加页面路径（域名取自 `filing.domain`）。有对应页的页面写 `zh-CN`、`en` 两条 alternate，`x-default` 指向中文；只有一种语言的页面（中文旧文、尚无中文版的英文文章）只写自己那条，`x-default` 也指向自己。
@@ -55,7 +55,7 @@ python3 -m http.server 4173 --directory dist
 - **新增文章**：在 `content/` 添加 Markdown，并在 `site.json` 的 `articles` 中按发表日期倒序的位置填写 slug、标题、摘要、发表日期、主题和阅读时间；`updated` 只用于首页“最近的记录”。每篇只显示作者谢世杰和发表日期。
 - **删除文章**：删掉正文和 `site.json` 条目后重新构建，并删除根目录下对应的 `writing/<slug>/`；`npm run check` 会提示遗留目录。
 - **首页精选**：`featuredArticles` 指定三篇。改了首页文案或精选后要重新生成字体子集（见下文）。
-- **项目介绍**：`projects` 按 slug 取用，不依赖顺序。`revision` 固定为核对过的上游提交，项目页的依据版本、Skill 原文和 pipeline 规则链接都指向它：dev-skills 依据 `2254db6` 的 README、README.zh-CN 与 `skills/*/SKILL.md`，Agent Lord 依据 `775bc88` 的 README。dev-skills 的 `catalog` 用 `group` 分为 `flow`（首页手记卡片与作品页展示的四个流程 Skill，带 `step` 与 `you`）、`support`（流程中复用）和 `standalone`（单独使用）。改介绍时先读上游新版本，再更新 `revision`、`updated` 与 `updateNote`（后两者进入首页“最近的记录”）。
+- **项目介绍**：`projects` 按 slug 取用，不依赖顺序。`revision` 固定为核对过的上游提交，项目页的依据版本和 Skill 原文链接都指向它：dev-skills 依据 `2254db6` 的 README、README.zh-CN 与 `skills/*/SKILL.md`。dev-skills 的 `catalog` 用 `group` 分为 `flow`（首页手记卡片与作品页展示的四个流程 Skill，带 `step` 与 `you`）、`support`（流程中复用）和 `standalone`（单独使用）。改介绍时先读上游新版本，再更新 `revision`、`updated` 与 `updateNote`（后两者进入首页“最近的记录”）。
 - **配图与头像**：图片放在腾讯云 COS 图床 `coder-xieshijie-img-1253784930.cos.ap-beijing.myqcloud.com`，仓库不存副本。正文保留原图地址，构建时追加 `imageMogr2/thumbnail/…/format/webp`，由图床按需缩放并转为 WebP。头像为 `site/xieshijie-avatar.jpg`。图床需保持公开读、开启数据万象图片处理，并允许本站 Referer。
 - **英文内容**：见“多语言”。
 - **公开边界**：关于页和文章只写本人确认可公开的经历；内部平台、截图、内网地址、业务数据不进入正文。
@@ -70,7 +70,7 @@ python3 -m http.server 4173 --directory dist
 - [IBM Plex Sans SC / Mono Regular](https://github.com/IBM/plex/tree/78cd4223d8de9fcb78cba84eadecb269c56093c5)，`assets/fonts/Plex-*-LICENSE.txt`。
 - [Phosphor Core](https://github.com/phosphor-icons/core/tree/2b75f3ad12b420c9504ef05df8d2564a28f8500e)，`assets/fonts/Phosphor-LICENSE.txt`；SVG 图形保持上游路径，合并为本地 sprite。
 
-Agent Lord 项目页的交叉评审流程图取自 [775bc88](https://github.com/coder-xieshijie/agent-lord/tree/775bc882b82fe13c5863440c05fbf08272c830c7) 的 `assets/diagrams/cross-review.svg`，本地文件为 `assets/agent-lord-cross-review.svg`，未改写图中内容。开源贡献依据 [MiniMax Code PR #280](https://github.com/MiniMax-AI/minimax-code/pull/280)，合入日期为 2026-09-21。
+开源贡献依据 [MiniMax Code PR #280](https://github.com/MiniMax-AI/minimax-code/pull/280)，合入日期为 2026-09-21。
 
 ## 自动部署
 
