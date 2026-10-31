@@ -33,6 +33,7 @@ python3 -m http.server 4173 --directory dist
 | `assets/brand-robot.png`、`favicon.ico`、`apple-touch-icon.png` | 朱红机器人品牌标识（页头与站点图标） |
 | `scripts/deploy-*.py` / `.github/workflows/deploy.yml` | 阿里云部署 |
 | `.openai/hosting.json` | Codex Sites 私有预览配置，静态目录为 `dist` |
+| `docs/design/` | 首页设计归档：风格方向（`current-direction.md`）与首页视觉、交互规范（`ai-roam-homepage.md`），核对至 `f8e1760`，之后的改动以源码和本文件为准；不进入构建产物 |
 
 页面结构：首页、作品列表、dev-skills 项目详情、文章列表与文章正文、关于我，中英文各一套（见“多语言”）。页头导航在所有页面一致：作品 → `projects/`，文章 → `writing/`，关于 → `about/`，路径相对当前语言的根目录。
 
