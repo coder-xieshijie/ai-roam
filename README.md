@@ -2,7 +2,7 @@
 
 谢世杰｜AI游民的个人网站 [xieshijie.cn](https://xieshijie.cn/)：Agent 工具作品、AI Coding 实践文章和个人经历。
 
-纯静态站点：`scripts/build.mjs` 从 `content/` 生成 HTML，合入 `main` 后由 GitHub Actions 部署到阿里云 ECS。GitHub Pages（[coder-xieshijie.cn/ai-roam](https://coder-xieshijie.cn/ai-roam/)）发布同一份根目录文件，作为备用地址。
+纯静态站点：`scripts/build.mjs` 从 `content/` 生成 HTML，合入 `main` 后由 GitHub Actions 部署到阿里云 ECS。GitHub Pages（[coder-xieshijie.github.io/ai-roam](https://coder-xieshijie.github.io/ai-roam/)）发布同一份根目录文件，作为备用地址。
 
 ## 本地开发
 
